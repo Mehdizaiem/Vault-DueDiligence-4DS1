@@ -71,8 +71,11 @@ We welcome contributions to Vault! Please read our contributing guidelines befor
 
 
 ## 📧 Contact
-zaiem.mehdi@esprit.tn
-
+zaiem.mehdi@esprit.tn -- Project Lead
+hamza.chaieb@esprit.tn -- Project Manager
+zghal.nour@esprit.tn   --Architect
+louati.nesrine@esprit.tn --Data scientist
+maryem.essaidi@esprit.tn --Data scientist
 ## 🙏 Acknowledgments
 - Team Data Science Process (TDSP) Framework
 

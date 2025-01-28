@@ -1,3 +1,39 @@
+
+
+## 🚀 Overview
+Vault is an advanced cryptocurrency due diligence platform that leverages AI and real-time data analysis to provide comprehensive investment insights. The platform automates the collection, analysis, and reporting of cryptocurrency metrics, market trends, and risk factors, delivering actionable intelligence through an interactive dashboard and automated reports.
+
+## 🎯 Key Features
+- Real-time market data analysis and monitoring
+- AI-powered investment insights
+- Interactive web dashboard with real-time updates
+- Automated due diligence report generation
+- RAG-enhanced AI assistant for custom queries
+- Multi-source data integration and validation
+- Sentiment analysis from social media and news
+- Automated PowerPoint report generation
+
+## 🛠️ Tech Stack
+### Data Collection & Processing
+
+
+### Backend
+
+
+### Frontend
+
+
+### AI/ML
+
+### Reporting
+
+
+## 📊 Architecture
+
+## 🎯 Project Goals
+
+
+## 🚀 Installation
 <<<<<<< HEAD
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
@@ -21,14 +57,7 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
 ## Deploy on Vercel
 
@@ -39,66 +68,6 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 # Vault-DueDiligence-4DS1
 Vault is an advanced cryptocurrency due diligence platform that leverages AI and real-time data analysis to provide comprehensive investment insights. 
 # Vault: Automated Cryptocurrency Due Diligence Platform
-
-## 🚀 Overview
-Vault is an advanced cryptocurrency due diligence platform that leverages AI and real-time data analysis to provide comprehensive investment insights. The platform automates the collection, analysis, and reporting of cryptocurrency metrics, market trends, and risk factors, delivering actionable intelligence through an interactive dashboard and automated reports.
-
-## 🎯 Key Features
-- Real-time market data analysis and monitoring
-- AI-powered investment insights
-- Interactive web dashboard with real-time updates
-- Automated due diligence report generation
-- RAG-enhanced AI assistant for custom queries
-- Multi-source data integration and validation
-- Sentiment analysis from social media and news
-- Automated PowerPoint report generation
-
-## 🛠️ Tech Stack
-### Data Collection & Processing
-- Data Sources:  [ Api calls ]
-- Pipeline: Apache Airflow, Apache Kafka
-- Storage: PostgreSQL, MongoDB
-- Vector Store: Chroma
-
-### Backend
-- FastAPI
-- WebSocket for real-time updates
-- Docker Compose for containerization
-- LlamaIndex for RAG implementation
-
-### Frontend
-- React
-- TailwindCSS
-- D3.js for data visualization
-- Real-time WebSocket integration
-
-### AI/ML
-- PyTorch for market analysis models
-- BERT/DistilBERT for sentiment analysis
-- Llama 2/Mistral AI for language models
-- Custom risk assessment models
-
-### Reporting
-- Python-pptx for automated presentations
-- Custom templating system
-- PDF and Excel export capabilities
-
-## 📊 Architecture
-- Microservices-based architecture
-- Event-driven design for real-time processing
-- RAG-enhanced document processing
-- Scalable data pipeline with Apache Kafka
-- Modular design for easy component updates
-
-## 🎯 Project Goals
-1. Automate cryptocurrency due diligence process
-2. Provide real-time market insights and analysis
-3. Generate comprehensive investment reports
-4. Offer AI-powered investment recommendations
-5. Enable data-driven decision making
-
-## 🚀 Installation
-[Coming Soon]
 
 ## 📝 Documentation
 [Coming Soon]

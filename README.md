@@ -4,14 +4,7 @@
 Vault is an advanced cryptocurrency due diligence platform that leverages AI and real-time data analysis to provide comprehensive investment insights. The platform automates the collection, analysis, and reporting of cryptocurrency metrics, market trends, and risk factors, delivering actionable intelligence through an interactive dashboard and automated reports.
 
 ## 🎯 Key Features
-- Real-time market data analysis and monitoring
-- AI-powered investment insights
-- Interactive web dashboard with real-time updates
-- Automated due diligence report generation
-- RAG-enhanced AI assistant for custom queries
-- Multi-source data integration and validation
-- Sentiment analysis from social media and news
-- Automated PowerPoint report generation
+
 
 ## 🛠️ Tech Stack
 ### Data Collection & Processing

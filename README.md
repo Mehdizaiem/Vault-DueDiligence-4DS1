@@ -67,22 +67,6 @@ Following Team Data Science Process (TDSP) methodology:
 ### Prerequisites
 - Node.js 16.x
 - npm/yarn
-
-### Installation
-```bash
-# Clone the repository
-git clone https://github.com/Mehdizaiem/Vault-DueDiligence-4DS1.git
-
-# Install dependencies
-npm install
-
-# Set up environment variables
-cp .env.example .env.local
-
-# Run the development server
-npm run dev
-
-Open http://localhost:3000 with your browser to see the result.
 ### 📝 Documentation
 
 Business Understanding
@@ -102,4 +86,21 @@ louati.nesrine@esprit.tn --Data scientist
 maryem.essaidi@esprit.tn --Data scientist
 ## 🙏 Acknowledgments
 - Team Data Science Process (TDSP) Framework
+
+
+### Installation
+```bash
+# Clone the repository
+git clone https://github.com/Mehdizaiem/Vault-DueDiligence-4DS1.git
+
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp .env.example .env.local
+
+# Run the development server
+npm run dev
+
+Open http://localhost:3000 with your browser to see the result.
 

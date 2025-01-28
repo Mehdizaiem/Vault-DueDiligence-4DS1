@@ -1,73 +1,97 @@
-
+# VAULT: AI-Powered Crypto Due Diligence Platform
 
 ## 🚀 Overview
-Vault is an advanced cryptocurrency due diligence platform that leverages AI and real-time data analysis to provide comprehensive investment insights. The platform automates the collection, analysis, and reporting of cryptocurrency metrics, market trends, and risk factors, delivering actionable intelligence through an interactive dashboard and automated reports.
+VAULT is an advanced cryptocurrency due diligence platform that leverages AI and real-time data analysis to provide comprehensive investment insights. The platform automates the collection, analysis, and reporting of cryptocurrency metrics, market trends, and risk factors, delivering actionable intelligence through an interactive dashboard and automated reports.
 
 ## 🎯 Key Features
-
+- **Multi-Source Data Integration**: Consolidates data from 20+ sources including blockchain analytics, market data, and regulatory databases
+- **Automated Document Analysis**: Reduces manual document review time by 70% through AI-powered extraction and analysis
+- **Intelligent Q&A System**: Provides contextual answers to due diligence queries within 30 seconds
+- **Real-Time Risk Assessment**: 24/7 monitoring of crypto fund performance with automated alerts
+- **Automated Report Generation**: Standardized due diligence reports generated within 10 minutes
 
 ## 🛠️ Tech Stack
-### Data Collection & Processing
-
-
-### Backend
-
 
 ### Frontend
+- Next.js 13 with App Router
+- TypeScript
+- Tailwind CSS
+- Clerk Authentication
+- Shadcn UI Components
+- Lucide React Icons
 
+### Backend (Coming Soon)
+- Node.js
+- Express.js
+- MongoDB
+- Redis for caching
 
-### AI/ML
+### AI/ML Components (Coming Soon)
+- LangChain
+- OpenAI GPT-4
+- BERT for relevance scoring
+- RAGAs for document retrieval
 
-### Reporting
+### Data Processing (Coming Soon)
+- Python
+- Pandas
+- NumPy
+- Apache Tika
+- Tesseract OCR
 
-
-## 📊 Architecture
+## 📊 Project Structure
+Following Team Data Science Process (TDSP) methodology:
+/
+├── Docs/
+│   ├── Business_Understanding/
+│   ├── Data_Understanding/
+│   ├── Modeling/
+│   └── Deployment/
+├── Code/
+├── Sample_Data/
+└── src/
+└── app/
+├── (auth)/
+└── (dashboard)/
 
 ## 🎯 Project Goals
+1. Reduce manual due diligence time by 70%
+2. Achieve 95% user satisfaction rate
+3. Provide answers within 30 seconds
+4. Maintain 85% answer accuracy
+5. Generate reports within 10 minutes
+6. Enable real-time risk monitoring
 
+## 🚀 Getting Started
 
-## 🚀 Installation
-<<<<<<< HEAD
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+### Prerequisites
+- Node.js 16.x
+- npm/yarn
 
-## Getting Started
-
-First, run the development server:
-
+### Installation
 ```bash
+# Clone the repository
+git clone https://github.com/Mehdizaiem/Vault-DueDiligence-4DS1.git
+
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp .env.example .env.local
+
+# Run the development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000 with your browser to see the result.
+📝 Documentation
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Business Understanding
+Technical Architecture
+API Documentation (Coming Soon)
+User Guide (Coming Soon)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-=======
-# Vault-DueDiligence-4DS1
-Vault is an advanced cryptocurrency due diligence platform that leverages AI and real-time data analysis to provide comprehensive investment insights. 
-# Vault: Automated Cryptocurrency Due Diligence Platform
-
-## 📝 Documentation
-[Coming Soon]
-
-## 🤝 Contributing
-We welcome contributions to Vault! Please read our contributing guidelines before submitting pull requests.
-
+🤝 Contributing
+We welcome contributions to VAULT! Please read our contributing guidelines before submitting pull requests.
 
 
 ## 📧 Contact
@@ -79,5 +103,3 @@ maryem.essaidi@esprit.tn --Data scientist
 ## 🙏 Acknowledgments
 - Team Data Science Process (TDSP) Framework
 
-
->>>>>>> 22ab3623c86c09983f7eb551de0f6a2deed18b40

@@ -97,7 +97,7 @@ git clone https://github.com/Mehdizaiem/Vault-DueDiligence-4DS1.git
 npm install
 
 # Set up environment variables
-cp .env.example .env.local
+make a new file called "  .env.local   " and ask the ProjectLead for the api keys ! or make yours !
 
 # Run the development server
 npm run dev

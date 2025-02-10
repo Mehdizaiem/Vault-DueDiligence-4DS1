@@ -1,0 +1,9 @@
+python-binance==1.0.19
+pycoingecko==3.1.0
+requests==2.31.0
+pandas==2.2.3
+numpy==1.24.0
+sqlalchemy==2.0.0
+python-dotenv==1.0.0
+psycopg2-binary==2.9.9
+cryptocompare==0.7.5

@@ -3,33 +3,14 @@ import os
 from dotenv import load_dotenv
 from vector_store.embed import generate_embedding
 
-# Load environment variables
-load_dotenv()
-
-# Get Weaviate connection details
-WEAVIATE_URL = os.getenv("WEAVIATE_URL", "http://localhost:9090")
-WEAVIATE_GRPC_PORT = int(os.getenv("WEAVIATE_GRPC_PORT", "50051"))
-
-# Ensure URL has http:// or https:// prefix
-if not WEAVIATE_URL.startswith(("http://", "https://")):
-    WEAVIATE_URL = f"http://{WEAVIATE_URL}"
-
-# Initialize Weaviate client with v4 syntax
-client = weaviate.WeaviateClient(
-    connection_params=weaviate.connect.ConnectionParams.from_url(
-        url=WEAVIATE_URL,
-        grpc_port=WEAVIATE_GRPC_PORT
-    )
-)
-
-def create_schema():
+def create_schema(client):
     """Create the LegalDocument collection if it doesn't exist"""
     # Check if collection exists
     try:
         client.collections.get("LegalDocument")
         print("Collection 'LegalDocument' already exists")
     except weaviate.exceptions.WeaviateGRPCError:
-        # Create collection
+        # Create collection with HuggingFace vectorizer configuration
         print("Creating 'LegalDocument' collection")
         client.collections.create(
             name="LegalDocument",
@@ -46,24 +27,25 @@ def create_schema():
                     "description": "File name"
                 }
             ],
-            vectorizer_config=None  # No auto-vectorization
+            vectorizer_config=None  # We'll provide vectors directly
         )
 
-def store_document(text, filename):
+def store_document(client, text, filename):
     """
     Store a document in Weaviate with its embedding.
     
     Args:
+        client (weaviate.WeaviateClient): The active Weaviate client
         text (str): The document text
         filename (str): The source filename
     """
     # Ensure the schema exists
-    create_schema()
+    create_schema(client)
     
     # Get the collection
     collection = client.collections.get("LegalDocument")
     
-    # Generate embedding
+    # Generate embedding using HuggingFace model
     vector = generate_embedding(text)
     
     # Insert the object
@@ -77,6 +59,9 @@ def store_document(text, filename):
 
 if __name__ == "__main__":
     # Test storing a document
+    from vector_store.weaviate_client import get_weaviate_client
+    
+    client = get_weaviate_client()
     sample_text = "This is a test document about crypto regulations."
-    store_document(sample_text, "test_doc.txt")
+    store_document(client, sample_text, "test_doc.txt")
     print("Test document stored successfully")

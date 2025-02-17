@@ -1,32 +1,47 @@
 import weaviate
 import os
 from dotenv import load_dotenv
-
-# Load environment variables
-load_dotenv()
-
-# Get Weaviate connection details
-WEAVIATE_URL = os.getenv("WEAVIATE_URL", "http://localhost:9090")
-WEAVIATE_GRPC_PORT = int(os.getenv("WEAVIATE_GRPC_PORT", "50051"))
-
-# Ensure URL has http:// or https:// prefix
-if not WEAVIATE_URL.startswith(("http://", "https://")):
-    WEAVIATE_URL = f"http://{WEAVIATE_URL}"
+from weaviate import connect
+from weaviate.classes.init import AdditionalConfig, Timeout
 
 def get_weaviate_client():
-    """Create and return a Weaviate client using v4 syntax"""
-    client = weaviate.WeaviateClient(
-        connection_params=weaviate.connect.ConnectionParams.from_url(
-            url=WEAVIATE_URL,
-            grpc_port=WEAVIATE_GRPC_PORT
-        )
-    )
-    return client
-
-if __name__ == "__main__":
-    client = get_weaviate_client()
+    """Create and return a Weaviate client with improved error handling and connection options"""
+    load_dotenv()
     
-    if client.is_ready():
-        print("Connected to Weaviate successfully!")
-    else:
-        raise Exception("Failed to connect to Weaviate.")
+    WEAVIATE_URL = os.getenv("WEAVIATE_URL", "http://localhost:9090")
+    WEAVIATE_GRPC_PORT = int(os.getenv("WEAVIATE_GRPC_PORT", "50051"))
+    try:
+        client = weaviate.WeaviateClient(
+            connection_params=weaviate.connect.ConnectionParams.from_url(
+                url=WEAVIATE_URL,
+                grpc_port=WEAVIATE_GRPC_PORT
+            ),
+            additional_config=AdditionalConfig(
+                timeout=Timeout(init=10)  # Increase timeout if needed
+            )
+        )
+        
+        # Try to connect explicitly
+        client.connect()
+        
+        # Check if the client is now connected
+        if not client.is_live():
+            raise ConnectionError("Failed to connect to Weaviate. Check server status.")
+        
+        print("Weaviate client is connected.")
+        return client
+    except Exception as e:
+        print(f"Error connecting to Weaviate: {str(e)}")
+        print("Please ensure Weaviate is running, accessible, and your network connection is stable.")
+        raise
+    
+def check_weaviate_connection(client):
+    """Utility function to test Weaviate connection"""
+    try:
+        # v4 syntax for checking connection
+        client.connect()
+        print("Successfully connected to Weaviate!")
+        return True
+    except Exception as e:
+        print(f"Connection test failed: {str(e)}")
+        return False

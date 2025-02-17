@@ -1,7 +1,7 @@
 import os
 import glob
 from docx import Document
-from PyPDF2 import PdfReader
+from pypdf import PdfReader
 from dotenv import load_dotenv
 from vector_store.store import store_document
 
@@ -19,10 +19,14 @@ def read_docx(file_path):
     return '\n'.join(full_text)
 
 def read_pdf(file_path):
-    reader = PdfReader(file_path)
+    """Read PDF files using pypdf instead of PyPDF2"""
     text = ""
-    for page in reader.pages:
-        text += page.extract_text()
+    try:
+        reader = PdfReader(file_path)
+        for page in reader.pages:
+            text += page.extract_text() or ''  # Handles None returns
+    except Exception as e:
+        print(f"Error reading PDF {file_path}: {e}")
     return text
 
 def load_documents():
@@ -60,20 +64,19 @@ def load_documents():
     
     return documents
 
-def ingest_documents():
+def ingest_documents(client):
     """Load documents and store them in Weaviate."""
     documents = load_documents()
     print(f"Ingesting {len(documents)} documents into Weaviate...")
-    
+
     for doc in documents:
         try:
-            store_document(doc["content"], doc["filename"])
+            store_document(client, doc["content"], doc["filename"])
             print(f"Stored document: {doc['filename']}")
         except Exception as e:
             print(f"Error storing document {doc['filename']}: {e}")
-    
+
     print(f"Successfully ingested {len(documents)} documents.")
-    return documents
 
 if __name__ == "__main__":
     docs = load_documents()

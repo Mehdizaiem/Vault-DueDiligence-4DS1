@@ -1,0 +1,14 @@
+version: '3.8'
+services:
+  weaviate:
+    image: semitechnologies/weaviate:1.21.1
+    ports:
+      - "9090:8080"
+    environment:
+      AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: "true"
+      PERSISTENCE_DATA_PATH: "./data"
+      DEFAULT_VECTORIZER_MODULE: "none"  # No external vectorizer
+    volumes:
+      - weaviate_data:/var/lib/weaviate
+volumes:
+  weaviate_data:

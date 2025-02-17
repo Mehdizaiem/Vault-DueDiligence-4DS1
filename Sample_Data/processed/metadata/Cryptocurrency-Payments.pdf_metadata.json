@@ -1,0 +1,8 @@
+{
+  "source": "Cryptocurrency-Payments.pdf",
+  "file_path": "Sample_Data\\processed\\text\\Cryptocurrency-Payments.pdf.txt",
+  "document_type": "pdf",
+  "num_chunks": 29,
+  "chunk_size": 1000,
+  "chunk_overlap": 200
+}

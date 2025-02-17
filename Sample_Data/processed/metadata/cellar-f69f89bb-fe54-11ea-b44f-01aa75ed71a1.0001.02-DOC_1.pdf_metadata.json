@@ -1,0 +1,8 @@
+{
+  "source": "cellar-f69f89bb-fe54-11ea-b44f-01aa75ed71a1.0001.02-DOC_1.pdf",
+  "file_path": "Sample_Data\\processed\\text\\cellar-f69f89bb-fe54-11ea-b44f-01aa75ed71a1.0001.02-DOC_1.pdf.txt",
+  "document_type": "pdf",
+  "num_chunks": 595,
+  "chunk_size": 1000,
+  "chunk_overlap": 200
+}

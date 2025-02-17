@@ -1,0 +1,8 @@
+{
+  "source": "Updated-Guidance-VA-VASP.pdf.coredownload.inline.pdf",
+  "file_path": "Sample_Data\\processed\\text\\Updated-Guidance-VA-VASP.pdf.coredownload.inline.pdf.txt",
+  "document_type": "pdf",
+  "num_chunks": 460,
+  "chunk_size": 1000,
+  "chunk_overlap": 200
+}

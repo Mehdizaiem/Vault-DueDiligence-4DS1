@@ -1,0 +1,234 @@
+[
+  {
+    "text": "Teneo\n1\nCryptocurrency \nPayments\nWill cryptocurrencies provide viable \nalternative payment mechanisms?\nTeneo Insights\nFebruary 2022\nTeneoTeneo\n32\nIntroduction \nCryptocurrencies are frequently talked about \nsynonymously with payments, but is that  \ncorrect? Can cryptocurrencies form the basis \nof viable payments mechanisms? Could they in \nthe future? What forms of payments could they \nbe beneficial for?\nBackground\nThe hype to-date has largely revolved around unbacked cryptocurrencies as an asset class \ndominated by Bitcoin and a handful of other tokens. Speculators buy them, hold them and sell them.\nFocus has been on how their value against a fiat currency has performed, much like a commodity. \nBut by their very name, cryptocurrencies are seen by some as a currency. As their whole existence \nrelates to transactions and records of transactions, it is difficult not to see cryptocurrencies also as a \npayment system.",
+    "metadata": {
+      "source": "Cryptocurrency-Payments.pdf",
+      "file_path": "Sample_Data\\processed\\text\\Cryptocurrency-Payments.pdf.txt",
+      "document_type": "pdf"
+    }
+  },
+  {
+    "text": "relates to transactions and records of transactions, it is difficult not to see cryptocurrencies also as a \npayment system.\nCryptocurrencies can be used as a payment mechanism. An individual can make a payment to \nanother individual in a cryptocurrency which is recorded on blockchain. Consequently, the key \nquestion is not whether they can be used as a payment mechanism, but whether cryptocurrencies \nare, or could be, a viable challenger to the existing fiat currency payment systems for anything more \nthan a few ad hoc barter transfers.\nThis is a subject that has no doubt formed the basis of many PhD \ntheses. Here, we try to distil the key points into a few pages which \nthe layperson can understand. \nIn doing so, we make no apologies for sticking to the mainstream \ndefinitions and mechanisms and ignoring the many variations which \nprove exceptions to those rules and can make the discussion \noverly complicated. Similarly, for any metric associated with",
+    "metadata": {
+      "source": "Cryptocurrency-Payments.pdf",
+      "file_path": "Sample_Data\\processed\\text\\Cryptocurrency-Payments.pdf.txt",
+      "document_type": "pdf"
+    }
+  },
+  {
+    "text": "definitions and mechanisms and ignoring the many variations which \nprove exceptions to those rules and can make the discussion \noverly complicated. Similarly, for any metric associated with \ncryptocurrencies, there is a wide range of answers, depending on \nsources and dates. We have not verified the metrics used as we are \ninterested in the orders of magnitude rather than precise figures to \nmake the observations below.\nAs the cryptocurrency world is both relatively new and rapidly \nevolving, there is as yet no definitive lexicon; different authors use \nsubtly different definitions. In the appendix, are listed the definitions \nused in this article (drawn from a range of sources).\nTeneo2\nTeneoTeneo\n54\nIn the fiat currency world there is an array of payment \nmechanisms, many doing something slightly different. \nFrequently, multiple mechanisms are used sequentially \nto complete each payment. Some are domestic/\nsingle currency (e.g. BACS1, Faster Payments, CHIPS2,",
+    "metadata": {
+      "source": "Cryptocurrency-Payments.pdf",
+      "file_path": "Sample_Data\\processed\\text\\Cryptocurrency-Payments.pdf.txt",
+      "document_type": "pdf"
+    }
+  },
+  {
+    "text": "Frequently, multiple mechanisms are used sequentially \nto complete each payment. Some are domestic/\nsingle currency (e.g. BACS1, Faster Payments, CHIPS2, \nCHAPS3), some regional (e.g. SEPA4) and some \ninternational/multi-currency (e.g. Visa, Mastercard, Letters \nof Credit). Some of these mechanisms relate to high \nvolume retail transactions (e.g. retail card payments and \nelectronic payments), whereas others are lower volume \nbusiness-to-business transactions (e.g. international \nbank-to-bank payments and Letters of Credit). Overlaid \non the actual payments systems lie messaging systems, \nprincipally Swift 5, which is the conduit for payment \ninstructions and therefore forms an integral part of the \nwhole solution for inter-bank payments. The processes \nhave evolved organically over time and, as a result, are \nfairly archaic. International payments for example, often \ninvolve a series of intermediary (correspondent) banks \nconnected via thousands of bilateral agreements. For",
+    "metadata": {
+      "source": "Cryptocurrency-Payments.pdf",
+      "file_path": "Sample_Data\\processed\\text\\Cryptocurrency-Payments.pdf.txt",
+      "document_type": "pdf"
+    }
+  },
+  {
+    "text": "fairly archaic. International payments for example, often \ninvolve a series of intermediary (correspondent) banks \nconnected via thousands of bilateral agreements. For \ninternational trade payments, networks of banks are \ninvolved to process payments and/or check documents \nand/or guarantee payments.\nThe complexity of the current solution, particularly \nfor international payments, means that payments are \nexpensive and take a relatively long time to process. \nFor retail card payments, an infrastructure exists both \ndomestically and internationally which is broadly fit \nfor purpose, if rather expensive; however, in its recent \nreport6, the UK Payment Systems Regulator (PSR) stated \nthat, “the supply of card-acquiring services does not \nwork well for small and medium-sized merchants.” The \nPSR goes on to say, “We will work…to develop remedies \nthat … ensures that the market works better for them.” \nThere is clearly room for improvement. \nCurrent situation",
+    "metadata": {
+      "source": "Cryptocurrency-Payments.pdf",
+      "file_path": "Sample_Data\\processed\\text\\Cryptocurrency-Payments.pdf.txt",
+      "document_type": "pdf"
+    }
+  },
+  {
+    "text": "PSR goes on to say, “We will work…to develop remedies \nthat … ensures that the market works better for them.” \nThere is clearly room for improvement. \nCurrent situation\n1. BACS - Bankers’ Automated Clearing System (GBP)\n2. CHIPS - Clearing House Interbank Payments System (USD)\n3. CHAPS - Clearing House Automated Payments System (GBP)\n4. SEPA - Single Euro Payments Area (EUR)\n5. Swift - Society for Worldwide Interbank Financial Telecommunications.\n6. Source - https://www.psr.org.uk/publications/market reviews/mr18-1-8-card-acquiring-report-final/ \nCryptocurrencies as a  \npotential game changer\nThe recent launch of The Bank of London (only the second clearing bank \nlaunched in the UK in the last 250 years) as a self-proclaimed disrupter \nof the fundamentals of banking, specifically regarding end-to-end \ninternational banking services, also indicates that change is in the air.\nAn innovation that revolutionises the industry and delivers far simpler,",
+    "metadata": {
+      "source": "Cryptocurrency-Payments.pdf",
+      "file_path": "Sample_Data\\processed\\text\\Cryptocurrency-Payments.pdf.txt",
+      "document_type": "pdf"
+    }
+  },
+  {
+    "text": "international banking services, also indicates that change is in the air.\nAn innovation that revolutionises the industry and delivers far simpler, \nquicker, and cheaper solutions may be overdue. Some argue that \ncryptocurrencies, or rather the underlying blockchain, may form the basis \nof these solutions.\nLet’s look at a few of the pertinent factors which have been aired in the \npress over recent months: value volatility, transaction rate, transaction \ntime, transaction cost, energy consumption and blockchain size.\nTeneo 5\nTeneoTeneo\n76\nI. Value volatility\nThe first key challenge that cryptocurrencies face \nversus fiat currencies is value volatility. Few of us have \nencountered the chaos caused by hyperinflation, \nbut cryptocurrency-based transactions face similar \nchallenges. Typically, businesses want to make profits \non the products they sell. To reduce risk, they usually \nprice in the same currency as their costs. If they are",
+    "metadata": {
+      "source": "Cryptocurrency-Payments.pdf",
+      "file_path": "Sample_Data\\processed\\text\\Cryptocurrency-Payments.pdf.txt",
+      "document_type": "pdf"
+    }
+  },
+  {
+    "text": "challenges. Typically, businesses want to make profits \non the products they sell. To reduce risk, they usually \nprice in the same currency as their costs. If they are \npricing (or buying) in a different currency, they hedge, at \na cost, against adverse foreign exchange movements. If \npayments were made in cryptocurrencies, there would be \na crypto/fiat exchange, and therefore hedging required, \non every transaction. Given the high volatility, the use of \nhedging instruments is not a viable option. There are two \npossible solutions that address this in some way:\nIa. Stablecoins\nStablecoins are cryptocurrencies which are purportedly \nmore stable and secure than unbacked cryptocurrencies, \non the basis that they are typically tied to the value of a \nfiat currency and therefore address this issue head on. \nProducts or services could be priced in fiat and/or a \nstablecoin in the confidence that their values would not \ndiverge drastically. However, recurring questions over",
+    "metadata": {
+      "source": "Cryptocurrency-Payments.pdf",
+      "file_path": "Sample_Data\\processed\\text\\Cryptocurrency-Payments.pdf.txt",
+      "document_type": "pdf"
+    }
+  },
+  {
+    "text": "Products or services could be priced in fiat and/or a \nstablecoin in the confidence that their values would not \ndiverge drastically. However, recurring questions over \nthe reality of the collateral behind these does raise some \nconcerns; are some merely the latest iteration of a Madoff \nor Wirecard style fraud where the reported underlying \ncollateral does not actually exist? Without adequate \nregulatory oversight, we cannot be confident.\nIb. Rapid transactions\nThe “claimed” speed of cryptocurrency transactions \nmeans that if one prices in home fiat currency, a \npayment service provider could convert the payment to a \ncryptocurrency at the spot rate at the time of transaction, \nsend the payment and convert back to fiat. If this can \nbe achieved in a few seconds, the exchange rate risk is \nminimised. \nII. Transaction rate\nThe credit card payments network, Visa, can process \n32,000 transactions per second (“tps”)7, whilst Bitcoin,",
+    "metadata": {
+      "source": "Cryptocurrency-Payments.pdf",
+      "file_path": "Sample_Data\\processed\\text\\Cryptocurrency-Payments.pdf.txt",
+      "document_type": "pdf"
+    }
+  },
+  {
+    "text": "minimised. \nII. Transaction rate\nThe credit card payments network, Visa, can process \n32,000 transactions per second (“tps”)7, whilst Bitcoin, \nas a first-generation cryptocurrency, processes at only \n3 tps8. The way a block is added to the blockchain \n(its consensus protocol, proof-of-work), the number of \ntransactions it processes at a time (block size, 1 MB) \nand the target time to add a block (10 minutes), are the \nparameters that limit its transaction rate. As blockchain \ntechnology evolves, new solutions are emerging that \naddress the restrictions inherent with Bitcoin. \nChanges are also being made to Ethereum, the second \nlargest blockchain, in a series of steps to transition to \nEthereum 2.0 by June 2022. The target for Ethereum 2.0 \nis to increase transaction rates from the current 15-45 tps \nto 100,000 tps. \nAlready, third-generation blockchains are emerging with \nclaims of significantly increased transaction rates: Nano \nat 1,000 tps and Solana9 at 50,000 tps. These use a",
+    "metadata": {
+      "source": "Cryptocurrency-Payments.pdf",
+      "file_path": "Sample_Data\\processed\\text\\Cryptocurrency-Payments.pdf.txt",
+      "document_type": "pdf"
+    }
+  },
+  {
+    "text": "to 100,000 tps. \nAlready, third-generation blockchains are emerging with \nclaims of significantly increased transaction rates: Nano \nat 1,000 tps and Solana9 at 50,000 tps. These use a \nblockchain and are distributed but use very different \nmechanisms to Bitcoin. In short, although the original \nprotocols were unsuited for high volume transactions, \nthe emerging protocols address this issue and could, it \nappears, deliver transaction rates which would support a \nviable payments system.\n7. Source - Visa fact sheet, two Visa transactions per payment\n8. Source - https://www.blockchain.com/charts/transactions-per-second \n9. Source - https://break.solana.com/ \nIII. Transaction time\nFor a cryptocurrency transaction, there are two relevant \ntransaction time measures: The time to process the \ntransaction (record the transaction in the blockchain) \nand the time to be confident that the transaction will \nnot be annulled (confirmation). For Bitcoin this is seen",
+    "metadata": {
+      "source": "Cryptocurrency-Payments.pdf",
+      "file_path": "Sample_Data\\processed\\text\\Cryptocurrency-Payments.pdf.txt",
+      "document_type": "pdf"
+    }
+  },
+  {
+    "text": "transaction (record the transaction in the blockchain) \nand the time to be confident that the transaction will \nnot be annulled (confirmation). For Bitcoin this is seen \nas an average of 10 minutes to process the transaction \nand an hour for confirmation. However, 10 minutes is a \ntarget average; if the fee is low and/or volume high it may \ntake longer (and may never happen). Third-generation \nblockchains are emerging with claims of far faster \ntransaction times, some purporting to be near-instant \nanywhere in the world (e.g. Nano and Solana claiming \nsub-second settlement times).\nAlternative approaches, such as net payments where \nmultiple individual payments are aggregated and netted \noff between parties and only the net movement written to \nthe blockchain, are also emerging. The Lightning network \ndoes this for Bitcoin to address the transaction rate and \ntime issues mentioned above. These services offer faster \ntransaction times but add another layer of infrastructure",
+    "metadata": {
+      "source": "Cryptocurrency-Payments.pdf",
+      "file_path": "Sample_Data\\processed\\text\\Cryptocurrency-Payments.pdf.txt",
+      "document_type": "pdf"
+    }
+  },
+  {
+    "text": "does this for Bitcoin to address the transaction rate and \ntime issues mentioned above. These services offer faster \ntransaction times but add another layer of infrastructure \nand start to move away from the blockchain concept, \nbecoming closer to the existing fiat currency payment \nmodels. It is worth comparing this to a fiat currency \ntransaction. In the UK, a transfer between UK banks can \nbe close to instantaneous. \nFaster payments are normally a few seconds (but can \ntake up to two hours), 24 hours a day, seven days a \nweek. For larger sums or direct debit/standing order \npayments, CHAPS is same day and BACS takes three \ndays. On the other hand, international payments can take \nsignificantly longer, up to five days (especially if between \nsmaller banks in smaller countries which are routed via \nseveral intermediaries) and may require arrangements \nto be put in place prior to the transaction (such as \nnominating advising or confirming banks for Letters",
+    "metadata": {
+      "source": "Cryptocurrency-Payments.pdf",
+      "file_path": "Sample_Data\\processed\\text\\Cryptocurrency-Payments.pdf.txt",
+      "document_type": "pdf"
+    }
+  },
+  {
+    "text": "several intermediaries) and may require arrangements \nto be put in place prior to the transaction (such as \nnominating advising or confirming banks for Letters \nof Credit) to provide the level of confidence required \nfor trade. In that time, there remains an exposure to \nexchange rate risk which may need to be hedged.  \nThese payments are also affected by weekends and  \nbank holidays.\nIn conclusion, although the first-generation \ncryptocurrencies could not support high volume “retail” \ntransactions, the emerging solutions could; and  \nfor international payments, even the oldest and slowest \ncryptocurrency payment is significantly faster than the \nbest a fiat currency payment system can  \ncurrently achieve. \nTeneoTeneo\n98\nV. Energy consumption\nIn May 2021, China banned the processing of \ntransactions, also known as mining, of Bitcoin on the \npremise that it was too energy intensive. In November \n2021, India announced a similar ban and in January",
+    "metadata": {
+      "source": "Cryptocurrency-Payments.pdf",
+      "file_path": "Sample_Data\\processed\\text\\Cryptocurrency-Payments.pdf.txt",
+      "document_type": "pdf"
+    }
+  },
+  {
+    "text": "transactions, also known as mining, of Bitcoin on the \npremise that it was too energy intensive. In November \n2021, India announced a similar ban and in January \n2022, Kosovo also banned mining. Was this a ruse or do \nthese countries have a point? Let us look at some facts. \nCurrently, global Bitcoin mining consumes 300 GWh per \nday10. In terms that we can assimilate, that is one third \nof the UK’s entire electricity consumption. If Bitcoin were \nto process the same number of transactions as Visa, \nVI. Blockchain size\nIn first-generation distributed networks, each node has \na copy of the entire blockchain. If we again take Bitcoin \nas an example, the current Bitcoin blockchain is about \n360 GB. Every new block adds 1 MB, and a new block is \ncreated every 10 minutes. That’s 144 MB per day, 53 GB \nper year. This data must be transmitted between nodes \nand stored across the distributed network. Scaling this to \nhandle the volume of transactions needed to make it  \nIV. Transaction cost",
+    "metadata": {
+      "source": "Cryptocurrency-Payments.pdf",
+      "file_path": "Sample_Data\\processed\\text\\Cryptocurrency-Payments.pdf.txt",
+      "document_type": "pdf"
+    }
+  },
+  {
+    "text": "per year. This data must be transmitted between nodes \nand stored across the distributed network. Scaling this to \nhandle the volume of transactions needed to make it  \nIV. Transaction cost\nThe fee structures vary significantly, with variable \npercentages (some decreasing with the value of \ntransaction), fixed elements and a discretionary element \n(tips) to increase the probability of rapid processing. \nSome of the newer cryptocurrencies have zero \ntransaction fees (e.g. Nano); the older ones rather higher \nfees. In general, given the variation, there is no reason \nwhy newer cryptocurrencies can’t be very competitive \nwith fiat payments systems in terms of fees.\nit would consume 30 times the electricity consumption of \nthe entire globe. So, in a world ever more conscious of the \neffects of climate change, Bitcoin as a volume payment \nmethod has some significant issues to resolve. But there is \na recurring theme: Third-generation cryptocurrencies can",
+    "metadata": {
+      "source": "Cryptocurrency-Payments.pdf",
+      "file_path": "Sample_Data\\processed\\text\\Cryptocurrency-Payments.pdf.txt",
+      "document_type": "pdf"
+    }
+  },
+  {
+    "text": "effects of climate change, Bitcoin as a volume payment \nmethod has some significant issues to resolve. But there is \na recurring theme: Third-generation cryptocurrencies can \nprocess transactions without consuming vast amount of \nenergy by utilising different ways of adding blocks to the \nblockchain (different consensus protocols) which avoid \nmultiple parallel processing.\na realistic competitor to the existing fiat payment systems  \nis impracticable.\nThird-generation cryptocurrencies are trying to tackle \nthis head on. Pruning, subscriptions, partitioning and/\nor compression can reduce the amount of data each \nnode has to store significantly. Viability at scale is a key \nobjective of the new entrants.\n10. Source - https://ccaf.io/cbeci/index \nPredictions\nAs Nostradamus purportedly once said, “prediction is difficult, especially about the future,” but let us nail  \nour colours to the mast.",
+    "metadata": {
+      "source": "Cryptocurrency-Payments.pdf",
+      "file_path": "Sample_Data\\processed\\text\\Cryptocurrency-Payments.pdf.txt",
+      "document_type": "pdf"
+    }
+  },
+  {
+    "text": "10. Source - https://ccaf.io/cbeci/index \nPredictions\nAs Nostradamus purportedly once said, “prediction is difficult, especially about the future,” but let us nail  \nour colours to the mast.\nThe concept is new, progress is being made very rapidly and there appears to be no shortage of investment \nin its development. It is also worth noting that current payments processing, especially internationally, is not a \nstraightforward, fast and cheap process with zero risk.\nAs the first cryptocurrency, Bitcoin gets most of the press. But we should consider it as the Motorola brick phone of \nthe cryptocurrency world: a significant innovation, of great academic interest and a catalyst of change, but of limited \nreal-world use. The concept as defined in 2008 for Bitcoin does not work for volume transactions for many reasons, \nbut there is real promise in the emerging solutions which its creation has spawned. Here are some key questions we \nleave you to consider alongside our predictions:",
+    "metadata": {
+      "source": "Cryptocurrency-Payments.pdf",
+      "file_path": "Sample_Data\\processed\\text\\Cryptocurrency-Payments.pdf.txt",
+      "document_type": "pdf"
+    }
+  },
+  {
+    "text": "TeneoTeneo\n1110\nWho will the future players be?\nWill the entities currently processing payments be \nable to develop and/or adopt the new technologies \nrapidly enough to avoid going the way of Kodak? Will \ntheir value-added services and ubiquity in the market \nmean that they will continue, albeit in a very different \nform? Cryptocurrencies/blockchain may provide the \ninfrastructure, but there is more to the end-to-end \npayment solution than the wires. The applications and \nrelationships that surround it will be key, and the existing \nplayers have the edge on these aspects.\nThe threat to the existing players doesn’t stop with \nthe infrastructure providers themselves (e.g. Swift, \nMastercard, CHIPS). If international payments can be \nmade rapidly, cheaply and at low risk, what will happen to \nthe trade banks advising and confirming payments? The \nregulatory challenges are significant, but let us for now \nassume that a suitable international regulatory regime",
+    "metadata": {
+      "source": "Cryptocurrency-Payments.pdf",
+      "file_path": "Sample_Data\\processed\\text\\Cryptocurrency-Payments.pdf.txt",
+      "document_type": "pdf"
+    }
+  },
+  {
+    "text": "the trade banks advising and confirming payments? The \nregulatory challenges are significant, but let us for now \nassume that a suitable international regulatory regime \nwill emerge in time. The regulators will undoubtably play \nan important role in the wholesale adoption of such a \npayments infrastructure. In parallel, many governments \nare investigating the issuance of Central Bank Digital \nCurrencies (CBDCs). Although not cryptocurrencies, we \nmay see a merging of technologies and concepts and \ncentral banks reasserting their dominance of control in \nthe payments space.\nWhat about unbacked coins?\nGiven the speculative nature of unbacked coins, \nwe believe the future of payments will be based on \nstablecoins or coins invisible to the user. Nevertheless, \nsome regulation will be required before the established \nbanks are likely to adopt them in order to avoid another \nMadoff or Wirecard. Unbacked cryptocurrencies may \ncontinue as a speculative asset class or die as the latest",
+    "metadata": {
+      "source": "Cryptocurrency-Payments.pdf",
+      "file_path": "Sample_Data\\processed\\text\\Cryptocurrency-Payments.pdf.txt",
+      "document_type": "pdf"
+    }
+  },
+  {
+    "text": "banks are likely to adopt them in order to avoid another \nMadoff or Wirecard. Unbacked cryptocurrencies may \ncontinue as a speculative asset class or die as the latest \nmanifestation of Tulipmania11.\n11. Tulipmania - https://www.investopedia.com/terms/d/dutch_tulip_bulb_market_bubble.asp \nConclusions\nIt is impossible to conclude with any certainty on the future of payments systems \nand the role cryptocurrencies will play in their development. However, we believe \nthere is about to be a fundamental change to payments, the like of which we \nhave not seen before. Many of the incumbent large players will be replaced by \nnew entrants. A few incumbents may be agile enough to adapt and survive.  \nAs a result, payments will look strikingly different.\nIf any of these issues resonate with you, please contact Teneo’s Financial Services team below:\nKey Contacts\nDavid Taylor \nAuthor & Managing Director \nPhone: 07712 776 691 \nEmail: david.taylor@teneo.com\nDavid Soden\nSenior Managing Director",
+    "metadata": {
+      "source": "Cryptocurrency-Payments.pdf",
+      "file_path": "Sample_Data\\processed\\text\\Cryptocurrency-Payments.pdf.txt",
+      "document_type": "pdf"
+    }
+  },
+  {
+    "text": "Key Contacts\nDavid Taylor \nAuthor & Managing Director \nPhone: 07712 776 691 \nEmail: david.taylor@teneo.com\nDavid Soden\nSenior Managing Director \nPhone: 07780 954 883 \nEmail: david.soden@teneo.com\nStephen Browne\nSenior Managing Director \nPhone: 07710 378 740 \nEmail: stephen.browne@teneo.com\nFor international payments, the opportunities are \nimmense. The current processes are protracted \nand expensive. We can see a wholesale adoption \nof cryptocurrency-based international payments for \nlegitimate purposes emerge; however, the volume is \nrelatively low, which may hamper progress. Whether this \nchange is driven by the emerging technology players \nor whether any of the current players can move rapidly \nenough to remain in the game has yet to become clear. \nFor volume transactions there are many more barriers to \novercome, but the market is huge. \nThe technology undoubtably has huge potential. \nThere are many players vying to be the first to",
+    "metadata": {
+      "source": "Cryptocurrency-Payments.pdf",
+      "file_path": "Sample_Data\\processed\\text\\Cryptocurrency-Payments.pdf.txt",
+      "document_type": "pdf"
+    }
+  },
+  {
+    "text": "For volume transactions there are many more barriers to \novercome, but the market is huge. \nThe technology undoubtably has huge potential. \nThere are many players vying to be the first to \ndevelop blockchains which are truly scalable, secure, \ninteroperable, robust and energy efficient. Our guess is \nthat they will be successful. \nThe focus will move away from the cryptocurrency \nelement and towards the utility of the mechanism. The \nactual cryptocurrency used may become invisible to the \nsender and recipient, a transaction being initiated and \ncompleted in fiat currency and the cryptocurrency merely \nbecoming part of the technology solution.\nWhat forms of payments could cryptocurrency be beneficial for?\nTeneoTeneo\n1312\nBitcoin Bitcoin was the first cryptocurrency and is an example of an unbacked cryptocurrency using blockchain \nacross a public network. Its design was set out in a paper written in 2008 by an unidentified person or",
+    "metadata": {
+      "source": "Cryptocurrency-Payments.pdf",
+      "file_path": "Sample_Data\\processed\\text\\Cryptocurrency-Payments.pdf.txt",
+      "document_type": "pdf"
+    }
+  },
+  {
+    "text": "across a public network. Its design was set out in a paper written in 2008 by an unidentified person or \ngroup calling itself Satoshi Nakamoto12. It is the largest cryptocurrency by market capitalisation.\nBlock A group of transactions which are processed and added to a blockchain simultaneously. The data in the \nblock comprises the transaction data, data about the transaction (meta data), a timestamp and a code \nwhich links it to the blockchain as it was when the block was added.\nBlockchain A system, originally defined by Satoshi Nakamoto in 2008, in which records of transactions are recorded in \nmultiple locations across a distributed peer-to-peer network. Cryptography is used to protect against fraud. \nIt is simply a chain of sequential blocks, each one derived from the previous blocks and the block being \nadded.\nConsensus \nprotocol\nThe integrity of the transactions added to the blockchain is maintained through the consensus protocol.",
+    "metadata": {
+      "source": "Cryptocurrency-Payments.pdf",
+      "file_path": "Sample_Data\\processed\\text\\Cryptocurrency-Payments.pdf.txt",
+      "document_type": "pdf"
+    }
+  },
+  {
+    "text": "added.\nConsensus \nprotocol\nThe integrity of the transactions added to the blockchain is maintained through the consensus protocol.  \nAs there is no central control, consensus must be agreed by the nodes in the network to prevent  \nmalicious parties taking over the validation and process fraudulent transactions. There are multiple \nconsensus protocols.\nConsensus \nprotocol - Proof  \nof Stake\nAn increasingly popular mechanism, as it is seen as the “green” approach. Blocks are “forged.” Forgers \nare selected by a pseudo-random election process broadly in proportion to their quantity of holdings in \nthe associated cryptocurrency (i.e. the size of their stake). A common factor is Coin Age (number of days \ncoins held X number of coins staked); the days held is reset to zero once the node has added a block, thus \npreventing very large forgers to dominate. \nIf the network identifies a fraudulent transaction, the forger node will lose part of its stake and its right to",
+    "metadata": {
+      "source": "Cryptocurrency-Payments.pdf",
+      "file_path": "Sample_Data\\processed\\text\\Cryptocurrency-Payments.pdf.txt",
+      "document_type": "pdf"
+    }
+  },
+  {
+    "text": "preventing very large forgers to dominate. \nIf the network identifies a fraudulent transaction, the forger node will lose part of its stake and its right to \nparticipate as a forger in the future. If the stake is higher than the reward, the validator would lose more \ncoins that it would gain in case of attempted fraud.\nConsensus \nprotocol - Proof  \nof Work\nThe first consensus mechanism and used by Bitcoin. The nodes on the network try, simultaneously, to be \nthe fastest to add a block, a process called “mining.” As only the first node (miner) reaps a reward, speed \nis of the essence, which is leading to a processing power race. This method is under pressure due to the \nenormous and increasing amounts of power used and heat generated across the globe.\nAs the amount of effort required to obtain a reward is significant, and that would be sacrificed if an invalid/\nfraudulent block was mined, fraud is discouraged.",
+    "metadata": {
+      "source": "Cryptocurrency-Payments.pdf",
+      "file_path": "Sample_Data\\processed\\text\\Cryptocurrency-Payments.pdf.txt",
+      "document_type": "pdf"
+    }
+  },
+  {
+    "text": "As the amount of effort required to obtain a reward is significant, and that would be sacrificed if an invalid/\nfraudulent block was mined, fraud is discouraged.\nCryptocurrency Digital currency in which transactions are verified and records maintained on a decentralised system using \ncryptography and which is not controlled or issued by a centralised authority.\nFiat currency A currency backed by a government or other central body, but not linked to any underlying asset/\ncommodity (e.g. USD, GBP, EUR).\nAppendix – Definitions\n12. Source - https://nakamotoinstitute.org/bitcoin/\nFX Hedge A transaction processed into order to reduce the risk of adverse foreign exchange movements. A hedge \ncosts money to process but provides some protection if the exchange rate moves against you.\nProof of Stake See Consensus protocol - Proof of Stake.\nProof of Work See Consensus protocol - Proof of Work.",
+    "metadata": {
+      "source": "Cryptocurrency-Payments.pdf",
+      "file_path": "Sample_Data\\processed\\text\\Cryptocurrency-Payments.pdf.txt",
+      "document_type": "pdf"
+    }
+  },
+  {
+    "text": "Proof of Stake See Consensus protocol - Proof of Stake.\nProof of Work See Consensus protocol - Proof of Work.\nSmart Contract Contracts written in lines of code and recorded in a decentralised blockchain. The code controls the \nexecution of the contract. As they are written to a blockchain they are immutable. They can include health \nand voting records, not solely traditional contracts.\nStablecoin Cryptocurrency where the price is designed to be pegged to real world assets, e.g. fiat money (e.g. \nTether) or exchanged traded commodity (e.g. Digix Gold Tokens (DGX). Where the collateral is volatile (e.g. \nanother cryptocurrency), price stability is achieved through introduction of supplementary instruments and \nincentives, not just collateral. How and whether this is achieved is frequently rather opaque.\nUnbacked \ncryptocurrency\nA privately created cryptocurrency, the value of which is determined solely by the market.  \nFor example, Bitcoin.",
+    "metadata": {
+      "source": "Cryptocurrency-Payments.pdf",
+      "file_path": "Sample_Data\\processed\\text\\Cryptocurrency-Payments.pdf.txt",
+      "document_type": "pdf"
+    }
+  },
+  {
+    "text": "Unbacked \ncryptocurrency\nA privately created cryptocurrency, the value of which is determined solely by the market.  \nFor example, Bitcoin.\nThis publication has been written in general terms and we recommend that you obtain professional advice before \nacting or refraining from action on any of the contents of this publication. Teneo Financial Advisory Limited accepts \nno liability for any loss occasioned to any person acting or refraining from action as a result of any material in this \npublication. Teneo Financial Advisory Limited is registered in England and Wales with registered number 13192958 and \nits registered office at 5th Floor, 6 More London Place, London, SE1 2DA, United Kingdom. © 2022 Teneo. All rights \nreserved.\nhttps://www.teneo.com/service/financial-advisory/\nTeneo\n14\nLondon\n5th Floor,  \n6 More London Place \nSE1 2DA\nhttps://www.teneo.com/service/financial-advisory/",
+    "metadata": {
+      "source": "Cryptocurrency-Payments.pdf",
+      "file_path": "Sample_Data\\processed\\text\\Cryptocurrency-Payments.pdf.txt",
+      "document_type": "pdf"
+    }
+  }
+]

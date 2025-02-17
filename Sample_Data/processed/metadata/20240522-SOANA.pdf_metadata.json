@@ -1,0 +1,8 @@
+{
+  "source": "20240522-SOANA.pdf",
+  "file_path": "Sample_Data\\processed\\text\\20240522-SOANA.pdf.txt",
+  "document_type": "pdf",
+  "num_chunks": 1069,
+  "chunk_size": 1000,
+  "chunk_overlap": 200
+}

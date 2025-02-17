@@ -1,0 +1,8 @@
+{
+  "source": "CONSIL-ST_13198_2022_INIT-EN-TXT.pdf",
+  "file_path": "Sample_Data\\processed\\text\\CONSIL-ST_13198_2022_INIT-EN-TXT.pdf.txt",
+  "document_type": "pdf",
+  "num_chunks": 798,
+  "chunk_size": 1000,
+  "chunk_overlap": 200
+}

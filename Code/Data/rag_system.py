@@ -95,6 +95,15 @@ class DocumentProcessor:
         try:
             chunks = self.text_splitter.split_documents(documents)
             logger.info(f"Created {len(chunks)} chunks from {len(documents)} documents")
+
+            # --- DEBUGGING PRINTS START ---
+            print("\n--- Sample Chunks after Splitting (process_documents) ---")
+            for i, chunk in enumerate(chunks[:2]):  # Print content of the first 2 chunks
+                print(f"\nChunk {i+1} Content Preview (process_documents): {chunk.page_content[:100]}...")
+                print(f"Chunk {i+1} Metadata (process_documents): {chunk.metadata}")
+            print("--- DEBUGGING PRINTS END ---\n")
+            # --- DEBUGGING PRINTS END ---
+
             return chunks
         except Exception as e:
             logger.error(f"Error processing documents: {str(e)}")
@@ -105,7 +114,7 @@ class DocumentProcessor:
         try:
             # Get existing collections
             existing_collections = self.client.collections.list_all()
-            
+
             # Create collection if it doesn't exist
             if class_name not in existing_collections:
                 self.client.collections.create(
@@ -118,7 +127,7 @@ class DocumentProcessor:
                     ]
                 )
                 logger.info(f"Created collection: {class_name}")
-            
+
             collection = self.client.collections.get(class_name)
 
             # Configure batch processing using dynamic batch sizing
@@ -127,7 +136,7 @@ class DocumentProcessor:
                 for i, chunk in enumerate(chunks):
                     # Get vector embeddings from HuggingFace
                     vector = self.embeddings.embed_query(chunk.page_content)
-                    
+
                     # Prepare properties
                     properties = {
                         "content": chunk.page_content,
@@ -135,50 +144,65 @@ class DocumentProcessor:
                         "chunk_id": i,
                         "doc_id": str(chunk.metadata.get("source", ""))
                     }
-                    
-                    # Add object with its vector embedding
+
+                    # --- DEBUGGING PRINTS START ---
+                    if (i + 1) % 100 == 0 or i < 2: # Print for the first 2 chunks and every 100th chunk
+                        print("\n--- Debugging Chunk before Weaviate Storage ---")
+                        print(f"Chunk {i+1} Content Preview (store_in_weaviate): {chunk.page_content[:100]}...")
+                        print(f"Chunk {i+1} Metadata (store_in_weaviate): {chunk.metadata}")
+                        print(f"Properties being stored (store_in_weaviate): {properties}")
+                        print("--- DEBUGGING PRINTS END ---\n")
+                    # --- DEBUGGING PRINTS END ---
+
+
                     batch.add_object(
                         properties=properties,
                         vector=vector
                     )
-                    
+
                     if (i + 1) % 100 == 0:
                         logger.info(f"Processed {i + 1} chunks")
-            
+
             logger.info(f"Successfully stored {len(chunks)} chunks in Weaviate")
         except Exception as e:
             logger.error(f"Error storing documents: {str(e)}")
             raise
 
     def query_documents(self, query_text: str, class_name: str = "Document", limit: int = 5):
-        """Query documents from Weaviate using near_vector search."""
+        """Query documents from Weaviate, now fetching all objects for debugging."""
         try:
             # Get the collection
             collection = self.client.collections.get(class_name)
 
-            # Generate the query vector using HuggingFace
-            query_vector = self.embeddings.embed_query(query_text)
-
-            # Create and execute near_vector search query
-            response = (
-                collection.query
-                .near_vector(
-                    near_vector=query_vector, # Corrected keyword argument name
-                    limit=limit,
-                    return_properties=["content", "metadata", "chunk_id", "doc_id"] # Field selection here
-                )
-                # .do()  <- REMOVE THIS LINE
+            # --- MODIFIED QUERY: Fetch all objects without near_vector ---
+            response = collection.query.fetch_objects(
+                limit=limit,
+                return_properties=["content", "metadata", "chunk_id", "doc_id"]
             )
+            # --- END MODIFIED QUERY ---
+
 
             if not response.objects:
-                logger.warning("No results found for the query.")
+                logger.warning("No results found in Weaviate collection (fetch_objects).")
                 return []
+
+            # --- DEBUGGING PRINTS START (query_documents) ---
+            print("\n--- Debugging Results from query_documents (fetch_objects) ---")
+            print(f"Number of objects retrieved: {len(response.objects)}")
+            for i, result in enumerate(response.objects[:2]): # Print info for first 2 results
+                print(f"\nResult {i+1} (query_documents - fetch_objects):")
+                print(f"Document ID: {result.uuid}")
+                print(f"Content Preview (query_documents - fetch_objects): {result.properties.get('content', 'No content available')[:100]}...")
+                print(f"Metadata (query_documents - fetch_objects): {result.properties.get('metadata')}")
+                print(f"Properties (query_documents - fetch_objects): {result.properties}")
+            print("--- DEBUGGING PRINTS END (query_documents) ---\n")
+            # --- DEBUGGING PRINTS END ---
+
 
             return response.objects
         except Exception as e:
             logger.error(f"Error querying documents: {str(e)}")
             raise
-
 
     def search_documents(self, query_text: str, class_name: str = "Document", limit: int = 5, threshold: float = 0.0):
         """Extended search with threshold filtering and better result formatting."""
@@ -239,6 +263,15 @@ def main():
             print(f"Relevance Score: {relevance_score}") # Modified line
             print(f"Content Preview: {result.properties['content'][:200]}...")
             print("-" * 50)
+
+            # --- DEBUGGING PRINTS START ---
+            print("\n--- Debugging Result Object ---")
+            print(f"Type of result: {type(result)}")
+            print(f"Result object: {result}")
+            print(f"Result.properties: {result.properties}")
+            print(f"Result.metadata: {result.metadata}")
+            print("--- DEBUGGING PRINTS END ---")
+
 
         logger.info("Document processing and search completed successfully")
     except Exception as e:

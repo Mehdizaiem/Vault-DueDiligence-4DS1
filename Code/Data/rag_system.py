@@ -13,7 +13,7 @@ from langchain_huggingface import HuggingFaceEmbeddings
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
+#work on this
 # Get the project root directory
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 

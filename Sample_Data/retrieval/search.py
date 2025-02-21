@@ -22,11 +22,12 @@ client = weaviate.WeaviateClient(
     )
 )
 
-def search_documents(query_text, top_k=3):
+def search_documents(client, query_text, top_k=3):
     """
     Search for documents using vector similarity.
     
     Args:
+        client (weaviate.WeaviateClient): The active Weaviate client
         query_text (str): The query text to search for
         top_k (int): Number of results to return
         
@@ -40,15 +41,11 @@ def search_documents(query_text, top_k=3):
         # Get the collection
         collection = client.collections.get("LegalDocument")
         
-        # Perform the search - using correct parameter format for v4
-        response = (
-            collection.query
-            .near_vector(
-                near_vector=query_vector,
-                limit=top_k
-            )
-            .with_additional(["score"])
-            .do()
+        # Perform the search
+        response = collection.query.near_vector(
+            near_vector=query_vector,
+            limit=top_k,
+            return_metadata=["distance"]
         )
         
         # Format the results
@@ -57,25 +54,32 @@ def search_documents(query_text, top_k=3):
             results.append({
                 "content": obj.properties.get("content", ""),
                 "source": obj.properties.get("source", "Unknown"),
-                "score": obj.metadata.score
+                "distance": obj.metadata.distance if obj.metadata else "N/A"
             })
         
         return results
-    except weaviate.exceptions.WeaviateGRPCError as e:
+    except weaviate.exceptions.WeaviateQueryError as e:
         if "collection not found" in str(e).lower():
             print("No documents found in collection. Please ingest documents first.")
             return []
         else:
             raise
-
+    except Exception as e:
+        print(f"Unexpected error during search: {str(e)}")
+        raise
 
 if __name__ == "__main__":
-    query = "fraudulent crypto transactions"
-    results = search_documents(query)
-    
-    if results:
-        for idx, doc in enumerate(results):
-            print(f"Result {idx + 1}: {doc['source']} (Score: {doc['score']:.3f})")
-            print(f"Content: {doc['content'][:500]}...\n")
-    else:
-        print("No results found. Make sure you've ingested documents first.")
+    from vector_store.weaviate_client import get_weaviate_client
+    client = get_weaviate_client()
+    try:
+        query = "fraudulent crypto transactions"
+        results = search_documents(client, query)
+        
+        if results:
+            for idx, doc in enumerate(results):
+                print(f"Result {idx + 1}: {doc['source']} (Distance: {doc['distance']:.3f})")
+                print(f"Content: {doc['content'][:500]}...\n")
+        else:
+            print("No results found. Make sure you've ingested documents first.")
+    finally:
+        client.close()

@@ -1,16 +1,12 @@
 import weaviate
-import os
-from dotenv import load_dotenv
 from vector_store.embed import generate_embedding
 
 def create_schema(client):
     """Create the LegalDocument collection if it doesn't exist"""
-    # Check if collection exists
     try:
         client.collections.get("LegalDocument")
         print("Collection 'LegalDocument' already exists")
-    except weaviate.exceptions.WeaviateGRPCError:
-        # Create collection with HuggingFace vectorizer configuration
+    except weaviate.exceptions.WeaviateQueryError:
         print("Creating 'LegalDocument' collection")
         client.collections.create(
             name="LegalDocument",
@@ -58,10 +54,11 @@ def store_document(client, text, filename):
     )
 
 if __name__ == "__main__":
-    # Test storing a document
     from vector_store.weaviate_client import get_weaviate_client
-    
     client = get_weaviate_client()
-    sample_text = "This is a test document about crypto regulations."
-    store_document(client, sample_text, "test_doc.txt")
-    print("Test document stored successfully")
+    try:
+        sample_text = "This is a test document about crypto regulations."
+        store_document(client, sample_text, "test_doc.txt")
+        print("Test document stored successfully")
+    finally:
+        client.close()

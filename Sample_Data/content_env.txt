@@ -1,0 +1,4 @@
+WEAVIATE_URL=http://localhost:9090
+WEAVIATE_GRPC_PORT=50051
+EMBEDDING_MODEL=bert-base-uncased
+DATA_PATH=Sample_Data/raw_documents/

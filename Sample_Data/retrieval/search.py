@@ -39,7 +39,7 @@ def search_documents(client, query_text, top_k=3):
     
     try:
         # Get the collection
-        collection = client.collections.get("LegalDocument")
+        collection = client.collections.get("CryptoDueDiligenceDocuments")
         
         # Perform the search
         response = collection.query.near_vector(

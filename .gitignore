@@ -25,10 +25,27 @@ yarn-error.log*
 # local env files
 .env*.local
 .env
-
 # vercel
 .vercel
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Python pycache files  <--- Add these lines
+__pycache__/
+*.pyc
+*.pyo
+
+# Compiled Python files (more general)  <--- Add this if you use other compilation methods
+*.pyd  # Windows
+*.so   # Linux/macOS
+
+# IDE files (if applicable)  <--- Consider adding these if you use specific IDEs
+.idea/      # IntelliJ IDEA
+.vscode/    # VS Code
+*.pyc      # PyCharm
+
+# OS generated files (if applicable)
+.AppleDouble
+Thumbs.db

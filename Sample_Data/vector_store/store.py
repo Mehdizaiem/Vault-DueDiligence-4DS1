@@ -1,5 +1,5 @@
 import weaviate
-from vector_store.embed import generate_embedding
+from vector_store.embed import generate_embedding, process_document
 from weaviate.exceptions import WeaviateBaseError
 import logging
 
@@ -8,7 +8,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def create_schema(client):
-    """Create the CryptoDueDiligenceDocuments collection if it doesn't exist"""
+    """Create the CryptoDueDiligenceDocuments collection with enhanced properties for features"""
     try:
         client.collections.get("CryptoDueDiligenceDocuments")
         logger.info("Collection 'CryptoDueDiligenceDocuments' already exists")
@@ -19,6 +19,7 @@ def create_schema(client):
                 name="CryptoDueDiligenceDocuments",
                 description="Collection for all documents related to crypto fund due diligence, including whitepapers, audit reports, regulatory filings, due diligence reports, and project documentation",
                 properties=[
+                    # Basic document properties
                     {
                         "name": "content",
                         "dataType": ["text"],
@@ -78,11 +79,131 @@ def create_schema(client):
                         "name": "jurisdiction",
                         "dataType": ["text"],
                         "description": "Geographic or legal jurisdiction (optional, e.g., US, EU)"
+                    },
+                    
+                    # Common extracted features
+                    {
+                        "name": "word_count",
+                        "dataType": ["int"],
+                        "description": "Number of words in the document"
+                    },
+                    {
+                        "name": "sentence_count",
+                        "dataType": ["int"],
+                        "description": "Number of sentences in the document"
+                    },
+                    {
+                        "name": "keywords",
+                        "dataType": ["text[]"],
+                        "description": "Key terms extracted from the document"
+                    },
+                    {
+                        "name": "org_entities",
+                        "dataType": ["text[]"],
+                        "description": "Organization entities mentioned in the document"
+                    },
+                    {
+                        "name": "person_entities",
+                        "dataType": ["text[]"],
+                        "description": "Person entities mentioned in the document"
+                    },
+                    {
+                        "name": "location_entities",
+                        "dataType": ["text[]"],
+                        "description": "Location entities mentioned in the document"
+                    },
+                    {
+                        "name": "extracted_risk_score",
+                        "dataType": ["number"],
+                        "description": "Risk score from feature extraction (0-100)"
+                    },
+                    
+                    # Whitepaper specific features
+                    {
+                        "name": "has_tokenomics",
+                        "dataType": ["boolean"],
+                        "description": "Whether the document contains tokenomics information"
+                    },
+                    {
+                        "name": "tech_score",
+                        "dataType": ["number"],
+                        "description": "Technical depth score (0-100)"
+                    },
+                    {
+                        "name": "has_roadmap",
+                        "dataType": ["boolean"],
+                        "description": "Whether the document contains a roadmap"
+                    },
+                    {
+                        "name": "mentioned_blockchains",
+                        "dataType": ["text[]"],
+                        "description": "Blockchain platforms mentioned in the document"
+                    },
+                    
+                    # Audit report specific features
+                    {
+                        "name": "vulnerability_score",
+                        "dataType": ["number"],
+                        "description": "Vulnerability mentions score (0-100)"
+                    },
+                    {
+                        "name": "critical_count",
+                        "dataType": ["int"],
+                        "description": "Number of critical issues mentioned"
+                    },
+                    {
+                        "name": "high_count",
+                        "dataType": ["int"],
+                        "description": "Number of high severity issues mentioned"
+                    },
+                    {
+                        "name": "medium_count",
+                        "dataType": ["int"],
+                        "description": "Number of medium severity issues mentioned"
+                    },
+                    {
+                        "name": "low_count",
+                        "dataType": ["int"],
+                        "description": "Number of low severity issues mentioned"
+                    },
+                    
+                    # Regulatory filing specific features
+                    {
+                        "name": "mentioned_regulatory_bodies",
+                        "dataType": ["text[]"],
+                        "description": "Regulatory bodies mentioned in the document"
+                    },
+                    {
+                        "name": "legal_score",
+                        "dataType": ["number"],
+                        "description": "Legal terminology score (0-100)"
+                    },
+                    {
+                        "name": "has_penalties",
+                        "dataType": ["boolean"],
+                        "description": "Whether the document mentions penalties or sanctions"
+                    },
+                    
+                    # Due diligence report specific features
+                    {
+                        "name": "assessment_score",
+                        "dataType": ["number"],
+                        "description": "Assessment terminology score (0-100)"
+                    },
+                    {
+                        "name": "has_risk_assessment",
+                        "dataType": ["boolean"],
+                        "description": "Whether the document contains risk assessment"
+                    },
+                    {
+                        "name": "has_recommendations",
+                        "dataType": ["boolean"],
+                        "description": "Whether the document contains recommendations"
                     }
                 ],
                 vectorizer_config=None  # We'll provide vectors directly
             )
-            logger.info("Successfully created 'CryptoDueDiligenceDocuments' collection")
+            logger.info("Successfully created 'CryptoDueDiligenceDocuments' collection with feature properties")
         except WeaviateBaseError as e:
             logger.error(f"Failed to create 'CryptoDueDiligenceDocuments' collection: {str(e)}")
             raise
@@ -107,7 +228,7 @@ def store_document(client, text, filename, document_type=None, title=None, date=
                   author_issuer=None, category=None, status=None, risk_score=None, authority=None, 
                   jurisdiction=None):
     """
-    Store a document in Weaviate with its embedding.
+    Store a document in Weaviate with its embedding and extracted features.
     
     Args:
         client (weaviate.WeaviateClient): The active Weaviate client
@@ -130,9 +251,6 @@ def store_document(client, text, filename, document_type=None, title=None, date=
     # Get the collection
     collection = client.collections.get("CryptoDueDiligenceDocuments")
     
-    # Generate embedding using HuggingFace model
-    vector = generate_embedding(text)
-    
     # Infer document_type if not provided
     if not document_type:
         document_type = infer_document_type(filename)
@@ -140,6 +258,9 @@ def store_document(client, text, filename, document_type=None, title=None, date=
     # Use filename as title if not provided, removing extension
     if not title:
         title = filename.rsplit('.', 1)[0]
+    
+    # Process the document to get embedding and features
+    vector, features = process_document(text, document_type)
     
     # Prepare properties with required fields
     properties = {
@@ -149,7 +270,7 @@ def store_document(client, text, filename, document_type=None, title=None, date=
         "title": title
     }
     
-    # Add optional properties if provided
+    # Add optional metadata properties if provided
     if date:
         properties["date"] = date
     if crypto_fund:
@@ -167,13 +288,53 @@ def store_document(client, text, filename, document_type=None, title=None, date=
     if jurisdiction:
         properties["jurisdiction"] = jurisdiction
     
+    # Add common feature properties
+    properties["word_count"] = features.get("word_count", 0)
+    properties["sentence_count"] = features.get("sentence_count", 0)
+    properties["keywords"] = features.get("keywords", [])
+    properties["extracted_risk_score"] = features.get("risk_score", 0)
+    
+    # Add entity properties if available
+    entities = features.get("entities", {})
+    if "ORG" in entities:
+        properties["org_entities"] = entities["ORG"]
+    if "PERSON" in entities:
+        properties["person_entities"] = entities["PERSON"]
+    if "GPE" in entities:
+        properties["location_entities"] = entities["GPE"]
+    
+    # Add document type specific properties
+    if document_type == "whitepaper":
+        properties["has_tokenomics"] = features.get("has_tokenomics", False)
+        properties["tech_score"] = features.get("tech_score", 0)
+        properties["has_roadmap"] = features.get("has_roadmap", False)
+        properties["mentioned_blockchains"] = features.get("mentioned_blockchains", [])
+    
+    elif document_type == "audit_report":
+        properties["vulnerability_score"] = features.get("vulnerability_score", 0)
+        properties["critical_count"] = features.get("critical_count", 0)
+        properties["high_count"] = features.get("high_count", 0)
+        properties["medium_count"] = features.get("medium_count", 0)
+        properties["low_count"] = features.get("low_count", 0)
+        properties["has_recommendations"] = features.get("has_recommendations", False)
+    
+    elif document_type == "regulatory_filing":
+        properties["mentioned_regulatory_bodies"] = features.get("mentioned_regulatory_bodies", [])
+        properties["legal_score"] = features.get("legal_score", 0)
+        properties["has_penalties"] = features.get("has_penalties", False)
+    
+    elif document_type == "due_diligence_report":
+        properties["assessment_score"] = features.get("assessment_score", 0)
+        properties["has_risk_assessment"] = features.get("has_risk_assessment", False)
+        properties["has_recommendations"] = features.get("has_recommendations", False)
+    
     try:
-        # Insert the object
+        # Insert the object with all properties and the BERT embedding vector
         collection.data.insert(
             properties=properties,
             vector=vector
         )
-        logger.info(f"Document '{title}' stored successfully in 'CryptoDueDiligenceDocuments'")
+        logger.info(f"Document '{title}' stored successfully with features in 'CryptoDueDiligenceDocuments'")
     except WeaviateBaseError as e:
         logger.error(f"Error storing document '{title}': {str(e)}")
         raise
@@ -200,7 +361,7 @@ if __name__ == "__main__":
             jurisdiction="US"
         )
         
-        print("Test document stored successfully")
+        print("Test document stored successfully with features")
     except Exception as e:
         print(f"Error: {str(e)}")
     finally:

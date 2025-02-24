@@ -37,7 +37,7 @@ def get_weaviate_client():
 def fetch_all_embeddings(client):
     """Fetch all documents with their embeddings from Weaviate."""
     try:
-        collection = client.collections.get("LegalDocument")
+        collection = client.collections.get("CryptoDueDiligenceDocuments")
         
         # Fetch all objects with vectors
         response = collection.query.fetch_objects(
@@ -104,7 +104,7 @@ def visualize_embeddings():
             y=reduced_vectors[:, 1],
             hover_data={"Source": sources, "Content": contents},
             labels={"x": "Dimension 1", "y": "Dimension 2"},
-            title="2D Visualization of LegalDocument Embeddings"
+            title="2D Visualization of CryptoDueDiligenceDocuments Embeddings"
         )
         fig.update_traces(marker=dict(size=10, opacity=0.8))
         fig.update_layout(showlegend=True)

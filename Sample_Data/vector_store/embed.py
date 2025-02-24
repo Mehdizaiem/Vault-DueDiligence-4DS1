@@ -2,6 +2,12 @@ import os
 from transformers import BertTokenizer, BertModel
 import torch
 from dotenv import load_dotenv
+from feature_extraction import CryptoFeatureExtractor
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Load environment variables
 load_dotenv()
@@ -18,6 +24,9 @@ model = BertModel.from_pretrained(EMBEDDING_MODEL)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = model.to(device)
 model.eval()  # Set model to evaluation mode
+
+# Initialize the feature extractor
+feature_extractor = CryptoFeatureExtractor()
 
 def generate_embedding(text):
     """
@@ -52,9 +61,50 @@ def generate_embedding(text):
             
         return embeddings.numpy().tolist()
 
+def extract_features(text, document_type=None):
+    """
+    Extract features from text using the CryptoFeatureExtractor.
+    
+    Args:
+        text (str): The text to extract features from
+        document_type (str, optional): Type of document
+        
+    Returns:
+        dict: Dictionary of extracted features
+    """
+    return feature_extractor.extract_features(text, document_type)
+
+def process_document(text, document_type=None):
+    """
+    Process a document by generating its embedding and extracting features.
+    
+    Args:
+        text (str): The document text
+        document_type (str, optional): Type of document
+        
+    Returns:
+        tuple: (embedding, features) where embedding is a list of floats
+               and features is a dictionary of extracted features
+    """
+    logger.info(f"Processing document of type: {document_type or 'unknown'}")
+    
+    # Generate embedding
+    embedding = generate_embedding(text)
+    
+    # Extract features
+    features = extract_features(text, document_type)
+    
+    return embedding, features
+
 if __name__ == "__main__":
-    # Test the embedding generation
+    # Test the embedding and feature extraction
     test_text = "This is a test document about cryptocurrency regulations."
-    embedding = generate_embedding(test_text)
+    
+    embedding, features = process_document(test_text, "regulatory_filing")
+    
     print(f"Generated embedding with {len(embedding)} dimensions")
     print(f"First few values: {embedding[:5]}")
+    
+    print("\nExtracted features:")
+    for key, value in features.items():
+        print(f"{key}: {value}")

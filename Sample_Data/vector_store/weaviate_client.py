@@ -1,13 +1,13 @@
 import weaviate
-import os
-from dotenv import load_dotenv
-from weaviate import connect
 from weaviate.classes.init import AdditionalConfig, Timeout
+import os
+import sys
+from dotenv import load_dotenv
 
-import weaviate
-from weaviate.classes.init import AdditionalConfig, Timeout
-import os
-from dotenv import load_dotenv
+# Add project root to path if needed
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+if project_root not in sys.path:
+    sys.path.append(project_root)
 
 def get_weaviate_client():
     """Create and return a Weaviate client with improved error handling and connection options"""
@@ -51,3 +51,20 @@ def check_weaviate_connection(client):
     except Exception as e:
         print(f"Connection test failed: {str(e)}")
         return False
+
+if __name__ == "__main__":
+    # Test connection
+    client = get_weaviate_client()
+    try:
+        if client.is_live():
+            print("✅ Connection test successful!")
+            
+            # Show collections
+            collections = client.collections.list()
+            print(f"\nAvailable collections:")
+            for collection in collections:
+                print(f"- {collection.name}")
+        else:
+            print("❌ Connection test failed: Weaviate is not responding")
+    finally:
+        client.close()

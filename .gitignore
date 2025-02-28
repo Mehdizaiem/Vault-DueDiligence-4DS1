@@ -49,3 +49,6 @@ __pycache__/
 # OS generated files (if applicable)
 .AppleDouble
 Thumbs.db
+
+
+venv/

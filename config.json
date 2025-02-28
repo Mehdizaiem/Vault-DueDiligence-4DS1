@@ -1,0 +1,10 @@
+{
+    "crypto_symbols": ["BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "ADAUSDT"],
+    "news_sources": ["CoinDesk", "Cointelegraph"],
+    "scrape_interval_hours": 4,
+    "sentiment_interval_hours": 6,
+    "forecast_interval_hours": 12,
+    "forecast_days_ahead": 7,
+    "use_openai": false,
+    "data_dir": "data"
+  }

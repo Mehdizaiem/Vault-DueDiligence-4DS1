@@ -30,11 +30,7 @@ def search_documents(client, query_text, top_k=3):
     query_vector = generate_embedding(query_text)
     
     try:
-<<<<<<< HEAD
-        # Get the correct collection
-=======
         # Get the collection
->>>>>>> 28757b56381786cccf6ab020e7955163a8f5fc89
         collection = client.collections.get("CryptoDueDiligenceDocuments")
         
         # Perform the vector search

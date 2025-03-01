@@ -59,3 +59,7 @@ Sample_Data/visualizations/documents_export.json
 
 # Python scripts (if you want to ignore specific scripts like feature_extraction.py)
 Sample_Data/feature_extraction.py
+
+
+
+venv/

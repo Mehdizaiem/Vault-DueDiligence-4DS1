@@ -22,6 +22,13 @@ def cleanup_market_data():
         except Exception as e:
             logger.info(f"Collection doesn't exist or already deleted: {e}")
 
+        # Also cleanup CryptoNewsSentiment
+        try:
+            client.collections.delete("CryptoNewsSentiment")
+            logger.info("✅ Successfully deleted CryptoNewsSentiment collection")
+        except Exception as e:
+            logger.info(f"Collection doesn't exist or already deleted: {e}")
+
     except Exception as e:
         logger.error(f"Error during cleanup: {e}")
     finally:

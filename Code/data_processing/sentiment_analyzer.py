@@ -85,11 +85,14 @@ class CryptoSentimentAnalyzer:
             text = row[content_column]
             sentiment = self.analyze_text(text)
             
+            # Format date to RFC3339
+            current_time = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
+            
             results.append({
                 **row.to_dict(),
                 "sentiment_label": sentiment["label"],
                 "sentiment_score": sentiment["score"],
-                "analyzed_at": datetime.now().isoformat()
+                "analyzed_at": current_time
             })
             
             if (idx + 1) % 10 == 0:
@@ -126,6 +129,9 @@ class CryptoSentimentAnalyzer:
                 
                 for _, row in batch.iterrows():
                     try:
+                        # Format current date in RFC3339 format
+                        current_time = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
+                        
                         data = {
                             "source": row["source"],
                             "title": row["title"],
@@ -133,15 +139,44 @@ class CryptoSentimentAnalyzer:
                             "content": row["content"],
                             "sentiment_label": row["sentiment_label"],
                             "sentiment_score": float(row["sentiment_score"]),
-                            "analyzed_at": row["analyzed_at"]
+                            "analyzed_at": current_time
                         }
                         
                         # Handle optional fields
                         if "date" in row and row["date"]:
-                            if isinstance(row["date"], str):
-                                data["date"] = row["date"]
+                            # Format date to RFC3339
+                            if isinstance(row["date"], datetime):
+                                data["date"] = row["date"].strftime("%Y-%m-%dT%H:%M:%SZ")
+                            elif isinstance(row["date"], str):
+                                # Try to parse and format the string date
+                                try:
+                                    # Try multiple date formats
+                                    try:
+                                        parsed_date = datetime.fromisoformat(row["date"].replace('Z', '+00:00'))
+                                    except:
+                                        # Try alternate formats
+                                        try:
+                                            parsed_date = datetime.strptime(row["date"], "%Y-%m-%d %H:%M:%S.%f")
+                                        except:
+                                            try:
+                                                # Try timestamp format
+                                                if str(row["date"]).isdigit() and len(str(row["date"])) > 10:
+                                                    # Unix timestamp in milliseconds
+                                                    parsed_date = datetime.fromtimestamp(int(row["date"])/1000)
+                                                else:
+                                                    # Default to current date
+                                                    parsed_date = datetime.now()
+                                            except:
+                                                parsed_date = datetime.now()
+                                    
+                                    data["date"] = parsed_date.strftime("%Y-%m-%dT%H:%M:%SZ")
+                                except:
+                                    # Use current time as fallback
+                                    data["date"] = current_time
                             else:
-                                data["date"] = row["date"].isoformat() if hasattr(row["date"], 'isoformat') else str(row["date"])
+                                data["date"] = current_time
+                        else:
+                            data["date"] = current_time
                         
                         if "authors" in row and isinstance(row["authors"], list):
                             data["authors"] = row["authors"]
@@ -162,9 +197,24 @@ class CryptoSentimentAnalyzer:
                 
                 # Insert batch
                 if objects:
-                    response = collection.data.insert_many(objects)
-                    total += len(objects)
-                    logger.info(f"Stored {len(objects)} articles in Weaviate")
+                    try:
+                        response = collection.data.insert_many(objects)
+                        total += len(objects)
+                        logger.info(f"Stored {len(objects)} articles in Weaviate")
+                    except Exception as e:
+                        logger.error(f"Failed to insert batch: {e}")
+                        # Try inserting one by one
+                        successful = 0
+                        for obj in objects:
+                            try:
+                                collection.data.insert(obj)
+                                successful += 1
+                            except Exception as individual_e:
+                                logger.error(f"Failed to insert individual object: {individual_e}")
+                        
+                        if successful > 0:
+                            total += successful
+                            logger.info(f"Stored {successful} articles individually after batch failure")
             
             logger.info(f"Successfully stored {total} articles with sentiment analysis in Weaviate")
             return True

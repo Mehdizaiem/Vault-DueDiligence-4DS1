@@ -74,7 +74,7 @@ def ensure_market_metrics_schema(client):
             logger.info("✅ Successfully created MarketMetrics collection")
             
             # Add some sample data for testing
-            self._add_sample_market_data(client, collection)
+            _add_sample_market_data(client, collection)
             
             return collection
         except Exception as e:

@@ -176,7 +176,7 @@ class AgenticRagSystem:
     def _search_documents(self, query):
         """Search crypto documents based on a query"""
         try:
-            from Sample_Data.vector_store.search import search_documents
+            from Sample_Data.retrieval.search import search_documents
             results = search_documents(self.client, query, top_k=5)
             
             if not results:

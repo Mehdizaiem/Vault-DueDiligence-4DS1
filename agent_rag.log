@@ -281,3 +281,923 @@ invalid date property 'analyzed_at' on class 'CryptoNewsSentiment': requires a s
 2025-03-01 00:45:46,710 - Code.data_processing.crypto_forecaster - ERROR - Failed to train model for ADAUSDT
 2025-03-01 00:45:46,710 - __main__ - WARNING - No predictions generated for ADAUSDT
 2025-03-01 00:45:46,711 - __main__ - INFO - Forecast updates completed for 0 symbols
+2025-03-01 11:45:08,875 - __main__ - INFO - LangChain successfully imported
+2025-03-01 11:45:08,877 - __main__ - INFO - Initializing Agentic RAG System...
+2025-03-01 11:45:12,074 - __main__ - ERROR - Initialization error: Connection to Weaviate failed. Details: Error: All connection attempts failed. 
+Is Weaviate running and reachable at http://localhost:9090?
+2025-03-01 11:45:12,101 - __main__ - ERROR - Traceback (most recent call last):
+  File "C:\Users\PRO-ART\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpx\_transports\default.py", line 72, in map_httpcore_exceptions
+    yield
+  File "C:\Users\PRO-ART\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpx\_transports\default.py", line 377, in handle_async_request
+    resp = await self._pool.handle_async_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PRO-ART\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpcore\_async\connection_pool.py", line 216, in handle_async_request
+    raise exc from None
+  File "C:\Users\PRO-ART\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpcore\_async\connection_pool.py", line 196, in handle_async_request
+    response = await connection.handle_async_request(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PRO-ART\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpcore\_async\connection.py", line 99, in handle_async_request
+    raise exc
+  File "C:\Users\PRO-ART\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpcore\_async\connection.py", line 76, in handle_async_request
+    stream = await self._connect(request)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PRO-ART\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpcore\_async\connection.py", line 122, in _connect
+    stream = await self._network_backend.connect_tcp(**kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PRO-ART\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpcore\_backends\auto.py", line 30, in connect_tcp
+    return await self._backend.connect_tcp(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PRO-ART\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpcore\_backends\anyio.py", line 115, in connect_tcp
+    with map_exceptions(exc_map):
+  File "C:\Users\PRO-ART\AppData\Local\Programs\Python\Python312\Lib\contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "C:\Users\PRO-ART\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpcore\_exceptions.py", line 14, in map_exceptions
+    raise to_exc(exc) from exc
+httpcore.ConnectError: All connection attempts failed
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\PRO-ART\AppData\Local\Programs\Python\Python312\Lib\site-packages\weaviate\connect\v4.py", line 264, in _open_connections_rest
+    response = await client.get(oidc_url)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PRO-ART\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpx\_client.py", line 1814, in get
+    return await self.request(
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PRO-ART\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpx\_client.py", line 1585, in request
+    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PRO-ART\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpx\_client.py", line 1674, in send
+    response = await self._send_handling_auth(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PRO-ART\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpx\_client.py", line 1702, in _send_handling_auth
+    response = await self._send_handling_redirects(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PRO-ART\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpx\_client.py", line 1739, in _send_handling_redirects
+    response = await self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PRO-ART\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpx\_client.py", line 1776, in _send_single_request
+    response = await transport.handle_async_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PRO-ART\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpx\_transports\default.py", line 376, in handle_async_request
+    with map_httpcore_exceptions():
+  File "C:\Users\PRO-ART\AppData\Local\Programs\Python\Python312\Lib\contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "C:\Users\PRO-ART\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpx\_transports\default.py", line 89, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+httpx.ConnectError: All connection attempts failed
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\PRO-ART\Desktop\Projet\agentic_rag.py", line 105, in initialize
+    self.client = get_weaviate_client()
+                  ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PRO-ART\Desktop\Projet\Sample_Data\vector_store\weaviate_client.py", line 32, in get_weaviate_client
+    client.connect()
+  File "C:\Users\PRO-ART\AppData\Local\Programs\Python\Python312\Lib\site-packages\weaviate\syncify.py", line 23, in sync_method
+    return _EventLoopSingleton.get_instance().run_until_complete(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PRO-ART\AppData\Local\Programs\Python\Python312\Lib\site-packages\weaviate\event_loop.py", line 42, in run_until_complete
+    return fut.result()
+           ^^^^^^^^^^^^
+  File "C:\Users\PRO-ART\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PRO-ART\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\PRO-ART\AppData\Local\Programs\Python\Python312\Lib\site-packages\weaviate\client_base.py", line 153, in connect
+    await self._connection.connect(self._skip_init_checks)
+  File "C:\Users\PRO-ART\AppData\Local\Programs\Python\Python312\Lib\site-packages\weaviate\connect\v4.py", line 154, in connect
+    await self._open_connections_rest(self._auth, skip_init_checks)
+  File "C:\Users\PRO-ART\AppData\Local\Programs\Python\Python312\Lib\site-packages\weaviate\connect\v4.py", line 266, in _open_connections_rest
+    raise WeaviateConnectionError(
+weaviate.exceptions.WeaviateConnectionError: Connection to Weaviate failed. Details: Error: All connection attempts failed. 
+Is Weaviate running and reachable at http://localhost:9090?
+
+2025-03-01 11:50:33,619 - __main__ - INFO - LangChain successfully imported
+2025-03-01 11:50:33,621 - __main__ - INFO - Initializing Agentic RAG System...
+2025-03-01 11:50:34,486 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 11:50:34,792 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 11:50:35,645 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 11:50:35,785 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 11:50:35,998 - Code.data_acquisition.blockchain_collectors.news_scraper - WARNING - newspaper3k library not available. Installing or using fallback extraction.
+2025-03-01 11:50:38,060 - Code.data_processing.sentiment_analyzer - INFO - Using TextBlob for sentiment analysis
+2025-03-01 11:50:38,704 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - News cache directory: C:\Users\PRO-ART\Desktop\Projet\Sample_Data\data_ingestion\news_cache
+2025-03-01 11:50:38,704 - Code.data_processing.sentiment_analyzer - INFO - Initializing sentiment analyzer with TextBlob
+2025-03-01 11:50:38,704 - __main__ - INFO - Agentic RAG System initialized successfully
+2025-03-01 11:50:38,704 - __main__ - INFO - Starting background services
+2025-03-01 11:50:38,706 - __main__ - INFO - Starting scheduled news scraping
+2025-03-01 11:50:38,706 - __main__ - INFO - Starting news scraping...
+2025-03-01 11:50:38,706 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Scraping from CoinDesk...
+2025-03-01 11:50:45,419 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Scraping from Cointelegraph...
+2025-03-01 11:50:52,868 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Scraped new article: What is Bitcoin price going to do next? — Bear trap, bottom, or oversold bounce?
+2025-03-01 11:50:54,875 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoin spot and margin longs push BTC to $85K, but the bottom isn’t in yet
+2025-03-01 11:50:54,877 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: States likely to adopt Bitcoin reserves first: Report
+2025-03-01 11:50:54,878 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Here’s what happened in crypto today
+2025-03-01 11:50:54,880 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoin’s ‘Trump trade’ is over — Traders shift hope to Fed rate cuts, expanding global liquidity
+2025-03-01 11:50:54,881 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Competitors want to ‘kill Tether,’ most altcoins ‘won’t make it’ in 2025: Finance Redefined
+2025-03-01 11:50:54,883 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoin rebounds to $84K — Analysts say BTC crash was ultimate buy signal
+2025-03-01 11:50:54,886 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Price analysis 2/28: BTC, ETH, XRP, BNB, SOL, DOGE, ADA, LTC, LINK, AVAX
+2025-03-01 11:50:54,887 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoin crash triggered by erosion of ETF cash and carry trade — Analyst
+2025-03-01 11:50:54,890 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoin price metric hits ‘optimal DCA’ zone not seen since BTC traded in $50K to $70K range
+2025-03-01 11:50:59,894 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Saved 10 articles to data\crypto_news.csv
+2025-03-01 11:50:59,895 - __main__ - INFO - News scraping completed. Scraped 10 articles.
+2025-03-01 11:50:59,895 - __main__ - INFO - Starting scheduled sentiment analysis
+2025-03-01 11:50:59,895 - __main__ - INFO - Starting sentiment analysis...
+2025-03-01 11:50:59,911 - Code.data_processing.sentiment_analyzer - INFO - Loaded 10 articles from data\crypto_news.csv
+2025-03-01 11:50:59,911 - Code.data_processing.sentiment_analyzer - INFO - Analyzing sentiment for 10 articles
+2025-03-01 11:50:59,968 - Code.data_processing.sentiment_analyzer - INFO - Processed 10 articles
+2025-03-01 11:50:59,970 - Code.data_processing.sentiment_analyzer - INFO - Saved sentiment analysis results to C:\Users\PRO-ART\Desktop\Projet\Sample_Data\data_ingestion\processed\sentiment_analysis_20250301.csv
+2025-03-01 11:51:00,277 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 11:51:00,584 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 11:51:01,240 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 11:51:01,381 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 11:51:01,382 - Sample_Data.vector_store.market_sentiment_schema - INFO - CryptoNewsSentiment collection already exists
+2025-03-01 11:51:01,436 - Code.data_processing.sentiment_analyzer - ERROR - Error storing sentiment data in Weaviate: Every object failed during insertion. Here is the set of all errors: invalid date property 'date' on class 'CryptoNewsSentiment': requires a string with a RFC3339 formatted date, but the given value is '1740780819433'
+invalid date property 'date' on class 'CryptoNewsSentiment': requires a string with a RFC3339 formatted date, but the given value is '1740785877120'
+invalid date property 'date' on class 'CryptoNewsSentiment': requires a string with a RFC3339 formatted date, but the given value is '1740780821889'
+invalid date property 'analyzed_at' on class 'CryptoNewsSentiment': requires a string with a RFC3339 formatted date, but the given value is '2025-03-01T11:50:59.968237'
+invalid date property 'analyzed_at' on class 'CryptoNewsSentiment': requires a string with a RFC3339 formatted date, but the given value is '2025-03-01T11:50:59.947207'
+invalid date property 'date' on class 'CryptoNewsSentiment': requires a string with a RFC3339 formatted date, but the given value is '2025-03-01 11:50:52.858492'
+invalid date property 'analyzed_at' on class 'CryptoNewsSentiment': requires a string with a RFC3339 formatted date, but the given value is '2025-03-01T11:50:59.950715'
+invalid date property 'analyzed_at' on class 'CryptoNewsSentiment': requires a string with a RFC3339 formatted date, but the given value is '2025-03-01T11:50:59.960733'
+invalid date property 'date' on class 'CryptoNewsSentiment': requires a string with a RFC3339 formatted date, but the given value is '1740780826805'
+invalid date property 'date' on class 'CryptoNewsSentiment': requires a string with a RFC3339 formatted date, but the given value is '1740785527249'
+2025-03-01 11:51:01,437 - __main__ - INFO - Sentiment analysis completed. Analyzed 10 articles.
+2025-03-01 11:51:01,437 - __main__ - INFO - Starting scheduled forecast updates
+2025-03-01 11:51:01,437 - __main__ - INFO - Updating price forecasts...
+2025-03-01 11:51:01,437 - __main__ - INFO - Generating forecast for BTCUSDT...
+2025-03-01 11:51:01,438 - Code.data_processing.crypto_forecaster - INFO - Training model for BTCUSDT
+2025-03-01 11:51:01,760 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 11:51:02,091 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 11:51:02,788 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 11:51:03,058 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 11:51:03,073 - Code.data_processing.crypto_forecaster - ERROR - Error fetching market data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "no such prop with name 'source' found in class 'MarketMetrics' in the schema. Check your schema files for which properties in this class are available"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"no such prop with name \'source\' found in class \'MarketMetrics\' in the schema. Check your schema files for which properties in this class are available", grpc_status:2, created_time:"2025-03-01T10:51:03.0629717+00:00"}"
+>.
+2025-03-01 11:51:03,405 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 11:51:03,708 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 11:51:04,400 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 11:51:04,540 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 11:51:04,549 - Code.data_processing.crypto_forecaster - ERROR - Error fetching sentiment data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "get vector input from modules provider: VectorFromInput was called without vectorizer"
+	debug_error_string = "UNKNOWN:Error received from peer  {created_time:"2025-03-01T10:51:04.5428091+00:00", grpc_status:2, grpc_message:"get vector input from modules provider: VectorFromInput was called without vectorizer"}"
+>.
+2025-03-01 11:51:04,550 - Code.data_processing.crypto_forecaster - ERROR - Insufficient market data for BTCUSDT
+2025-03-01 11:51:04,550 - Code.data_processing.crypto_forecaster - WARNING - No trained model found for BTCUSDT
+2025-03-01 11:51:04,550 - Code.data_processing.crypto_forecaster - INFO - No model found for BTCUSDT, training now...
+2025-03-01 11:51:04,551 - Code.data_processing.crypto_forecaster - INFO - Training model for BTCUSDT
+2025-03-01 11:51:04,865 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 11:51:05,203 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 11:51:05,944 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 11:51:06,098 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 11:51:06,108 - Code.data_processing.crypto_forecaster - ERROR - Error fetching market data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "no such prop with name 'source' found in class 'MarketMetrics' in the schema. Check your schema files for which properties in this class are available"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"no such prop with name \'source\' found in class \'MarketMetrics\' in the schema. Check your schema files for which properties in this class are available", grpc_status:2, created_time:"2025-03-01T10:51:06.1014699+00:00"}"
+>.
+2025-03-01 11:51:06,427 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 11:51:06,732 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 11:51:07,489 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 11:51:07,707 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 11:51:07,716 - Code.data_processing.crypto_forecaster - ERROR - Error fetching sentiment data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "get vector input from modules provider: VectorFromInput was called without vectorizer"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"get vector input from modules provider: VectorFromInput was called without vectorizer", grpc_status:2, created_time:"2025-03-01T10:51:07.7103302+00:00"}"
+>.
+2025-03-01 11:51:07,717 - Code.data_processing.crypto_forecaster - ERROR - Insufficient market data for BTCUSDT
+2025-03-01 11:51:07,717 - Code.data_processing.crypto_forecaster - ERROR - Failed to train model for BTCUSDT
+2025-03-01 11:51:07,718 - __main__ - WARNING - No predictions generated for BTCUSDT
+2025-03-01 11:51:07,718 - __main__ - INFO - Generating forecast for ETHUSDT...
+2025-03-01 11:51:07,718 - Code.data_processing.crypto_forecaster - INFO - Training model for ETHUSDT
+2025-03-01 11:51:08,033 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 11:51:08,355 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 11:51:09,040 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 11:51:09,459 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 11:51:09,468 - Code.data_processing.crypto_forecaster - ERROR - Error fetching market data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "no such prop with name 'source' found in class 'MarketMetrics' in the schema. Check your schema files for which properties in this class are available"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"no such prop with name \'source\' found in class \'MarketMetrics\' in the schema. Check your schema files for which properties in this class are available", grpc_status:2, created_time:"2025-03-01T10:51:09.4620316+00:00"}"
+>.
+2025-03-01 11:51:09,791 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 11:51:10,143 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 11:51:10,919 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 11:51:11,269 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 11:51:11,279 - Code.data_processing.crypto_forecaster - ERROR - Error fetching sentiment data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "get vector input from modules provider: VectorFromInput was called without vectorizer"
+	debug_error_string = "UNKNOWN:Error received from peer  {created_time:"2025-03-01T10:51:11.273164+00:00", grpc_status:2, grpc_message:"get vector input from modules provider: VectorFromInput was called without vectorizer"}"
+>.
+2025-03-01 11:51:11,280 - Code.data_processing.crypto_forecaster - ERROR - Insufficient market data for ETHUSDT
+2025-03-01 11:51:11,280 - Code.data_processing.crypto_forecaster - WARNING - No trained model found for ETHUSDT
+2025-03-01 11:51:11,280 - Code.data_processing.crypto_forecaster - INFO - No model found for ETHUSDT, training now...
+2025-03-01 11:51:11,281 - Code.data_processing.crypto_forecaster - INFO - Training model for ETHUSDT
+2025-03-01 11:51:11,598 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 11:51:11,903 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 11:51:12,595 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 11:51:12,887 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 11:51:12,897 - Code.data_processing.crypto_forecaster - ERROR - Error fetching market data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "no such prop with name 'source' found in class 'MarketMetrics' in the schema. Check your schema files for which properties in this class are available"
+	debug_error_string = "UNKNOWN:Error received from peer  {created_time:"2025-03-01T10:51:12.8903255+00:00", grpc_status:2, grpc_message:"no such prop with name \'source\' found in class \'MarketMetrics\' in the schema. Check your schema files for which properties in this class are available"}"
+>.
+2025-03-01 11:51:13,207 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 11:51:13,519 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 11:51:14,208 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 11:51:14,422 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 11:51:14,431 - Code.data_processing.crypto_forecaster - ERROR - Error fetching sentiment data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "get vector input from modules provider: VectorFromInput was called without vectorizer"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"get vector input from modules provider: VectorFromInput was called without vectorizer", grpc_status:2, created_time:"2025-03-01T10:51:14.4253091+00:00"}"
+>.
+2025-03-01 11:51:14,432 - Code.data_processing.crypto_forecaster - ERROR - Insufficient market data for ETHUSDT
+2025-03-01 11:51:14,432 - Code.data_processing.crypto_forecaster - ERROR - Failed to train model for ETHUSDT
+2025-03-01 11:51:14,432 - __main__ - WARNING - No predictions generated for ETHUSDT
+2025-03-01 11:51:14,432 - __main__ - INFO - Generating forecast for SOLUSDT...
+2025-03-01 11:51:14,432 - Code.data_processing.crypto_forecaster - INFO - Training model for SOLUSDT
+2025-03-01 11:51:14,734 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 11:51:15,038 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 11:51:15,753 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 11:51:15,903 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 11:51:15,912 - Code.data_processing.crypto_forecaster - ERROR - Error fetching market data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "no such prop with name 'source' found in class 'MarketMetrics' in the schema. Check your schema files for which properties in this class are available"
+	debug_error_string = "UNKNOWN:Error received from peer  {created_time:"2025-03-01T10:51:15.9057122+00:00", grpc_status:2, grpc_message:"no such prop with name \'source\' found in class \'MarketMetrics\' in the schema. Check your schema files for which properties in this class are available"}"
+>.
+2025-03-01 11:51:16,213 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 11:51:16,515 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 11:51:17,231 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 11:51:17,380 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 11:51:17,389 - Code.data_processing.crypto_forecaster - ERROR - Error fetching sentiment data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "get vector input from modules provider: VectorFromInput was called without vectorizer"
+	debug_error_string = "UNKNOWN:Error received from peer  {created_time:"2025-03-01T10:51:17.3830429+00:00", grpc_status:2, grpc_message:"get vector input from modules provider: VectorFromInput was called without vectorizer"}"
+>.
+2025-03-01 11:51:17,389 - Code.data_processing.crypto_forecaster - ERROR - Insufficient market data for SOLUSDT
+2025-03-01 11:51:17,390 - Code.data_processing.crypto_forecaster - WARNING - No trained model found for SOLUSDT
+2025-03-01 11:51:17,390 - Code.data_processing.crypto_forecaster - INFO - No model found for SOLUSDT, training now...
+2025-03-01 11:51:17,390 - Code.data_processing.crypto_forecaster - INFO - Training model for SOLUSDT
+2025-03-01 11:51:17,705 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 11:51:18,020 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 11:51:18,707 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 11:51:18,859 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 11:51:18,868 - Code.data_processing.crypto_forecaster - ERROR - Error fetching market data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "no such prop with name 'source' found in class 'MarketMetrics' in the schema. Check your schema files for which properties in this class are available"
+	debug_error_string = "UNKNOWN:Error received from peer  {created_time:"2025-03-01T10:51:18.862423+00:00", grpc_status:2, grpc_message:"no such prop with name \'source\' found in class \'MarketMetrics\' in the schema. Check your schema files for which properties in this class are available"}"
+>.
+2025-03-01 11:51:19,173 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 11:51:19,473 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 11:51:20,186 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 11:51:20,335 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 11:51:20,344 - Code.data_processing.crypto_forecaster - ERROR - Error fetching sentiment data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "get vector input from modules provider: VectorFromInput was called without vectorizer"
+	debug_error_string = "UNKNOWN:Error received from peer  {created_time:"2025-03-01T10:51:20.3381783+00:00", grpc_status:2, grpc_message:"get vector input from modules provider: VectorFromInput was called without vectorizer"}"
+>.
+2025-03-01 11:51:20,345 - Code.data_processing.crypto_forecaster - ERROR - Insufficient market data for SOLUSDT
+2025-03-01 11:51:20,345 - Code.data_processing.crypto_forecaster - ERROR - Failed to train model for SOLUSDT
+2025-03-01 11:51:20,345 - __main__ - WARNING - No predictions generated for SOLUSDT
+2025-03-01 11:51:20,346 - __main__ - INFO - Generating forecast for BNBUSDT...
+2025-03-01 11:51:20,346 - Code.data_processing.crypto_forecaster - INFO - Training model for BNBUSDT
+2025-03-01 11:51:20,649 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 11:51:20,962 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 11:51:21,664 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 11:51:21,880 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 11:51:21,889 - Code.data_processing.crypto_forecaster - ERROR - Error fetching market data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "no such prop with name 'source' found in class 'MarketMetrics' in the schema. Check your schema files for which properties in this class are available"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"no such prop with name \'source\' found in class \'MarketMetrics\' in the schema. Check your schema files for which properties in this class are available", grpc_status:2, created_time:"2025-03-01T10:51:21.8829966+00:00"}"
+>.
+2025-03-01 11:51:22,205 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 11:51:22,516 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 11:51:23,207 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 11:51:23,359 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 11:51:23,367 - Code.data_processing.crypto_forecaster - ERROR - Error fetching sentiment data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "get vector input from modules provider: VectorFromInput was called without vectorizer"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"get vector input from modules provider: VectorFromInput was called without vectorizer", grpc_status:2, created_time:"2025-03-01T10:51:23.3614215+00:00"}"
+>.
+2025-03-01 11:51:23,367 - Code.data_processing.crypto_forecaster - ERROR - Insufficient market data for BNBUSDT
+2025-03-01 11:51:23,368 - Code.data_processing.crypto_forecaster - WARNING - No trained model found for BNBUSDT
+2025-03-01 11:51:23,368 - Code.data_processing.crypto_forecaster - INFO - No model found for BNBUSDT, training now...
+2025-03-01 11:51:23,368 - Code.data_processing.crypto_forecaster - INFO - Training model for BNBUSDT
+2025-03-01 11:51:23,668 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 11:51:23,975 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 11:51:24,687 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 11:51:24,836 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 11:51:24,845 - Code.data_processing.crypto_forecaster - ERROR - Error fetching market data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "no such prop with name 'source' found in class 'MarketMetrics' in the schema. Check your schema files for which properties in this class are available"
+	debug_error_string = "UNKNOWN:Error received from peer  {created_time:"2025-03-01T10:51:24.8391987+00:00", grpc_status:2, grpc_message:"no such prop with name \'source\' found in class \'MarketMetrics\' in the schema. Check your schema files for which properties in this class are available"}"
+>.
+2025-03-01 11:51:25,156 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 11:51:25,489 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 11:51:26,232 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 11:51:26,384 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 11:51:26,394 - Code.data_processing.crypto_forecaster - ERROR - Error fetching sentiment data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "get vector input from modules provider: VectorFromInput was called without vectorizer"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"get vector input from modules provider: VectorFromInput was called without vectorizer", grpc_status:2, created_time:"2025-03-01T10:51:26.3877558+00:00"}"
+>.
+2025-03-01 11:51:26,394 - Code.data_processing.crypto_forecaster - ERROR - Insufficient market data for BNBUSDT
+2025-03-01 11:51:26,395 - Code.data_processing.crypto_forecaster - ERROR - Failed to train model for BNBUSDT
+2025-03-01 11:51:26,395 - __main__ - WARNING - No predictions generated for BNBUSDT
+2025-03-01 11:51:26,395 - __main__ - INFO - Generating forecast for ADAUSDT...
+2025-03-01 11:51:26,395 - Code.data_processing.crypto_forecaster - INFO - Training model for ADAUSDT
+2025-03-01 11:51:26,719 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 11:51:27,045 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 11:51:27,780 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 11:51:28,064 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 11:51:28,074 - Code.data_processing.crypto_forecaster - ERROR - Error fetching market data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "no such prop with name 'source' found in class 'MarketMetrics' in the schema. Check your schema files for which properties in this class are available"
+	debug_error_string = "UNKNOWN:Error received from peer  {created_time:"2025-03-01T10:51:28.0669009+00:00", grpc_status:2, grpc_message:"no such prop with name \'source\' found in class \'MarketMetrics\' in the schema. Check your schema files for which properties in this class are available"}"
+>.
+2025-03-01 11:51:28,396 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 11:51:28,704 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 11:51:29,392 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 11:51:29,673 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 11:51:29,682 - Code.data_processing.crypto_forecaster - ERROR - Error fetching sentiment data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "get vector input from modules provider: VectorFromInput was called without vectorizer"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"get vector input from modules provider: VectorFromInput was called without vectorizer", grpc_status:2, created_time:"2025-03-01T10:51:29.6753807+00:00"}"
+>.
+2025-03-01 11:51:29,682 - Code.data_processing.crypto_forecaster - ERROR - Insufficient market data for ADAUSDT
+2025-03-01 11:51:29,683 - Code.data_processing.crypto_forecaster - WARNING - No trained model found for ADAUSDT
+2025-03-01 11:51:29,683 - Code.data_processing.crypto_forecaster - INFO - No model found for ADAUSDT, training now...
+2025-03-01 11:51:29,683 - Code.data_processing.crypto_forecaster - INFO - Training model for ADAUSDT
+2025-03-01 11:51:29,995 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 11:51:30,296 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 11:51:31,004 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 11:51:31,227 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 11:51:31,236 - Code.data_processing.crypto_forecaster - ERROR - Error fetching market data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "no such prop with name 'source' found in class 'MarketMetrics' in the schema. Check your schema files for which properties in this class are available"
+	debug_error_string = "UNKNOWN:Error received from peer  {created_time:"2025-03-01T10:51:31.2296477+00:00", grpc_status:2, grpc_message:"no such prop with name \'source\' found in class \'MarketMetrics\' in the schema. Check your schema files for which properties in this class are available"}"
+>.
+2025-03-01 11:51:31,552 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 11:51:31,852 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 11:51:32,549 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 11:51:32,698 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 11:51:32,706 - Code.data_processing.crypto_forecaster - ERROR - Error fetching sentiment data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "get vector input from modules provider: VectorFromInput was called without vectorizer"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"get vector input from modules provider: VectorFromInput was called without vectorizer", grpc_status:2, created_time:"2025-03-01T10:51:32.7004055+00:00"}"
+>.
+2025-03-01 11:51:32,707 - Code.data_processing.crypto_forecaster - ERROR - Insufficient market data for ADAUSDT
+2025-03-01 11:51:32,707 - Code.data_processing.crypto_forecaster - ERROR - Failed to train model for ADAUSDT
+2025-03-01 11:51:32,707 - __main__ - WARNING - No predictions generated for ADAUSDT
+2025-03-01 11:51:32,707 - __main__ - INFO - Forecast updates completed for 0 symbols
+2025-03-01 11:59:27,938 - __main__ - INFO - LangChain successfully imported
+2025-03-01 11:59:27,940 - __main__ - INFO - Initializing Agentic RAG System...
+2025-03-01 11:59:28,822 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 11:59:29,108 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 11:59:29,766 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 11:59:29,907 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 11:59:30,141 - Code.data_acquisition.blockchain_collectors.news_scraper - WARNING - newspaper3k library not available. Installing or using fallback extraction.
+2025-03-01 11:59:31,081 - Code.data_processing.sentiment_analyzer - INFO - Using TextBlob for sentiment analysis
+2025-03-01 11:59:32,081 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - News cache directory: C:\Users\PRO-ART\Desktop\Projet\Sample_Data\data_ingestion\news_cache
+2025-03-01 11:59:32,082 - Code.data_processing.sentiment_analyzer - INFO - Initializing sentiment analyzer with TextBlob
+2025-03-01 11:59:32,082 - __main__ - INFO - Agentic RAG System initialized successfully
+2025-03-01 11:59:32,082 - __main__ - INFO - Starting background services
+2025-03-01 11:59:32,083 - __main__ - INFO - Starting scheduled news scraping
+2025-03-01 11:59:32,083 - __main__ - INFO - Starting news scraping...
+2025-03-01 11:59:32,083 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Scraping from CoinDesk...
+2025-03-01 11:59:38,639 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Scraping from Cointelegraph...
+2025-03-01 11:59:42,017 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Scraped new article: Trump to host first White House crypto summit on March 7
+2025-03-01 11:59:44,022 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: What is Bitcoin price going to do next? — Bear trap, bottom, or oversold bounce?
+2025-03-01 11:59:44,024 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoin spot and margin longs push BTC to $85K, but the bottom isn’t in yet
+2025-03-01 11:59:44,026 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: States likely to adopt Bitcoin reserves first: Report
+2025-03-01 11:59:44,027 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Here’s what happened in crypto today
+2025-03-01 11:59:44,029 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoin’s ‘Trump trade’ is over — Traders shift hope to Fed rate cuts, expanding global liquidity
+2025-03-01 11:59:44,030 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Competitors want to ‘kill Tether,’ most altcoins ‘won’t make it’ in 2025: Finance Redefined
+2025-03-01 11:59:44,032 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoin rebounds to $84K — Analysts say BTC crash was ultimate buy signal
+2025-03-01 11:59:44,034 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Price analysis 2/28: BTC, ETH, XRP, BNB, SOL, DOGE, ADA, LTC, LINK, AVAX
+2025-03-01 11:59:44,035 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoin crash triggered by erosion of ETF cash and carry trade — Analyst
+2025-03-01 11:59:49,039 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Saved 10 articles to data\crypto_news.csv
+2025-03-01 11:59:49,039 - __main__ - INFO - News scraping completed. Scraped 10 articles.
+2025-03-01 11:59:49,039 - __main__ - INFO - Starting scheduled sentiment analysis
+2025-03-01 11:59:49,039 - __main__ - INFO - Starting sentiment analysis...
+2025-03-01 11:59:49,048 - Code.data_processing.sentiment_analyzer - INFO - Loaded 10 articles from data\crypto_news.csv
+2025-03-01 11:59:49,048 - Code.data_processing.sentiment_analyzer - INFO - Analyzing sentiment for 10 articles
+2025-03-01 11:59:49,095 - Code.data_processing.sentiment_analyzer - INFO - Processed 10 articles
+2025-03-01 11:59:49,098 - Code.data_processing.sentiment_analyzer - INFO - Saved sentiment analysis results to C:\Users\PRO-ART\Desktop\Projet\Sample_Data\data_ingestion\processed\sentiment_analysis_20250301.csv
+2025-03-01 11:59:49,394 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 11:59:49,685 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 11:59:50,395 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 11:59:50,536 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 11:59:50,537 - Sample_Data.vector_store.market_sentiment_schema - INFO - CryptoNewsSentiment collection already exists
+2025-03-01 11:59:50,584 - Code.data_processing.sentiment_analyzer - ERROR - Error storing sentiment data in Weaviate: Every object failed during insertion. Here is the set of all errors: invalid date property 'date' on class 'CryptoNewsSentiment': requires a string with a RFC3339 formatted date, but the given value is '1740829852858'
+invalid date property 'analyzed_at' on class 'CryptoNewsSentiment': requires a string with a RFC3339 formatted date, but the given value is '2025-03-01T11:59:49.078178'
+invalid date property 'analyzed_at' on class 'CryptoNewsSentiment': requires a string with a RFC3339 formatted date, but the given value is '2025-03-01T11:59:49.079178'
+invalid date property 'analyzed_at' on class 'CryptoNewsSentiment': requires a string with a RFC3339 formatted date, but the given value is '2025-03-01T11:59:49.089204'
+invalid date property 'analyzed_at' on class 'CryptoNewsSentiment': requires a string with a RFC3339 formatted date, but the given value is '2025-03-01T11:59:49.095224'
+invalid date property 'analyzed_at' on class 'CryptoNewsSentiment': requires a string with a RFC3339 formatted date, but the given value is '2025-03-01T11:59:49.087205'
+invalid date property 'date' on class 'CryptoNewsSentiment': requires a string with a RFC3339 formatted date, but the given value is '2025-03-01 11:59:42.015572'
+invalid date property 'analyzed_at' on class 'CryptoNewsSentiment': requires a string with a RFC3339 formatted date, but the given value is '2025-03-01T11:59:49.093717'
+invalid date property 'date' on class 'CryptoNewsSentiment': requires a string with a RFC3339 formatted date, but the given value is '1740785524640'
+invalid date property 'date' on class 'CryptoNewsSentiment': requires a string with a RFC3339 formatted date, but the given value is '1740780819433'
+2025-03-01 11:59:50,585 - __main__ - INFO - Sentiment analysis completed. Analyzed 10 articles.
+2025-03-01 11:59:50,585 - __main__ - INFO - Starting scheduled forecast updates
+2025-03-01 11:59:50,586 - __main__ - INFO - Updating price forecasts...
+2025-03-01 11:59:50,586 - __main__ - INFO - Generating forecast for BTCUSDT...
+2025-03-01 11:59:50,586 - Code.data_processing.crypto_forecaster - INFO - Training model for BTCUSDT
+2025-03-01 11:59:50,880 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 11:59:51,178 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 11:59:51,870 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 11:59:52,013 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 11:59:52,024 - Code.data_processing.crypto_forecaster - ERROR - Error fetching market data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "no such prop with name 'source' found in class 'MarketMetrics' in the schema. Check your schema files for which properties in this class are available"
+	debug_error_string = "UNKNOWN:Error received from peer  {created_time:"2025-03-01T10:59:52.0159637+00:00", grpc_status:2, grpc_message:"no such prop with name \'source\' found in class \'MarketMetrics\' in the schema. Check your schema files for which properties in this class are available"}"
+>.
+2025-03-01 11:59:52,314 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 11:59:52,605 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 11:59:53,281 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 11:59:53,432 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 11:59:53,440 - Code.data_processing.crypto_forecaster - ERROR - Error fetching sentiment data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "get vector input from modules provider: VectorFromInput was called without vectorizer"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"get vector input from modules provider: VectorFromInput was called without vectorizer", grpc_status:2, created_time:"2025-03-01T10:59:53.4343685+00:00"}"
+>.
+2025-03-01 11:59:53,440 - Code.data_processing.crypto_forecaster - ERROR - Insufficient market data for BTCUSDT
+2025-03-01 11:59:53,441 - Code.data_processing.crypto_forecaster - WARNING - No trained model found for BTCUSDT
+2025-03-01 11:59:53,441 - Code.data_processing.crypto_forecaster - INFO - No model found for BTCUSDT, training now...
+2025-03-01 11:59:53,441 - Code.data_processing.crypto_forecaster - INFO - Training model for BTCUSDT
+2025-03-01 11:59:53,730 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 11:59:54,022 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 11:59:54,692 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 11:59:54,840 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 11:59:54,852 - Code.data_processing.crypto_forecaster - ERROR - Error fetching market data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "no such prop with name 'source' found in class 'MarketMetrics' in the schema. Check your schema files for which properties in this class are available"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"no such prop with name \'source\' found in class \'MarketMetrics\' in the schema. Check your schema files for which properties in this class are available", grpc_status:2, created_time:"2025-03-01T10:59:54.8429775+00:00"}"
+>.
+2025-03-01 11:59:55,144 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 11:59:55,432 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 11:59:56,103 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 11:59:56,254 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 11:59:56,263 - Code.data_processing.crypto_forecaster - ERROR - Error fetching sentiment data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "get vector input from modules provider: VectorFromInput was called without vectorizer"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"get vector input from modules provider: VectorFromInput was called without vectorizer", grpc_status:2, created_time:"2025-03-01T10:59:56.2567728+00:00"}"
+>.
+2025-03-01 11:59:56,264 - Code.data_processing.crypto_forecaster - ERROR - Insufficient market data for BTCUSDT
+2025-03-01 11:59:56,264 - Code.data_processing.crypto_forecaster - ERROR - Failed to train model for BTCUSDT
+2025-03-01 11:59:56,264 - __main__ - WARNING - No predictions generated for BTCUSDT
+2025-03-01 11:59:56,264 - __main__ - INFO - Generating forecast for ETHUSDT...
+2025-03-01 11:59:56,264 - Code.data_processing.crypto_forecaster - INFO - Training model for ETHUSDT
+2025-03-01 11:59:56,564 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 11:59:56,855 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 11:59:57,513 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 11:59:57,662 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 11:59:57,671 - Code.data_processing.crypto_forecaster - ERROR - Error fetching market data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "no such prop with name 'source' found in class 'MarketMetrics' in the schema. Check your schema files for which properties in this class are available"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"no such prop with name \'source\' found in class \'MarketMetrics\' in the schema. Check your schema files for which properties in this class are available", grpc_status:2, created_time:"2025-03-01T10:59:57.6642083+00:00"}"
+>.
+2025-03-01 11:59:57,964 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 11:59:58,265 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 11:59:58,924 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 11:59:59,073 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 11:59:59,081 - Code.data_processing.crypto_forecaster - ERROR - Error fetching sentiment data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "get vector input from modules provider: VectorFromInput was called without vectorizer"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"get vector input from modules provider: VectorFromInput was called without vectorizer", grpc_status:2, created_time:"2025-03-01T10:59:59.0755625+00:00"}"
+>.
+2025-03-01 11:59:59,081 - Code.data_processing.crypto_forecaster - ERROR - Insufficient market data for ETHUSDT
+2025-03-01 11:59:59,082 - Code.data_processing.crypto_forecaster - WARNING - No trained model found for ETHUSDT
+2025-03-01 11:59:59,082 - Code.data_processing.crypto_forecaster - INFO - No model found for ETHUSDT, training now...
+2025-03-01 11:59:59,082 - Code.data_processing.crypto_forecaster - INFO - Training model for ETHUSDT
+2025-03-01 11:59:59,378 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 11:59:59,666 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:00:00,334 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:00:00,487 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:00:00,497 - Code.data_processing.crypto_forecaster - ERROR - Error fetching market data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "no such prop with name 'source' found in class 'MarketMetrics' in the schema. Check your schema files for which properties in this class are available"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"no such prop with name \'source\' found in class \'MarketMetrics\' in the schema. Check your schema files for which properties in this class are available", grpc_status:2, created_time:"2025-03-01T11:00:00.4898624+00:00"}"
+>.
+2025-03-01 12:00:00,788 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:00:01,079 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:00:01,747 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:00:01,896 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:00:01,907 - Code.data_processing.crypto_forecaster - ERROR - Error fetching sentiment data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "get vector input from modules provider: VectorFromInput was called without vectorizer"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"get vector input from modules provider: VectorFromInput was called without vectorizer", grpc_status:2, created_time:"2025-03-01T11:00:01.8987105+00:00"}"
+>.
+2025-03-01 12:00:01,908 - Code.data_processing.crypto_forecaster - ERROR - Insufficient market data for ETHUSDT
+2025-03-01 12:00:01,908 - Code.data_processing.crypto_forecaster - ERROR - Failed to train model for ETHUSDT
+2025-03-01 12:00:01,908 - __main__ - WARNING - No predictions generated for ETHUSDT
+2025-03-01 12:00:01,908 - __main__ - INFO - Generating forecast for SOLUSDT...
+2025-03-01 12:00:01,909 - Code.data_processing.crypto_forecaster - INFO - Training model for SOLUSDT
+2025-03-01 12:00:02,200 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:00:02,492 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:00:03,159 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:00:03,307 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:00:03,318 - Code.data_processing.crypto_forecaster - ERROR - Error fetching market data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "no such prop with name 'source' found in class 'MarketMetrics' in the schema. Check your schema files for which properties in this class are available"
+	debug_error_string = "UNKNOWN:Error received from peer  {created_time:"2025-03-01T11:00:03.309913+00:00", grpc_status:2, grpc_message:"no such prop with name \'source\' found in class \'MarketMetrics\' in the schema. Check your schema files for which properties in this class are available"}"
+>.
+2025-03-01 12:00:03,609 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:00:03,899 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:00:04,568 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:00:04,717 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:00:04,727 - Code.data_processing.crypto_forecaster - ERROR - Error fetching sentiment data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "get vector input from modules provider: VectorFromInput was called without vectorizer"
+	debug_error_string = "UNKNOWN:Error received from peer  {created_time:"2025-03-01T11:00:04.7200733+00:00", grpc_status:2, grpc_message:"get vector input from modules provider: VectorFromInput was called without vectorizer"}"
+>.
+2025-03-01 12:00:04,728 - Code.data_processing.crypto_forecaster - ERROR - Insufficient market data for SOLUSDT
+2025-03-01 12:00:04,728 - Code.data_processing.crypto_forecaster - WARNING - No trained model found for SOLUSDT
+2025-03-01 12:00:04,728 - Code.data_processing.crypto_forecaster - INFO - No model found for SOLUSDT, training now...
+2025-03-01 12:00:04,728 - Code.data_processing.crypto_forecaster - INFO - Training model for SOLUSDT
+2025-03-01 12:00:05,018 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:00:05,319 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:00:05,979 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:00:06,140 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:00:06,150 - Code.data_processing.crypto_forecaster - ERROR - Error fetching market data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "no such prop with name 'source' found in class 'MarketMetrics' in the schema. Check your schema files for which properties in this class are available"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"no such prop with name \'source\' found in class \'MarketMetrics\' in the schema. Check your schema files for which properties in this class are available", grpc_status:2, created_time:"2025-03-01T11:00:06.1427463+00:00"}"
+>.
+2025-03-01 12:00:06,448 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:00:06,737 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:00:07,390 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:00:07,539 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:00:07,548 - Code.data_processing.crypto_forecaster - ERROR - Error fetching sentiment data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "get vector input from modules provider: VectorFromInput was called without vectorizer"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"get vector input from modules provider: VectorFromInput was called without vectorizer", grpc_status:2, created_time:"2025-03-01T11:00:07.5425687+00:00"}"
+>.
+2025-03-01 12:00:07,549 - Code.data_processing.crypto_forecaster - ERROR - Insufficient market data for SOLUSDT
+2025-03-01 12:00:07,549 - Code.data_processing.crypto_forecaster - ERROR - Failed to train model for SOLUSDT
+2025-03-01 12:00:07,549 - __main__ - WARNING - No predictions generated for SOLUSDT
+2025-03-01 12:00:07,549 - __main__ - INFO - Generating forecast for BNBUSDT...
+2025-03-01 12:00:07,549 - Code.data_processing.crypto_forecaster - INFO - Training model for BNBUSDT
+2025-03-01 12:00:07,843 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:00:08,132 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:00:08,802 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:00:08,950 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:00:08,962 - Code.data_processing.crypto_forecaster - ERROR - Error fetching market data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "no such prop with name 'source' found in class 'MarketMetrics' in the schema. Check your schema files for which properties in this class are available"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"no such prop with name \'source\' found in class \'MarketMetrics\' in the schema. Check your schema files for which properties in this class are available", grpc_status:2, created_time:"2025-03-01T11:00:08.9534701+00:00"}"
+>.
+2025-03-01 12:00:09,254 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:00:09,545 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:00:10,214 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:00:10,427 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:00:10,436 - Code.data_processing.crypto_forecaster - ERROR - Error fetching sentiment data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "get vector input from modules provider: VectorFromInput was called without vectorizer"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"get vector input from modules provider: VectorFromInput was called without vectorizer", grpc_status:2, created_time:"2025-03-01T11:00:10.4301378+00:00"}"
+>.
+2025-03-01 12:00:10,436 - Code.data_processing.crypto_forecaster - ERROR - Insufficient market data for BNBUSDT
+2025-03-01 12:00:10,437 - Code.data_processing.crypto_forecaster - WARNING - No trained model found for BNBUSDT
+2025-03-01 12:00:10,437 - Code.data_processing.crypto_forecaster - INFO - No model found for BNBUSDT, training now...
+2025-03-01 12:00:10,437 - Code.data_processing.crypto_forecaster - INFO - Training model for BNBUSDT
+2025-03-01 12:00:10,730 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:00:11,019 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:00:11,692 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:00:11,841 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:00:11,850 - Code.data_processing.crypto_forecaster - ERROR - Error fetching market data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "no such prop with name 'source' found in class 'MarketMetrics' in the schema. Check your schema files for which properties in this class are available"
+	debug_error_string = "UNKNOWN:Error received from peer  {created_time:"2025-03-01T11:00:11.8428957+00:00", grpc_status:2, grpc_message:"no such prop with name \'source\' found in class \'MarketMetrics\' in the schema. Check your schema files for which properties in this class are available"}"
+>.
+2025-03-01 12:00:12,144 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:00:12,434 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:00:13,102 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:00:13,317 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:00:13,325 - Code.data_processing.crypto_forecaster - ERROR - Error fetching sentiment data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "get vector input from modules provider: VectorFromInput was called without vectorizer"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"get vector input from modules provider: VectorFromInput was called without vectorizer", grpc_status:2, created_time:"2025-03-01T11:00:13.31948+00:00"}"
+>.
+2025-03-01 12:00:13,326 - Code.data_processing.crypto_forecaster - ERROR - Insufficient market data for BNBUSDT
+2025-03-01 12:00:13,326 - Code.data_processing.crypto_forecaster - ERROR - Failed to train model for BNBUSDT
+2025-03-01 12:00:13,326 - __main__ - WARNING - No predictions generated for BNBUSDT
+2025-03-01 12:00:13,326 - __main__ - INFO - Generating forecast for ADAUSDT...
+2025-03-01 12:00:13,326 - Code.data_processing.crypto_forecaster - INFO - Training model for ADAUSDT
+2025-03-01 12:00:13,617 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:00:13,904 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:00:14,580 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:00:14,732 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:00:14,742 - Code.data_processing.crypto_forecaster - ERROR - Error fetching market data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "no such prop with name 'source' found in class 'MarketMetrics' in the schema. Check your schema files for which properties in this class are available"
+	debug_error_string = "UNKNOWN:Error received from peer  {created_time:"2025-03-01T11:00:14.7350236+00:00", grpc_status:2, grpc_message:"no such prop with name \'source\' found in class \'MarketMetrics\' in the schema. Check your schema files for which properties in this class are available"}"
+>.
+2025-03-01 12:00:15,031 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:00:15,318 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:00:15,992 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:00:16,274 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:00:16,284 - Code.data_processing.crypto_forecaster - ERROR - Error fetching sentiment data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "get vector input from modules provider: VectorFromInput was called without vectorizer"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"get vector input from modules provider: VectorFromInput was called without vectorizer", grpc_status:2, created_time:"2025-03-01T11:00:16.2765418+00:00"}"
+>.
+2025-03-01 12:00:16,285 - Code.data_processing.crypto_forecaster - ERROR - Insufficient market data for ADAUSDT
+2025-03-01 12:00:16,285 - Code.data_processing.crypto_forecaster - WARNING - No trained model found for ADAUSDT
+2025-03-01 12:00:16,285 - Code.data_processing.crypto_forecaster - INFO - No model found for ADAUSDT, training now...
+2025-03-01 12:00:16,285 - Code.data_processing.crypto_forecaster - INFO - Training model for ADAUSDT
+2025-03-01 12:00:16,577 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:00:16,867 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:00:17,537 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:00:17,751 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:00:17,760 - Code.data_processing.crypto_forecaster - ERROR - Error fetching market data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "no such prop with name 'source' found in class 'MarketMetrics' in the schema. Check your schema files for which properties in this class are available"
+	debug_error_string = "UNKNOWN:Error received from peer  {created_time:"2025-03-01T11:00:17.7537903+00:00", grpc_status:2, grpc_message:"no such prop with name \'source\' found in class \'MarketMetrics\' in the schema. Check your schema files for which properties in this class are available"}"
+>.
+2025-03-01 12:00:18,053 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:00:18,348 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:00:19,016 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:00:19,229 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:00:19,241 - Code.data_processing.crypto_forecaster - ERROR - Error fetching sentiment data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "get vector input from modules provider: VectorFromInput was called without vectorizer"
+	debug_error_string = "UNKNOWN:Error received from peer  {created_time:"2025-03-01T11:00:19.2325811+00:00", grpc_status:2, grpc_message:"get vector input from modules provider: VectorFromInput was called without vectorizer"}"
+>.
+2025-03-01 12:00:19,241 - Code.data_processing.crypto_forecaster - ERROR - Insufficient market data for ADAUSDT
+2025-03-01 12:00:19,241 - Code.data_processing.crypto_forecaster - ERROR - Failed to train model for ADAUSDT
+2025-03-01 12:00:19,242 - __main__ - WARNING - No predictions generated for ADAUSDT
+2025-03-01 12:00:19,242 - __main__ - INFO - Forecast updates completed for 0 symbols
+2025-03-01 12:13:23,572 - __main__ - INFO - LangChain successfully imported
+2025-03-01 12:13:23,574 - __main__ - INFO - Initializing Agentic RAG System...
+2025-03-01 12:13:24,437 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:13:24,719 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:13:25,418 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:13:25,560 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:13:25,681 - Code.data_acquisition.blockchain_collectors.news_scraper - WARNING - newspaper3k library not available. Installing or using fallback extraction.
+2025-03-01 12:13:26,681 - Code.data_processing.sentiment_analyzer - INFO - Using TextBlob for sentiment analysis
+2025-03-01 12:13:27,090 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - News cache directory: C:\Users\PRO-ART\Desktop\Projet\Sample_Data\data_ingestion\news_cache
+2025-03-01 12:13:27,090 - Code.data_processing.sentiment_analyzer - INFO - Initializing sentiment analyzer with TextBlob
+2025-03-01 12:13:27,090 - __main__ - INFO - Agentic RAG System initialized successfully
+2025-03-01 12:13:27,091 - __main__ - INFO - Starting background services
+2025-03-01 12:13:27,091 - __main__ - INFO - Starting scheduled news scraping
+2025-03-01 12:13:27,091 - __main__ - INFO - Starting news scraping...
+2025-03-01 12:13:27,091 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Scraping from CoinDesk...
+2025-03-01 12:13:34,021 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Scraping from Cointelegraph...
+2025-03-01 12:13:35,725 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Trump to host first White House crypto summit on March 7
+2025-03-01 12:13:35,727 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: What is Bitcoin price going to do next? — Bear trap, bottom, or oversold bounce?
+2025-03-01 12:13:35,729 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoin spot and margin longs push BTC to $85K, but the bottom isn’t in yet
+2025-03-01 12:13:35,729 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: States likely to adopt Bitcoin reserves first: Report
+2025-03-01 12:13:35,731 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Here’s what happened in crypto today
+2025-03-01 12:13:35,733 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoin’s ‘Trump trade’ is over — Traders shift hope to Fed rate cuts, expanding global liquidity
+2025-03-01 12:13:35,734 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Competitors want to ‘kill Tether,’ most altcoins ‘won’t make it’ in 2025: Finance Redefined
+2025-03-01 12:13:35,736 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoin rebounds to $84K — Analysts say BTC crash was ultimate buy signal
+2025-03-01 12:13:35,738 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Price analysis 2/28: BTC, ETH, XRP, BNB, SOL, DOGE, ADA, LTC, LINK, AVAX
+2025-03-01 12:13:35,740 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoin crash triggered by erosion of ETF cash and carry trade — Analyst
+2025-03-01 12:13:40,743 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Saved 10 articles to data\crypto_news.csv
+2025-03-01 12:13:40,744 - __main__ - INFO - News scraping completed. Scraped 10 articles.
+2025-03-01 12:13:40,744 - __main__ - INFO - Starting scheduled sentiment analysis
+2025-03-01 12:13:40,744 - __main__ - INFO - Starting sentiment analysis...
+2025-03-01 12:13:40,755 - Code.data_processing.sentiment_analyzer - INFO - Loaded 10 articles from data\crypto_news.csv
+2025-03-01 12:13:40,755 - Code.data_processing.sentiment_analyzer - INFO - Analyzing sentiment for 10 articles
+2025-03-01 12:13:40,796 - Code.data_processing.sentiment_analyzer - INFO - Processed 10 articles
+2025-03-01 12:13:40,798 - Code.data_processing.sentiment_analyzer - INFO - Saved sentiment analysis results to C:\Users\PRO-ART\Desktop\Projet\Sample_Data\data_ingestion\processed\sentiment_analysis_20250301.csv
+2025-03-01 12:13:41,077 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:13:41,356 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:13:42,015 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:13:42,156 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:13:42,157 - Sample_Data.vector_store.market_sentiment_schema - INFO - CryptoNewsSentiment collection already exists
+2025-03-01 12:13:42,219 - Code.data_processing.sentiment_analyzer - INFO - Stored 10 articles in Weaviate
+2025-03-01 12:13:42,219 - Code.data_processing.sentiment_analyzer - INFO - Successfully stored 10 articles with sentiment analysis in Weaviate
+2025-03-01 12:13:42,220 - __main__ - INFO - Sentiment analysis completed. Analyzed 10 articles.
+2025-03-01 12:13:42,220 - __main__ - INFO - Starting scheduled forecast updates
+2025-03-01 12:13:42,220 - __main__ - INFO - Updating price forecasts...
+2025-03-01 12:13:42,220 - __main__ - INFO - Generating forecast for BTCUSDT...
+2025-03-01 12:13:42,221 - Code.data_processing.crypto_forecaster - INFO - Training model for BTCUSDT
+2025-03-01 12:13:42,503 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:13:42,784 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:13:43,426 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:13:43,567 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:13:43,577 - Code.data_processing.crypto_forecaster - INFO - Fetched 30 market data points for BTCUSDT
+2025-03-01 12:13:43,860 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:13:44,138 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:13:44,838 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:13:44,980 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:13:44,989 - Code.data_processing.crypto_forecaster - ERROR - Error fetching sentiment data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "get vector input from modules provider: VectorFromInput was called without vectorizer"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"get vector input from modules provider: VectorFromInput was called without vectorizer", grpc_status:2, created_time:"2025-03-01T11:13:44.9825794+00:00"}"
+>.
+2025-03-01 12:13:44,999 - Code.data_processing.crypto_forecaster - INFO - Prepared features with shape: (29, 14)
+2025-03-01 12:13:45,078 - Code.data_processing.crypto_forecaster - INFO - Model evaluation for BTCUSDT:
+2025-03-01 12:13:45,078 - Code.data_processing.crypto_forecaster - INFO - MAE: 2537.9032
+2025-03-01 12:13:45,078 - Code.data_processing.crypto_forecaster - INFO - RMSE: 2762.4824
+2025-03-01 12:13:45,079 - Code.data_processing.crypto_forecaster - INFO - R²: -5.2016
+2025-03-01 12:13:46,646 - Code.data_processing.crypto_forecaster - INFO - Model for BTCUSDT trained and saved successfully
+2025-03-01 12:13:46,933 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:13:47,222 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:13:47,928 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:13:48,201 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:13:48,206 - Code.data_processing.crypto_forecaster - INFO - Fetched 30 market data points for BTCUSDT
+2025-03-01 12:13:48,490 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:13:48,771 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:13:49,473 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:13:49,616 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:13:49,624 - Code.data_processing.crypto_forecaster - ERROR - Error fetching sentiment data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "get vector input from modules provider: VectorFromInput was called without vectorizer"
+	debug_error_string = "UNKNOWN:Error received from peer  {created_time:"2025-03-01T11:13:49.6182554+00:00", grpc_status:2, grpc_message:"get vector input from modules provider: VectorFromInput was called without vectorizer"}"
+>.
+2025-03-01 12:13:49,628 - Code.data_processing.crypto_forecaster - INFO - Prepared features with shape: (29, 14)
+2025-03-01 12:13:49,681 - Code.data_processing.crypto_forecaster - INFO - Generated 7 day predictions for BTCUSDT
+2025-03-01 12:13:50,047 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:13:50,327 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:13:51,018 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:13:51,159 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:13:51,163 - Code.data_processing.crypto_forecaster - INFO - Fetched 30 market data points for BTCUSDT
+2025-03-01 12:13:51,286 - Code.data_processing.crypto_forecaster - INFO - Prediction plot saved to data\models\BTCUSDT_forecast.png
+2025-03-01 12:13:51,287 - __main__ - INFO - Forecast for BTCUSDT completed successfully
+2025-03-01 12:13:51,287 - __main__ - INFO - Generating forecast for ETHUSDT...
+2025-03-01 12:13:51,287 - Code.data_processing.crypto_forecaster - INFO - Training model for ETHUSDT
+2025-03-01 12:13:51,567 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:13:51,847 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:13:52,496 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:13:52,637 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:13:52,641 - Code.data_processing.crypto_forecaster - INFO - Fetched 30 market data points for ETHUSDT
+2025-03-01 12:13:52,925 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:13:53,204 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:13:53,907 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:13:54,180 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:13:54,190 - Code.data_processing.crypto_forecaster - ERROR - Error fetching sentiment data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "get vector input from modules provider: VectorFromInput was called without vectorizer"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"get vector input from modules provider: VectorFromInput was called without vectorizer", grpc_status:2, created_time:"2025-03-01T11:13:54.1826607+00:00"}"
+>.
+2025-03-01 12:13:54,194 - Code.data_processing.crypto_forecaster - INFO - Prepared features with shape: (29, 14)
+2025-03-01 12:13:54,269 - Code.data_processing.crypto_forecaster - INFO - Model evaluation for ETHUSDT:
+2025-03-01 12:13:54,269 - Code.data_processing.crypto_forecaster - INFO - MAE: 154.2194
+2025-03-01 12:13:54,269 - Code.data_processing.crypto_forecaster - INFO - RMSE: 181.4050
+2025-03-01 12:13:54,269 - Code.data_processing.crypto_forecaster - INFO - R²: -1.2009
+2025-03-01 12:13:54,456 - Code.data_processing.crypto_forecaster - INFO - Model for ETHUSDT trained and saved successfully
+2025-03-01 12:13:54,735 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:13:55,016 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:13:55,653 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:13:55,794 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:13:55,799 - Code.data_processing.crypto_forecaster - INFO - Fetched 30 market data points for ETHUSDT
+2025-03-01 12:13:56,078 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:13:56,357 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:13:57,063 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:13:57,204 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:13:57,212 - Code.data_processing.crypto_forecaster - ERROR - Error fetching sentiment data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "get vector input from modules provider: VectorFromInput was called without vectorizer"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"get vector input from modules provider: VectorFromInput was called without vectorizer", grpc_status:2, created_time:"2025-03-01T11:13:57.2071378+00:00"}"
+>.
+2025-03-01 12:13:57,217 - Code.data_processing.crypto_forecaster - INFO - Prepared features with shape: (29, 14)
+2025-03-01 12:13:57,255 - Code.data_processing.crypto_forecaster - INFO - Generated 7 day predictions for ETHUSDT
+2025-03-01 12:13:57,626 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:13:57,921 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:13:58,609 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:13:58,750 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:13:58,754 - Code.data_processing.crypto_forecaster - INFO - Fetched 30 market data points for ETHUSDT
+2025-03-01 12:13:58,871 - Code.data_processing.crypto_forecaster - INFO - Prediction plot saved to data\models\ETHUSDT_forecast.png
+2025-03-01 12:13:58,871 - __main__ - INFO - Forecast for ETHUSDT completed successfully
+2025-03-01 12:13:58,871 - __main__ - INFO - Generating forecast for SOLUSDT...
+2025-03-01 12:13:58,871 - Code.data_processing.crypto_forecaster - INFO - Training model for SOLUSDT
+2025-03-01 12:13:59,151 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:13:59,432 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:14:00,086 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:14:00,358 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:14:00,362 - Code.data_processing.crypto_forecaster - INFO - Fetched 30 market data points for SOLUSDT
+2025-03-01 12:14:00,646 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:14:00,924 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:14:01,564 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:14:01,707 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:14:01,716 - Code.data_processing.crypto_forecaster - ERROR - Error fetching sentiment data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "get vector input from modules provider: VectorFromInput was called without vectorizer"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"get vector input from modules provider: VectorFromInput was called without vectorizer", grpc_status:2, created_time:"2025-03-01T11:14:01.7095226+00:00"}"
+>.
+2025-03-01 12:14:01,720 - Code.data_processing.crypto_forecaster - INFO - Prepared features with shape: (29, 14)
+2025-03-01 12:14:01,794 - Code.data_processing.crypto_forecaster - INFO - Model evaluation for SOLUSDT:
+2025-03-01 12:14:01,794 - Code.data_processing.crypto_forecaster - INFO - MAE: 5.7639
+2025-03-01 12:14:01,794 - Code.data_processing.crypto_forecaster - INFO - RMSE: 6.9892
+2025-03-01 12:14:01,794 - Code.data_processing.crypto_forecaster - INFO - R²: -0.3284
+2025-03-01 12:14:01,971 - Code.data_processing.crypto_forecaster - INFO - Model for SOLUSDT trained and saved successfully
+2025-03-01 12:14:02,250 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:14:02,534 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:14:03,176 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:14:03,317 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:14:03,321 - Code.data_processing.crypto_forecaster - INFO - Fetched 30 market data points for SOLUSDT
+2025-03-01 12:14:03,604 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:14:03,882 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:14:04,587 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:14:04,861 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:14:04,870 - Code.data_processing.crypto_forecaster - ERROR - Error fetching sentiment data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "get vector input from modules provider: VectorFromInput was called without vectorizer"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"get vector input from modules provider: VectorFromInput was called without vectorizer", grpc_status:2, created_time:"2025-03-01T11:14:04.8631364+00:00"}"
+>.
+2025-03-01 12:14:04,874 - Code.data_processing.crypto_forecaster - INFO - Prepared features with shape: (29, 14)
+2025-03-01 12:14:04,911 - Code.data_processing.crypto_forecaster - INFO - Generated 7 day predictions for SOLUSDT
+2025-03-01 12:14:05,274 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:14:05,550 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:14:06,200 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:14:06,406 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:14:06,410 - Code.data_processing.crypto_forecaster - INFO - Fetched 30 market data points for SOLUSDT
+2025-03-01 12:14:06,529 - Code.data_processing.crypto_forecaster - INFO - Prediction plot saved to data\models\SOLUSDT_forecast.png
+2025-03-01 12:14:06,529 - __main__ - INFO - Forecast for SOLUSDT completed successfully
+2025-03-01 12:14:06,529 - __main__ - INFO - Generating forecast for BNBUSDT...
+2025-03-01 12:14:06,529 - Code.data_processing.crypto_forecaster - INFO - Training model for BNBUSDT
+2025-03-01 12:14:06,819 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:14:07,103 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:14:07,746 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:14:07,885 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:14:07,891 - Code.data_processing.crypto_forecaster - INFO - Fetched 30 market data points for BNBUSDT
+2025-03-01 12:14:08,174 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:14:08,460 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:14:09,156 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:14:09,430 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:14:09,438 - Code.data_processing.crypto_forecaster - ERROR - Error fetching sentiment data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "get vector input from modules provider: VectorFromInput was called without vectorizer"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"get vector input from modules provider: VectorFromInput was called without vectorizer", grpc_status:2, created_time:"2025-03-01T11:14:09.4323308+00:00"}"
+>.
+2025-03-01 12:14:09,442 - Code.data_processing.crypto_forecaster - INFO - Prepared features with shape: (29, 14)
+2025-03-01 12:14:09,519 - Code.data_processing.crypto_forecaster - INFO - Model evaluation for BNBUSDT:
+2025-03-01 12:14:09,519 - Code.data_processing.crypto_forecaster - INFO - MAE: 25.2839
+2025-03-01 12:14:09,519 - Code.data_processing.crypto_forecaster - INFO - RMSE: 33.4892
+2025-03-01 12:14:09,519 - Code.data_processing.crypto_forecaster - INFO - R²: -1.4041
+2025-03-01 12:14:09,702 - Code.data_processing.crypto_forecaster - INFO - Model for BNBUSDT trained and saved successfully
+2025-03-01 12:14:09,981 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:14:10,268 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:14:10,903 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:14:11,044 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:14:11,048 - Code.data_processing.crypto_forecaster - INFO - Fetched 30 market data points for BNBUSDT
+2025-03-01 12:14:11,332 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:14:11,616 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:14:12,314 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:14:12,454 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:14:12,464 - Code.data_processing.crypto_forecaster - ERROR - Error fetching sentiment data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "get vector input from modules provider: VectorFromInput was called without vectorizer"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"get vector input from modules provider: VectorFromInput was called without vectorizer", grpc_status:2, created_time:"2025-03-01T11:14:12.4578241+00:00"}"
+>.
+2025-03-01 12:14:12,468 - Code.data_processing.crypto_forecaster - INFO - Prepared features with shape: (29, 14)
+2025-03-01 12:14:12,505 - Code.data_processing.crypto_forecaster - INFO - Generated 7 day predictions for BNBUSDT
+2025-03-01 12:14:12,881 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:14:13,173 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:14:13,860 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:14:14,001 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:14:14,004 - Code.data_processing.crypto_forecaster - INFO - Fetched 30 market data points for BNBUSDT
+2025-03-01 12:14:14,216 - Code.data_processing.crypto_forecaster - INFO - Prediction plot saved to data\models\BNBUSDT_forecast.png
+2025-03-01 12:14:14,216 - __main__ - INFO - Forecast for BNBUSDT completed successfully
+2025-03-01 12:14:14,216 - __main__ - INFO - Generating forecast for ADAUSDT...
+2025-03-01 12:14:14,216 - Code.data_processing.crypto_forecaster - INFO - Training model for ADAUSDT
+2025-03-01 12:14:14,497 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:14:14,775 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:14:15,674 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:14:15,947 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:14:15,952 - Code.data_processing.crypto_forecaster - INFO - Fetched 30 market data points for ADAUSDT
+2025-03-01 12:14:16,236 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:14:16,512 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:14:17,152 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:14:17,294 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:14:17,303 - Code.data_processing.crypto_forecaster - ERROR - Error fetching sentiment data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "get vector input from modules provider: VectorFromInput was called without vectorizer"
+	debug_error_string = "UNKNOWN:Error received from peer  {created_time:"2025-03-01T11:14:17.2968982+00:00", grpc_status:2, grpc_message:"get vector input from modules provider: VectorFromInput was called without vectorizer"}"
+>.
+2025-03-01 12:14:17,307 - Code.data_processing.crypto_forecaster - INFO - Prepared features with shape: (29, 14)
+2025-03-01 12:14:17,380 - Code.data_processing.crypto_forecaster - INFO - Model evaluation for ADAUSDT:
+2025-03-01 12:14:17,380 - Code.data_processing.crypto_forecaster - INFO - MAE: 0.0200
+2025-03-01 12:14:17,380 - Code.data_processing.crypto_forecaster - INFO - RMSE: 0.0256
+2025-03-01 12:14:17,380 - Code.data_processing.crypto_forecaster - INFO - R²: -1.8493
+2025-03-01 12:14:17,564 - Code.data_processing.crypto_forecaster - INFO - Model for ADAUSDT trained and saved successfully
+2025-03-01 12:14:17,843 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:14:18,128 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:14:18,765 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:14:18,906 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:14:18,910 - Code.data_processing.crypto_forecaster - INFO - Fetched 30 market data points for ADAUSDT
+2025-03-01 12:14:19,193 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:14:19,479 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:14:20,176 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:14:20,466 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:14:20,475 - Code.data_processing.crypto_forecaster - ERROR - Error fetching sentiment data: Query call with protocol GRPC search failed with message <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "get vector input from modules provider: VectorFromInput was called without vectorizer"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"get vector input from modules provider: VectorFromInput was called without vectorizer", grpc_status:2, created_time:"2025-03-01T11:14:20.468989+00:00"}"
+>.
+2025-03-01 12:14:20,479 - Code.data_processing.crypto_forecaster - INFO - Prepared features with shape: (29, 14)
+2025-03-01 12:14:20,518 - Code.data_processing.crypto_forecaster - INFO - Generated 7 day predictions for ADAUSDT
+2025-03-01 12:14:20,877 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:14:21,156 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:14:21,857 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:14:22,130 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:14:22,134 - Code.data_processing.crypto_forecaster - INFO - Fetched 30 market data points for ADAUSDT
+2025-03-01 12:14:22,255 - Code.data_processing.crypto_forecaster - INFO - Prediction plot saved to data\models\ADAUSDT_forecast.png
+2025-03-01 12:14:22,256 - __main__ - INFO - Forecast for ADAUSDT completed successfully
+2025-03-01 12:14:22,256 - __main__ - INFO - Forecast updates completed for 5 symbols

@@ -391,16 +391,16 @@ Is Weaviate running and reachable at http://localhost:9090?
 2025-03-01 11:50:38,706 - __main__ - INFO - Starting news scraping...
 2025-03-01 11:50:38,706 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Scraping from CoinDesk...
 2025-03-01 11:50:45,419 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Scraping from Cointelegraph...
-2025-03-01 11:50:52,868 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Scraped new article: What is Bitcoin price going to do next? — Bear trap, bottom, or oversold bounce?
-2025-03-01 11:50:54,875 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoin spot and margin longs push BTC to $85K, but the bottom isn’t in yet
+2025-03-01 11:50:52,868 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Scraped new article: What is Bitcoin price going to do next? ï¿½ Bear trap, bottom, or oversold bounce?
+2025-03-01 11:50:54,875 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoin spot and margin longs push BTC to $85K, but the bottom isnï¿½t in yet
 2025-03-01 11:50:54,877 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: States likely to adopt Bitcoin reserves first: Report
-2025-03-01 11:50:54,878 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Here’s what happened in crypto today
-2025-03-01 11:50:54,880 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoin’s ‘Trump trade’ is over — Traders shift hope to Fed rate cuts, expanding global liquidity
-2025-03-01 11:50:54,881 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Competitors want to ‘kill Tether,’ most altcoins ‘won’t make it’ in 2025: Finance Redefined
-2025-03-01 11:50:54,883 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoin rebounds to $84K — Analysts say BTC crash was ultimate buy signal
+2025-03-01 11:50:54,878 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Hereï¿½s what happened in crypto today
+2025-03-01 11:50:54,880 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoinï¿½s ï¿½Trump tradeï¿½ is over ï¿½ Traders shift hope to Fed rate cuts, expanding global liquidity
+2025-03-01 11:50:54,881 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Competitors want to ï¿½kill Tether,ï¿½ most altcoins ï¿½wonï¿½t make itï¿½ in 2025: Finance Redefined
+2025-03-01 11:50:54,883 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoin rebounds to $84K ï¿½ Analysts say BTC crash was ultimate buy signal
 2025-03-01 11:50:54,886 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Price analysis 2/28: BTC, ETH, XRP, BNB, SOL, DOGE, ADA, LTC, LINK, AVAX
-2025-03-01 11:50:54,887 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoin crash triggered by erosion of ETF cash and carry trade — Analyst
-2025-03-01 11:50:54,890 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoin price metric hits ‘optimal DCA’ zone not seen since BTC traded in $50K to $70K range
+2025-03-01 11:50:54,887 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoin crash triggered by erosion of ETF cash and carry trade ï¿½ Analyst
+2025-03-01 11:50:54,890 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoin price metric hits ï¿½optimal DCAï¿½ zone not seen since BTC traded in $50K to $70K range
 2025-03-01 11:50:59,894 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Saved 10 articles to data\crypto_news.csv
 2025-03-01 11:50:59,895 - __main__ - INFO - News scraping completed. Scraped 10 articles.
 2025-03-01 11:50:59,895 - __main__ - INFO - Starting scheduled sentiment analysis
@@ -670,15 +670,15 @@ invalid date property 'date' on class 'CryptoNewsSentiment': requires a string w
 2025-03-01 11:59:32,083 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Scraping from CoinDesk...
 2025-03-01 11:59:38,639 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Scraping from Cointelegraph...
 2025-03-01 11:59:42,017 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Scraped new article: Trump to host first White House crypto summit on March 7
-2025-03-01 11:59:44,022 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: What is Bitcoin price going to do next? — Bear trap, bottom, or oversold bounce?
-2025-03-01 11:59:44,024 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoin spot and margin longs push BTC to $85K, but the bottom isn’t in yet
+2025-03-01 11:59:44,022 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: What is Bitcoin price going to do next? ï¿½ Bear trap, bottom, or oversold bounce?
+2025-03-01 11:59:44,024 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoin spot and margin longs push BTC to $85K, but the bottom isnï¿½t in yet
 2025-03-01 11:59:44,026 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: States likely to adopt Bitcoin reserves first: Report
-2025-03-01 11:59:44,027 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Here’s what happened in crypto today
-2025-03-01 11:59:44,029 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoin’s ‘Trump trade’ is over — Traders shift hope to Fed rate cuts, expanding global liquidity
-2025-03-01 11:59:44,030 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Competitors want to ‘kill Tether,’ most altcoins ‘won’t make it’ in 2025: Finance Redefined
-2025-03-01 11:59:44,032 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoin rebounds to $84K — Analysts say BTC crash was ultimate buy signal
+2025-03-01 11:59:44,027 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Hereï¿½s what happened in crypto today
+2025-03-01 11:59:44,029 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoinï¿½s ï¿½Trump tradeï¿½ is over ï¿½ Traders shift hope to Fed rate cuts, expanding global liquidity
+2025-03-01 11:59:44,030 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Competitors want to ï¿½kill Tether,ï¿½ most altcoins ï¿½wonï¿½t make itï¿½ in 2025: Finance Redefined
+2025-03-01 11:59:44,032 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoin rebounds to $84K ï¿½ Analysts say BTC crash was ultimate buy signal
 2025-03-01 11:59:44,034 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Price analysis 2/28: BTC, ETH, XRP, BNB, SOL, DOGE, ADA, LTC, LINK, AVAX
-2025-03-01 11:59:44,035 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoin crash triggered by erosion of ETF cash and carry trade — Analyst
+2025-03-01 11:59:44,035 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoin crash triggered by erosion of ETF cash and carry trade ï¿½ Analyst
 2025-03-01 11:59:49,039 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Saved 10 articles to data\crypto_news.csv
 2025-03-01 11:59:49,039 - __main__ - INFO - News scraping completed. Scraped 10 articles.
 2025-03-01 11:59:49,039 - __main__ - INFO - Starting scheduled sentiment analysis
@@ -948,15 +948,15 @@ invalid date property 'date' on class 'CryptoNewsSentiment': requires a string w
 2025-03-01 12:13:27,091 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Scraping from CoinDesk...
 2025-03-01 12:13:34,021 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Scraping from Cointelegraph...
 2025-03-01 12:13:35,725 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Trump to host first White House crypto summit on March 7
-2025-03-01 12:13:35,727 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: What is Bitcoin price going to do next? — Bear trap, bottom, or oversold bounce?
-2025-03-01 12:13:35,729 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoin spot and margin longs push BTC to $85K, but the bottom isn’t in yet
+2025-03-01 12:13:35,727 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: What is Bitcoin price going to do next? ï¿½ Bear trap, bottom, or oversold bounce?
+2025-03-01 12:13:35,729 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoin spot and margin longs push BTC to $85K, but the bottom isnï¿½t in yet
 2025-03-01 12:13:35,729 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: States likely to adopt Bitcoin reserves first: Report
-2025-03-01 12:13:35,731 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Here’s what happened in crypto today
-2025-03-01 12:13:35,733 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoin’s ‘Trump trade’ is over — Traders shift hope to Fed rate cuts, expanding global liquidity
-2025-03-01 12:13:35,734 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Competitors want to ‘kill Tether,’ most altcoins ‘won’t make it’ in 2025: Finance Redefined
-2025-03-01 12:13:35,736 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoin rebounds to $84K — Analysts say BTC crash was ultimate buy signal
+2025-03-01 12:13:35,731 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Hereï¿½s what happened in crypto today
+2025-03-01 12:13:35,733 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoinï¿½s ï¿½Trump tradeï¿½ is over ï¿½ Traders shift hope to Fed rate cuts, expanding global liquidity
+2025-03-01 12:13:35,734 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Competitors want to ï¿½kill Tether,ï¿½ most altcoins ï¿½wonï¿½t make itï¿½ in 2025: Finance Redefined
+2025-03-01 12:13:35,736 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoin rebounds to $84K ï¿½ Analysts say BTC crash was ultimate buy signal
 2025-03-01 12:13:35,738 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Price analysis 2/28: BTC, ETH, XRP, BNB, SOL, DOGE, ADA, LTC, LINK, AVAX
-2025-03-01 12:13:35,740 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoin crash triggered by erosion of ETF cash and carry trade — Analyst
+2025-03-01 12:13:35,740 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoin crash triggered by erosion of ETF cash and carry trade ï¿½ Analyst
 2025-03-01 12:13:40,743 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Saved 10 articles to data\crypto_news.csv
 2025-03-01 12:13:40,744 - __main__ - INFO - News scraping completed. Scraped 10 articles.
 2025-03-01 12:13:40,744 - __main__ - INFO - Starting scheduled sentiment analysis
@@ -995,7 +995,7 @@ invalid date property 'date' on class 'CryptoNewsSentiment': requires a string w
 2025-03-01 12:13:45,078 - Code.data_processing.crypto_forecaster - INFO - Model evaluation for BTCUSDT:
 2025-03-01 12:13:45,078 - Code.data_processing.crypto_forecaster - INFO - MAE: 2537.9032
 2025-03-01 12:13:45,078 - Code.data_processing.crypto_forecaster - INFO - RMSE: 2762.4824
-2025-03-01 12:13:45,079 - Code.data_processing.crypto_forecaster - INFO - R²: -5.2016
+2025-03-01 12:13:45,079 - Code.data_processing.crypto_forecaster - INFO - Rï¿½: -5.2016
 2025-03-01 12:13:46,646 - Code.data_processing.crypto_forecaster - INFO - Model for BTCUSDT trained and saved successfully
 2025-03-01 12:13:46,933 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
 2025-03-01 12:13:47,222 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
@@ -1040,7 +1040,7 @@ invalid date property 'date' on class 'CryptoNewsSentiment': requires a string w
 2025-03-01 12:13:54,269 - Code.data_processing.crypto_forecaster - INFO - Model evaluation for ETHUSDT:
 2025-03-01 12:13:54,269 - Code.data_processing.crypto_forecaster - INFO - MAE: 154.2194
 2025-03-01 12:13:54,269 - Code.data_processing.crypto_forecaster - INFO - RMSE: 181.4050
-2025-03-01 12:13:54,269 - Code.data_processing.crypto_forecaster - INFO - R²: -1.2009
+2025-03-01 12:13:54,269 - Code.data_processing.crypto_forecaster - INFO - Rï¿½: -1.2009
 2025-03-01 12:13:54,456 - Code.data_processing.crypto_forecaster - INFO - Model for ETHUSDT trained and saved successfully
 2025-03-01 12:13:54,735 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
 2025-03-01 12:13:55,016 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
@@ -1085,7 +1085,7 @@ invalid date property 'date' on class 'CryptoNewsSentiment': requires a string w
 2025-03-01 12:14:01,794 - Code.data_processing.crypto_forecaster - INFO - Model evaluation for SOLUSDT:
 2025-03-01 12:14:01,794 - Code.data_processing.crypto_forecaster - INFO - MAE: 5.7639
 2025-03-01 12:14:01,794 - Code.data_processing.crypto_forecaster - INFO - RMSE: 6.9892
-2025-03-01 12:14:01,794 - Code.data_processing.crypto_forecaster - INFO - R²: -0.3284
+2025-03-01 12:14:01,794 - Code.data_processing.crypto_forecaster - INFO - Rï¿½: -0.3284
 2025-03-01 12:14:01,971 - Code.data_processing.crypto_forecaster - INFO - Model for SOLUSDT trained and saved successfully
 2025-03-01 12:14:02,250 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
 2025-03-01 12:14:02,534 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
@@ -1130,7 +1130,7 @@ invalid date property 'date' on class 'CryptoNewsSentiment': requires a string w
 2025-03-01 12:14:09,519 - Code.data_processing.crypto_forecaster - INFO - Model evaluation for BNBUSDT:
 2025-03-01 12:14:09,519 - Code.data_processing.crypto_forecaster - INFO - MAE: 25.2839
 2025-03-01 12:14:09,519 - Code.data_processing.crypto_forecaster - INFO - RMSE: 33.4892
-2025-03-01 12:14:09,519 - Code.data_processing.crypto_forecaster - INFO - R²: -1.4041
+2025-03-01 12:14:09,519 - Code.data_processing.crypto_forecaster - INFO - Rï¿½: -1.4041
 2025-03-01 12:14:09,702 - Code.data_processing.crypto_forecaster - INFO - Model for BNBUSDT trained and saved successfully
 2025-03-01 12:14:09,981 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
 2025-03-01 12:14:10,268 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
@@ -1175,7 +1175,7 @@ invalid date property 'date' on class 'CryptoNewsSentiment': requires a string w
 2025-03-01 12:14:17,380 - Code.data_processing.crypto_forecaster - INFO - Model evaluation for ADAUSDT:
 2025-03-01 12:14:17,380 - Code.data_processing.crypto_forecaster - INFO - MAE: 0.0200
 2025-03-01 12:14:17,380 - Code.data_processing.crypto_forecaster - INFO - RMSE: 0.0256
-2025-03-01 12:14:17,380 - Code.data_processing.crypto_forecaster - INFO - R²: -1.8493
+2025-03-01 12:14:17,380 - Code.data_processing.crypto_forecaster - INFO - Rï¿½: -1.8493
 2025-03-01 12:14:17,564 - Code.data_processing.crypto_forecaster - INFO - Model for ADAUSDT trained and saved successfully
 2025-03-01 12:14:17,843 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
 2025-03-01 12:14:18,128 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
@@ -1201,3 +1201,174 @@ invalid date property 'date' on class 'CryptoNewsSentiment': requires a string w
 2025-03-01 12:14:22,255 - Code.data_processing.crypto_forecaster - INFO - Prediction plot saved to data\models\ADAUSDT_forecast.png
 2025-03-01 12:14:22,256 - __main__ - INFO - Forecast for ADAUSDT completed successfully
 2025-03-01 12:14:22,256 - __main__ - INFO - Forecast updates completed for 5 symbols
+2025-03-01 12:29:32,062 - __main__ - INFO - LangChain successfully imported
+2025-03-01 12:29:32,063 - __main__ - INFO - Initializing Agentic RAG System...
+2025-03-01 12:29:32,965 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:29:33,249 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:29:33,897 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:29:34,038 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:29:34,165 - Code.data_acquisition.blockchain_collectors.news_scraper - WARNING - newspaper3k library not available. Installing or using fallback extraction.
+2025-03-01 12:29:35,152 - Code.data_processing.sentiment_analyzer - INFO - Using TextBlob for sentiment analysis
+2025-03-01 12:29:35,520 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - News cache directory: C:\Users\PRO-ART\Desktop\Projet\Sample_Data\data_ingestion\news_cache
+2025-03-01 12:29:35,520 - Code.data_processing.sentiment_analyzer - INFO - Initializing sentiment analyzer with TextBlob
+2025-03-01 12:29:35,520 - __main__ - INFO - Agentic RAG System initialized successfully
+2025-03-01 12:29:35,521 - __main__ - INFO - Starting background services
+2025-03-01 12:29:35,521 - __main__ - INFO - Starting scheduled news scraping
+2025-03-01 12:29:35,521 - __main__ - INFO - Starting news scraping...
+2025-03-01 12:29:35,522 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Scraping from CoinDesk...
+2025-03-01 12:29:42,836 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Scraping from Cointelegraph...
+2025-03-01 12:29:44,540 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Trump to host first White House crypto summit on March 7
+2025-03-01 12:29:44,542 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: What is Bitcoin price going to do next? ï¿½ Bear trap, bottom, or oversold bounce?
+2025-03-01 12:29:44,543 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoin spot and margin longs push BTC to $85K, but the bottom isnï¿½t in yet
+2025-03-01 12:29:44,545 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: States likely to adopt Bitcoin reserves first: Report
+2025-03-01 12:29:44,547 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Hereï¿½s what happened in crypto today
+2025-03-01 12:29:44,548 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoinï¿½s ï¿½Trump tradeï¿½ is over ï¿½ Traders shift hope to Fed rate cuts, expanding global liquidity
+2025-03-01 12:29:44,550 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Competitors want to ï¿½kill Tether,ï¿½ most altcoins ï¿½wonï¿½t make itï¿½ in 2025: Finance Redefined
+2025-03-01 12:29:44,553 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoin rebounds to $84K ï¿½ Analysts say BTC crash was ultimate buy signal
+2025-03-01 12:29:44,554 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Price analysis 2/28: BTC, ETH, XRP, BNB, SOL, DOGE, ADA, LTC, LINK, AVAX
+2025-03-01 12:29:44,556 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoin crash triggered by erosion of ETF cash and carry trade ï¿½ Analyst
+2025-03-01 12:29:49,560 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Saved 10 articles to data\crypto_news.csv
+2025-03-01 12:29:49,560 - __main__ - INFO - News scraping completed. Scraped 10 articles.
+2025-03-01 12:29:49,560 - __main__ - INFO - Starting scheduled sentiment analysis
+2025-03-01 12:29:49,560 - __main__ - INFO - Starting sentiment analysis...
+2025-03-01 12:29:49,571 - Code.data_processing.sentiment_analyzer - INFO - Loaded 10 articles from data\crypto_news.csv
+2025-03-01 12:29:49,571 - Code.data_processing.sentiment_analyzer - INFO - Analyzing sentiment for 10 articles
+2025-03-01 12:29:49,612 - Code.data_processing.sentiment_analyzer - INFO - Processed 10 articles
+2025-03-01 12:29:49,614 - Code.data_processing.sentiment_analyzer - INFO - Saved sentiment analysis results to C:\Users\PRO-ART\Desktop\Projet\Sample_Data\data_ingestion\processed\sentiment_analysis_20250301.csv
+2025-03-01 12:29:49,894 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:29:50,179 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:29:50,894 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:29:51,037 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:29:51,038 - Sample_Data.vector_store.market_sentiment_schema - INFO - CryptoNewsSentiment collection already exists
+2025-03-01 12:29:51,095 - Code.data_processing.sentiment_analyzer - INFO - Stored 10 articles in Weaviate
+2025-03-01 12:29:51,095 - Code.data_processing.sentiment_analyzer - INFO - Successfully stored 10 articles with sentiment analysis in Weaviate
+2025-03-01 12:29:51,096 - __main__ - INFO - Sentiment analysis completed. Analyzed 10 articles.
+2025-03-01 12:29:51,097 - __main__ - INFO - Starting scheduled forecast updates
+2025-03-01 12:29:51,097 - __main__ - INFO - Updating price forecasts...
+2025-03-01 12:29:51,097 - __main__ - INFO - Generating forecast for BTCUSDT...
+2025-03-01 12:29:51,097 - Code.data_processing.crypto_forecaster - INFO - Training model for BTCUSDT
+2025-03-01 12:29:51,380 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:29:51,676 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:29:52,372 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:29:52,514 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:29:52,522 - Code.data_processing.crypto_forecaster - INFO - Fetched 30 market data points for BTCUSDT
+2025-03-01 12:29:52,807 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:29:53,092 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:29:53,785 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:29:54,124 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:29:54,129 - Code.data_processing.crypto_forecaster - INFO - Fetched 18 sentiment data points for BTCUSDT
+2025-03-01 12:29:54,142 - Code.data_processing.crypto_forecaster - INFO - Prepared features with shape: (29, 24)
+2025-03-01 12:29:58,191 - Code.data_processing.crypto_forecaster - INFO - Best parameters: {'max_depth': None, 'min_samples_leaf': 2, 'min_samples_split': 5, 'n_estimators': 100}
+2025-03-01 12:29:58,198 - Code.data_processing.crypto_forecaster - INFO - Model evaluation for BTCUSDT:
+2025-03-01 12:29:58,198 - Code.data_processing.crypto_forecaster - INFO - MAE: 463.2661
+2025-03-01 12:29:58,199 - Code.data_processing.crypto_forecaster - INFO - RMSE: 757.9817
+2025-03-01 12:29:58,199 - Code.data_processing.crypto_forecaster - INFO - Rï¿½: 0.3653
+2025-03-01 12:29:58,444 - Code.data_processing.crypto_forecaster - INFO - Model for BTCUSDT trained and saved successfully
+2025-03-01 12:29:58,732 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:29:59,018 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:29:59,694 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:29:59,836 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:29:59,841 - Code.data_processing.crypto_forecaster - INFO - Fetched 30 market data points for BTCUSDT
+2025-03-01 12:30:00,132 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:30:00,424 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:30:01,105 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:30:01,316 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:30:01,320 - Code.data_processing.crypto_forecaster - INFO - Fetched 18 sentiment data points for BTCUSDT
+2025-03-01 12:30:01,336 - Code.data_processing.crypto_forecaster - INFO - Prepared features with shape: (29, 24)
+2025-03-01 12:30:01,399 - Code.data_processing.crypto_forecaster - INFO - Generated 7 day predictions for BTCUSDT
+2025-03-01 12:30:01,761 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:30:02,044 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:30:02,718 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:30:02,991 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:30:02,996 - Code.data_processing.crypto_forecaster - INFO - Fetched 14 market data points for BTCUSDT
+2025-03-01 12:30:03,137 - Code.data_processing.crypto_forecaster - INFO - Prediction plot saved to data\models\BTCUSDT_forecast.png
+2025-03-01 12:30:03,137 - __main__ - INFO - Forecast for BTCUSDT completed successfully
+2025-03-01 12:30:03,137 - __main__ - INFO - Generating forecast for ETHUSDT...
+2025-03-01 12:30:03,137 - Code.data_processing.crypto_forecaster - INFO - Training model for ETHUSDT
+2025-03-01 12:30:03,418 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:30:03,697 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:30:04,398 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:32:04,160 - agentic_rag - INFO - LangChain successfully imported
+2025-03-01 12:32:04,161 - agentic_rag - INFO - Initializing Agentic RAG System...
+2025-03-01 12:32:04,997 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:32:05,279 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:32:06,009 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:32:06,347 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:32:06,467 - Code.data_acquisition.blockchain_collectors.news_scraper - WARNING - newspaper3k library not available. Installing or using fallback extraction.
+2025-03-01 12:32:07,457 - Code.data_processing.sentiment_analyzer - INFO - Using TextBlob for sentiment analysis
+2025-03-01 12:32:07,833 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - News cache directory: C:\Users\PRO-ART\Desktop\Projet\Sample_Data\data_ingestion\news_cache
+2025-03-01 12:32:07,833 - Code.data_processing.sentiment_analyzer - INFO - Initializing sentiment analyzer with TextBlob
+2025-03-01 12:32:07,835 - agentic_rag - INFO - Agentic RAG System initialized successfully
+2025-03-01 12:32:07,835 - agentic_rag - INFO - Starting news scraping...
+2025-03-01 12:32:07,835 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Scraping from CoinDesk...
+2025-03-01 12:32:14,139 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Scraping from Cointelegraph...
+2025-03-01 12:32:15,841 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Trump to host first White House crypto summit on March 7
+2025-03-01 12:32:15,842 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: What is Bitcoin price going to do next? ï¿½ Bear trap, bottom, or oversold bounce?
+2025-03-01 12:32:15,844 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoin spot and margin longs push BTC to $85K, but the bottom isnï¿½t in yet
+2025-03-01 12:32:15,845 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: States likely to adopt Bitcoin reserves first: Report
+2025-03-01 12:32:15,847 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Hereï¿½s what happened in crypto today
+2025-03-01 12:32:15,848 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoinï¿½s ï¿½Trump tradeï¿½ is over ï¿½ Traders shift hope to Fed rate cuts, expanding global liquidity
+2025-03-01 12:32:15,850 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Competitors want to ï¿½kill Tether,ï¿½ most altcoins ï¿½wonï¿½t make itï¿½ in 2025: Finance Redefined
+2025-03-01 12:32:15,851 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoin rebounds to $84K ï¿½ Analysts say BTC crash was ultimate buy signal
+2025-03-01 12:32:15,853 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Price analysis 2/28: BTC, ETH, XRP, BNB, SOL, DOGE, ADA, LTC, LINK, AVAX
+2025-03-01 12:32:15,855 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Retrieved cached article: Bitcoin crash triggered by erosion of ETF cash and carry trade ï¿½ Analyst
+2025-03-01 12:32:20,858 - Code.data_acquisition.blockchain_collectors.news_scraper - INFO - Saved 10 articles to data\crypto_news.csv
+2025-03-01 12:32:20,859 - agentic_rag - INFO - News scraping completed. Scraped 10 articles.
+2025-03-01 12:32:20,859 - agentic_rag - INFO - Starting sentiment analysis...
+2025-03-01 12:32:20,869 - Code.data_processing.sentiment_analyzer - INFO - Loaded 10 articles from data\crypto_news.csv
+2025-03-01 12:32:20,870 - Code.data_processing.sentiment_analyzer - INFO - Analyzing sentiment for 10 articles
+2025-03-01 12:32:20,911 - Code.data_processing.sentiment_analyzer - INFO - Processed 10 articles
+2025-03-01 12:32:20,913 - Code.data_processing.sentiment_analyzer - INFO - Saved sentiment analysis results to C:\Users\PRO-ART\Desktop\Projet\Sample_Data\data_ingestion\processed\sentiment_analysis_20250301.csv
+2025-03-01 12:32:21,200 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:32:21,485 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:32:22,196 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:32:22,336 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:32:22,337 - Sample_Data.vector_store.market_sentiment_schema - INFO - CryptoNewsSentiment collection already exists
+2025-03-01 12:32:22,399 - Code.data_processing.sentiment_analyzer - INFO - Stored 10 articles in Weaviate
+2025-03-01 12:32:22,399 - Code.data_processing.sentiment_analyzer - INFO - Successfully stored 10 articles with sentiment analysis in Weaviate
+2025-03-01 12:32:22,400 - agentic_rag - INFO - Sentiment analysis completed. Analyzed 10 articles.
+2025-03-01 12:32:22,400 - agentic_rag - INFO - Updating price forecasts...
+2025-03-01 12:32:22,400 - agentic_rag - INFO - Generating forecast for BTCUSDT...
+2025-03-01 12:32:22,400 - Code.data_processing.crypto_forecaster - INFO - Training model for BTCUSDT
+2025-03-01 12:32:22,683 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:32:22,964 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:32:23,606 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:32:23,750 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:32:23,757 - Code.data_processing.crypto_forecaster - INFO - Fetched 30 market data points for BTCUSDT
+2025-03-01 12:32:24,045 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:32:24,350 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:32:25,218 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:32:25,491 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:32:25,497 - Code.data_processing.crypto_forecaster - INFO - Fetched 27 sentiment data points for BTCUSDT
+2025-03-01 12:32:25,507 - Code.data_processing.crypto_forecaster - INFO - Prepared features with shape: (29, 24)
+2025-03-01 12:32:29,355 - Code.data_processing.crypto_forecaster - INFO - Best parameters: {'max_depth': None, 'min_samples_leaf': 2, 'min_samples_split': 5, 'n_estimators': 100}
+2025-03-01 12:32:29,365 - Code.data_processing.crypto_forecaster - INFO - Model evaluation for BTCUSDT:
+2025-03-01 12:32:29,365 - Code.data_processing.crypto_forecaster - INFO - MAE: 463.2661
+2025-03-01 12:32:29,366 - Code.data_processing.crypto_forecaster - INFO - RMSE: 757.9817
+2025-03-01 12:32:29,366 - Code.data_processing.crypto_forecaster - INFO - Rï¿½: 0.3653
+2025-03-01 12:32:29,594 - Code.data_processing.crypto_forecaster - INFO - Model for BTCUSDT trained and saved successfully
+2025-03-01 12:32:29,882 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:32:30,164 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:32:30,865 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:32:31,138 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:32:31,143 - Code.data_processing.crypto_forecaster - INFO - Fetched 30 market data points for BTCUSDT
+2025-03-01 12:32:31,435 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:32:31,722 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:32:32,408 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:32:32,550 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:32:32,555 - Code.data_processing.crypto_forecaster - INFO - Fetched 27 sentiment data points for BTCUSDT
+2025-03-01 12:32:32,567 - Code.data_processing.crypto_forecaster - INFO - Prepared features with shape: (29, 24)
+2025-03-01 12:32:32,640 - Code.data_processing.crypto_forecaster - INFO - Generated 7 day predictions for BTCUSDT
+2025-03-01 12:32:33,006 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:32:33,293 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:32:33,953 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+2025-03-01 12:32:34,227 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/live "HTTP/1.1 200 OK"
+2025-03-01 12:32:34,231 - Code.data_processing.crypto_forecaster - INFO - Fetched 14 market data points for BTCUSDT
+2025-03-01 12:32:34,379 - Code.data_processing.crypto_forecaster - INFO - Prediction plot saved to data\models\BTCUSDT_forecast.png
+2025-03-01 12:32:34,379 - agentic_rag - INFO - Forecast for BTCUSDT completed successfully
+2025-03-01 12:32:34,379 - agentic_rag - INFO - Generating forecast for ETHUSDT...
+2025-03-01 12:32:34,379 - Code.data_processing.crypto_forecaster - INFO - Training model for ETHUSDT
+2025-03-01 12:32:34,677 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/.well-known/openid-configuration "HTTP/1.1 404 Not Found"
+2025-03-01 12:32:35,002 - httpx - INFO - HTTP Request: GET http://localhost:9090/v1/meta "HTTP/1.1 200 OK"
+2025-03-01 12:32:35,701 - httpx - INFO - HTTP Request: GET https://pypi.org/pypi/weaviate-client/json "HTTP/1.1 200 OK"
+---------------

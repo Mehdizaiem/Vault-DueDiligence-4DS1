@@ -5,7 +5,7 @@ from weaviate.exceptions import WeaviateBaseError
 from datetime import datetime, timedelta
 import random
 import numpy as np
-from weaviate.classes.config import DataType
+from weaviate.classes.config import DataType, Configure
 
 # Configure paths
 current_path = os.path.dirname(os.path.abspath(__file__))
@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 def create_sentiment_schema(client):
     """
     Create the CryptoNewsSentiment collection if it doesn't exist.
+    Fixed to properly handle vector storage.
     """
     try:
         # Check if collection already exists
@@ -29,11 +30,15 @@ def create_sentiment_schema(client):
         logger.info("Creating CryptoNewsSentiment collection")
         
         try:
-            # Create the collection with null vectorizer
+            # Create the collection with proper vectorizer configuration
+            # Using text2vec-contextionary as the default vectorizer
             collection = client.collections.create(
                 name="CryptoNewsSentiment",
                 description="Collection for crypto news articles with sentiment analysis",
-                vectorizer_config=None,  # Use None instead of text2vec-none
+                vectorizer_config=Configure.Vectorizer.none(),  # No default vectorizer, we'll provide vectors directly
+                vector_index_config=Configure.VectorIndex.hnsw(
+                    distance_metric=Configure.VectorIndex.Distance.cosine
+                ),
                 properties=[
                     {
                         "name": "source",
@@ -111,7 +116,7 @@ def create_forecast_schema(client):
             collection = client.collections.create(
                 name="CryptoForecasts",
                 description="Collection for cryptocurrency price forecasts",
-                vectorizer_config=None,  # Use None
+                vectorizer_config=Configure.Vectorizer.none(),  # No vectorizer needed for this collection
                 properties=[
                     {
                         "name": "symbol",
@@ -190,7 +195,7 @@ def create_market_metrics_schema(client):
         collection = client.collections.create(
             name="MarketMetrics",
             description="Collection for cryptocurrency market metrics",
-            vectorizer_config=None,  # Use None instead of text2vec-none
+            vectorizer_config=Configure.Vectorizer.none(),  # No vectorizer needed for this collection
             properties=[
                 {
                     "name": "symbol",
@@ -318,11 +323,14 @@ def create_due_diligence_schema(client):
         logger.info("Creating CryptoDueDiligenceDocuments collection")
         
         try:
-            # Create the collection
+            # Create the collection with proper vector configuration
             collection = client.collections.create(
                 name="CryptoDueDiligenceDocuments",
                 description="Collection for all documents related to crypto fund due diligence",
-                vectorizer_config=None,  # Use None
+                vectorizer_config=Configure.Vectorizer.none(),  # We'll provide vectors directly
+                vector_index_config=Configure.VectorIndex.hnsw(
+                    distance_metric=Configure.VectorIndex.Distance.cosine
+                ),
                 properties=[
                     # Basic document properties
                     {

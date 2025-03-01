@@ -3,10 +3,12 @@ import logging
 import sys
 import os
 
-# Add parent directory to path to import weaviate_client
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..')))
-from Sample_Data.vector_store.weaviate_client import get_weaviate_client
+# Add path to find vector_store
+parent_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+sys.path.append(parent_path)
 
+# Then import using the full path
+from Sample_Data.vector_store.weaviate_client import get_weaviate_client
 logger = logging.getLogger(__name__)
 
 def create_onchain_schema(client=None):

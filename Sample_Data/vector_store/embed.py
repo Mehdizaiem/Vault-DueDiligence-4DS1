@@ -37,17 +37,23 @@ except Exception as e:
         logger.error(f"Failed to load fallback model: {e2}")
         raise
 
-# Initialize the feature extractor with large model for better accuracy
+# Initialize the feature extractor with proper error handling
 try:
-    feature_extractor = CryptoFeatureExtractor(model_size="large")
+    # Initialize without model_size parameter
+    feature_extractor = CryptoFeatureExtractor()
+    logger.info("Successfully initialized CryptoFeatureExtractor")
 except Exception as e:
     logger.error(f"Error initializing feature extractor: {e}")
-    logger.info("Falling back to medium-sized model")
-    try:
-        feature_extractor = CryptoFeatureExtractor(model_size="medium")
-    except Exception as e2:
-        logger.error(f"Error initializing medium model: {e2}")
-        feature_extractor = CryptoFeatureExtractor(model_size="small")
+    # Since there's no fallback, create a minimal feature extractor if needed
+    class MinimalFeatureExtractor:
+        def extract_features(self, text, document_type=None):
+            return {
+                "word_count": len(text.split()),
+                "risk_score": 0,
+                "keywords": []
+            }
+    logger.warning("Using minimal feature extractor as fallback")
+    feature_extractor = MinimalFeatureExtractor()
 
 def generate_embedding(text):
     """

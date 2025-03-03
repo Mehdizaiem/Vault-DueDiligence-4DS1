@@ -1,0 +1,17 @@
+{
+    "document_type_distribution": {
+        "general_document": 36,
+        "contract": 3,
+        "whitepaper": 2,
+        "regulatory_filing": 1
+    },
+    "category_distribution": {
+        "general": 37,
+        "legal": 4,
+        "business": 1
+    },
+    "document_frequency_by_year": {
+        "2021": 1,
+        "2022": 2
+    }
+}

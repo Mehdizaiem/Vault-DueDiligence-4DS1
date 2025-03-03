@@ -1,5 +1,5 @@
-Filename,Document Type,Date,Category,Content Preview
-108364 PLE_Digital Assets_Deck 290724.pdf,general_document,,general,"plenitudeconsulting.com
+Filename,Document Type,Date,Category,Risk Score,Content Preview
+108364 PLE_Digital Assets_Deck 290724.pdf,general_document,,general,0,"plenitudeconsulting.com
 Digital Assets 
 PracticeContents
 Overview  03
@@ -9,8 +9,16 @@ Our service – Digital Assets 06
 Cryptoassets training and awareness 07
 Crypto compliance solutions   08
 Development and independent assessment  09 
-of control framewor"
-1110830.1.0 Introduction to Digital Assets for Institutional Investors_FINAL_0.pdf,general_document,,general,"WHAT’S INSIDE
+of control frameworks
+Our RegTech products  10
+Practice lead  11
+.
+03
+Overview Plenitude overview
+ 
+Plenitude provides market-leading Financial Crime Compliance (FCC) advisory, transformation, technology, 
+data analytic"
+1110830.1.0 Introduction to Digital Assets for Institutional Investors_FINAL_0.pdf,general_document,,general,0,"WHAT’S INSIDE
 Digital Asset Basics
 Digital Assets in a Portfolio
 Custody Considerations
@@ -19,25 +27,46 @@ Introduction
 to Digital Assets
 FOR INSTITUTIONAL INVESTORSA guide to digital assets and the investment landscape for institutions
 Table of Contents
-Digital Asset Basics          3."
-2021-05-19 Internal Crypto Funds Management Agreement.docx,contract,2021-05-19,business,"INTERNAL CRYPTO FUNDS MANAGEMENT AGREEMENT
+Digital Asset Basics          3.
+Introduction
+What are:
+Digital Assets
+DeFi
+Stablecoins
+Non-Fungible Tokens
+Scaling Solutions
+Digital Assets in a Portfolio        10.
+Digital Asset Considerations 
+Direct Investments
+Managed Investme"
+2021-05-19 Internal Crypto Funds Management Agreement.docx,contract,2021-05-19,business,0,"INTERNAL CRYPTO FUNDS MANAGEMENT AGREEMENT
 
 This Internal Crypto Funds Management Agreement (“Agreement”) is entered into on the date of the latest signature (“Effective Date”) by and between:
-[Company], a legal entity incorporated in [Country], registration number [Number], located at [Address] (“P"
-2022-05-17 FAST Token Addendum.docx,general_document,2022-05-17,general,"FAST TOKEN ADDENDUM
+[Company], a legal entity incorporated in [Country], registration number [Number], located at [Address] (“Principal”);
+[Name], a citizen of [Country], passport number [Number], residing or located at [Address] (“Agent”);
+each individually referred to as a “Party” and together as the “Parties”.
+RECITALS:
+Pr"
+2022-05-17 FAST Token Addendum.docx,general_document,2022-05-17,general,0,"FAST TOKEN ADDENDUM
 
-This FAST Token Addendum (“Addendum”) is entered into as of the date set forth on the signature page by and between the undersigned company (“Company”) and the undersigned advisor (“Advisor”) to supplement the Founder Advisor Standard Template (“FAST”) entered by and between the"
-2022-05-17 Web3 Insider Trading Policy.docx,general_document,2022-05-17,general,"WEB3 INSIDER TRADING POLICY
+This FAST Token Addendum (“Addendum”) is entered into as of the date set forth on the signature page by and between the undersigned company (“Company”) and the undersigned advisor (“Advisor”) to supplement the Founder Advisor Standard Template (“FAST”) entered by and between the Company and the Advisor in the past.
+Definitions
+Capitalized terms that are not otherwise defined in this Addendum have the following meaning.
+“Advisor Wallet” is the following {Ethereum} network add"
+2022-05-17 Web3 Insider Trading Policy.docx,general_document,2022-05-17,general,0,"WEB3 INSIDER TRADING POLICY
 
-1. Overview. This Web3 Insider Trading Policy (“Policy”) provides guidelines to help avoid trading in Digital Assets (as defined below) on inside information in violation of applicable law and regulation in [COMPANY NAME] and its subsidiaries (collectively, the “Company”"
-2023_IC3CryptocurrencyReport.pdf,general_document,,general," 1 
+1. Overview. This Web3 Insider Trading Policy (“Policy”) provides guidelines to help avoid trading in Digital Assets (as defined below) on inside information in violation of applicable law and regulation in [COMPANY NAME] and its subsidiaries (collectively, the “Company”).
+2. Covered Persons. This Policy applies to all directors, officers, and employees of the Company, as well to all contractors, clients, and counterparties of the Company who have adhered to this Pol"
+2023_IC3CryptocurrencyReport.pdf,general_document,,general,30," 1 
  
    2 
 2023 CRYPTOCURRENCY FRAUD REPORT 
 CONTENTS 
 INTRODUCTION ....................................................................................................................................... 3 
-2023 CRYPTOCURRENCY-RELATED COMPLAINTS REPORTED TO IC3 ....................................."
-23-cr-57_indictment.pdf,regulatory_filing,,general,"UNITED STATES DISTRICT COURT 
+2023 CRYPTOCURRENCY-RELATED COMPLAINTS REPORTED TO IC3 ...................................................... 4 
+2023 COMPLAINTS BY AGE GROUP................................ ................................ ................................ .......5 
+STATISTICS ON COMPLAINTS REPORTED TO IC3 O"
+23-cr-57_indictment.pdf,regulatory_filing,,general,40,"UNITED STATES DISTRICT COURT 
 DISTRICT OF OREGON 
 PORTLAND DIVISION 
 UNITED STATES OF AMERICA 3:23-cr- 51- f M 
@@ -45,16 +74,42 @@ v. INDICTMENT
 VLADIMIR OKHOTNIKOV, a/k/a ""LADO,"" 18 U.S.C. §§ 1349, 981 
 OLENA OBLAMSKA, a/k/a ""LOLA FERRARI,"" 
 MIKHAIL SERGEEV, a/k/a ""MIKE MOONEY,"" Forfeiture Allegation 
-""GLEB,"" ""GLEB "
-2406.18503.pdf,general_document,,general,"From Tweet to Theft:
+""GLEB,"" ""GLEB MILLION,"" and 
+SERGEY MASLAKOV, 
+Defendants. 
+THE GRAND JURY CHARGES: 
+At all times relevant to this Indictment: 
+INTRODUCTORY ALLEGATIONS 
+The Defendants and Forsage 
+1. Defendant Vladimir Okhotnikov"
+2406.18503.pdf,general_document,,general,0,"From Tweet to Theft:
 Tracing the Flow of Stolen Cryptocurrency
 Guglielmo Cola1 , Michele Mazza1 , and Maurizio Tesconi1
 Institute of Informatics and Telematics (IIT)
 National Research Council (CNR), Via G. Moruzzi 1, 56124, Pisa, Italy
 {g.cola, m.mazza, m.tesconi}@iit.cnr.it
-Note to Readers: This is"
-agreement.pdf,contract,,general,"Cryptocurrency  Purchase  Agreement   Prepared  for:   Nesrine  Louati   necomapny   Created  by:   Omar  Marouen   omcompany                                    This  Cryptocurrency  Purchase  Agreement  (""Agreement"")  took  effect  on  (5/26/2022)  (the  ""Effective  Date"")  by  and  between  Omar  "
-BedrettinGurcan.pdf,general_document,,general,"See discussions, stats, and author profiles for this publication at: https://www.researchgate.net/publication/338969569
+Note to Readers: This is a revised version of the paper originally presented at the ITASEC
+2023 conference and included in CEUR Workshop Proceedings 1. The revision includes new
+information disclosed by Arkham Intelligence, "
+241107_MiCA Whitepaper Template_v1.0 final.pdf,whitepaper,,general,0,"TEMPLATE | White paper for crypto -assets other than asset -referenced tokens or e- money tokens , based 
+on the Cardano blockchain  
+This template  has been prepared  by Lawside  Attorneys -at-Law LLC (www.lawside.ch ) in cooperation with 
+STADLER VÖLKEL  (https://sv.law/ ) and the Cardano Foundation . It is based on the second F inal Report pub-
+lished by ESMA on 3 July 2024 regarding technical standards specifying certain requirements of MiCA 
+(ESMA75-453128700 -1229). 
+This template is inten"
+34-81207.pdf,general_document,,general,0,"1 
+SECURITIES AND EXCHANGE COMMISSION  
+SECURITIES EXCHANGE ACT OF 1934 
+Release No. 81207 / July 25, 2017 
+Report of Investigation Pursuant to Section 21(a) of the Securities Exchange Act of 1934:  
+The DAO 
+I. Introduction and Summary 
+The United States Securities and Exchange Commission’s (“Commission”) Division of 
+Enforcement (“Division”) has investigated whether The DAO, an unincorporated organization; 
+Slock.it UG (“Slock.it”), a German corporation; Slock.it’s co-founders; and intermediar"
+agreement.pdf,contract,,general,0,"Cryptocurrency  Purchase  Agreement   Prepared  for:   Nesrine  Louati   necomapny   Created  by:   Omar  Marouen   omcompany                                    This  Cryptocurrency  Purchase  Agreement  (""Agreement"")  took  effect  on  (5/26/2022)  (the  ""Effective  Date"")  by  and  between  Omar  Marouen  (""Seller"")  and  Nesrine  Louati  (""Buyer"").   WHEREAS,  the  Seller  owns  certain  cryptocurrency  (the  ""Cryptocurrency"");  and   WHEREAS,  the  Buyer  desires  to  purchase  the  Cryptocu"
+BedrettinGurcan.pdf,general_document,,general,0,"See discussions, stats, and author profiles for this publication at: https://www.researchgate.net/publication/338969569
 The Legal Framework of the Cryptocurrencies and Initial Coin Offerings (ICOs)
 Thesis · February 2018
 CITATIONS
@@ -64,8 +119,115 @@ READS
 1 author:
 Bedrettin Gürcan
 University of Szeged
-7 PUBLI"
-cravath-bringing-blockchain-due-diligence-into-focus-102024_vb-002.pdf,general_document,,general,"OCTOBER 2024  
+7 PUBLICATIONS   9 CITATIONS   
+SEE PROFILE
+All content following this page was uploaded by Bedrettin Gürcan on 01 February 2020.
+The user has requested enhancement of the downloaded file. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ "
+bitcoin-com-legal-user-agreement.pdf,contract,,general,0,"Cookie Policy
+Data Subject Access Request (DSAR) Form
+FAQ for Law Enforcement
+Privacy Policy
+User Agreement
+Verse DEX Service Terms
+Wallet Service Terms
+User Agreement
+Last Updated: 31 January, 2025
+This is an agreement between the Bitcoin.com entity identified in the table below (“Bitcoin.com”, “we”,
+“us”, or “our”) and you (together with Bitcoin.com, the “Parties” and each a “Party”). By using the
+Bitcoin.com website (the “Site”) and any services available within the Site (collectively the “Se"
+Blockchain Legal  Regulatory Guidance - Section Edition 14 - Latham authored.pdf,general_document,,general,0,"Blockchain:  
+Legal &  
+Regulatory 
+Guidance  
+Second Edition
+Notice 
+This guidance does not constitute legal advice in any jurisdiction. It is intended to 
+provide technical guidance and suggestions as to best practice for legal practitioners 
+when dealing with matters involving blockchain and distributed ledger technology. The 
+authors of this guidance accept no liability for any claim in connection with any action 
+or inaction of any party acting in reliance on the contents herein.Foreword
+On"
+c101984_ex10-1.doc,general_document,,general,0,"ࡱ                ;  	               V                                                  	   
+         
+   U                                                      !   ""   #   $   %   &   '   (   )   *   +   ,   -   .   /   0   1   2   3   4   5   6   7   8   9   :   ;   <   =   >   ?   @   A   B   C   D   E   F   G   H   I   J   K   L   M   N   O   P   Q   R   S   T   U   V   W   X   Y   Z   [   \   ]   ^   _   `   a   b   c   d   e   f   g   h   i   j   k   l   m  "
+caia-org-blog-2021-12-12-operational-due-diligence-crypto-assets.pdf,general_document,2021-12-12,general,0,"Welcome to Po r tfolio fo r  the F u t ur e™ ! 
+← Back to Po r tfolio fo r  the F u t ur e™
+Ope r ational D u e
+Diligence of C r ypto
+A ss et s
+Decembe r  12 , 2021 Acce ss  to Alte r native s,
+E me r ging A ss et Cla ss e s,
+Manage r  Selection,
+State of the I n dus t r y
+d e s igne r 4 91 -iStockPhoto
+By the STA N DARDS BOARD FOR ALT ER N AT I V E  IN V E STM EN TS (SBA I ).
+ 
+I nt r o du ction
+C r ypto a ss et s  w e r e once the p ur vie w  of r etail inve s to rs , b u t mo r e r ecently th"
+coinbase legal-user_agreement-united_states.pdf,contract,,general,0,"Legal
+Co nbase User Agreement
+Last updated: February 25, 2025
+Welcome to Co nbase! Th s  s a User Agreement between you (also referred to here n as “User,” or
+“customer”) and Co nbase, Inc. (""Co nbase,"" “we,” “us,” and “our”). Th s User Agreement (""Agreement"" or
+“User Agreement”) governs your use of the serv ces prov ded by Co nbase descr bed below and such
+other serv ces that may be o ered by Co nbase from t me to t me (""Co nbase Serv ces"" or ""Serv ces""). By
+s gn ng up to use a Co nbase account"
+Compliance considerations for the crypto industry.pdf,general_document,,legal,0,"Global directory Product logins Support&training Contact us 
+Thomson Reuters = Q 
+COMPLIANCE & RISK 
+Compliance consideratioïs-f 
+crypto industry M 
+Samidh Guha Founding Partner / Guha PLLC 
+Sophia Kielar Associate Attorney / Guha PLLC 
+8 Jan 2024 - 8 minute read 
+The federal government's high-profile crackdown on crypto companies 
+requires all crypto market participants to redouble their compliance 
+- efforts, both to satisfy regulators and confirm the trust of customers 
+and counterparties 
+H "
+contracts-justia-com-companies-athena-bitcoin-global-14652-contract-220918-_utm_.pdf,contract,,general,0,"Cryptocurrency Purchase & Sale Agreement
+with Galaxy Digital Trading Cayman LLC, dated
+January 23, 2021
+Contract Categories:Business Finance- Purchase Agreements
+EX-10.33 2 athena_ex1033.htm
+Exhibit 10.33
+CRYPTOCURRENCY PURCHASE & SALE AGREEMENT
+This CRYPTOCURRENCY PURCHASE AGREEMENT (this “Agreement”), is
+made and entered into on January 23, 2021, by and between Galaxy Digital Trading
+Cayman LLC, a Cayman Islands exempted limited partnership and having a business
+address at 101 Hudson Street Fl"
+contracts-justia-com-companies-athena-bitcoin-global.pdf,contract,,general,0,"Cryptocurrency Purchase & Sale Agreement
+with Galaxy Digital Trading Cayman LLC, dated
+January 23, 2021
+Contract Categories:Business Finance- Purchase Agreements
+EX-10.33 2 athena_ex1033.htm
+Exhibit 10.33
+CRYPTOCURRENCY PURCHASE & SALE AGREEMENT
+This CRYPTOCURRENCY PURCHASE AGREEMENT (this “Agreement”), is
+made and entered into on January 23, 2021, by and between Galaxy Digital Trading
+Cayman LLC, a Cayman Islands exempted limited partnership and having a business
+address at 101 Hudson Street Fl"
+contracts-justia-com-companies-bitcoin-commodity-trust.pdf,contract,,general,0,"Form of Custodial Services Agreement
+Contract Categories:Business Operations- Services Agreements
+EX-10.5 10 d9112425_ex10-5.htm
+Exhibit 10.5
+[Certain identi ed information has been excluded from the exhibit because it is both not
+material and would likely cause competitive harm to the company if publicly disclosed.]
+CUSTODIAL SERVICES AGREEMENT
+wShares Bitcoin Fund
+&
+Fidelity Digital Asset Services, LLC
+Justia › Forms › Business Contracts › Bitcoin Commodity Trust › Form of Custodial Services A"
+cravath-bringing-blockchain-due-diligence-into-focus-102024_vb-002.pdf,general_document,,general,0,"OCTOBER 2024  
 1
 Bringing Blockchain Due Diligence  
 into Focus Alongside Uptick in  
@@ -74,15 +236,63 @@ SCOTT BENNETT, BENJAMIN GRUENSTEIN, DAVE KAPPOS,
 EVAN NORRIS, RYAN PATRONE, ELAD ROISMAN AND   
 SASHA ROSENTHAL-LARREA, CRAVATH  
 JASON TRAGER, FTI TECHNOLOGY
-Renewed momentum surrounding bl"
-Cryptocurrencies_legal_regulation.pdf,general_document,,legal,"BRICS LAW JOURNAL    Volume V (2018) Issue 2
+Renewed momentum surrounding blockchain and digital assets indicates that the space is returning to  
+a more stable trajectory. Following a slowdown in industry deal volume in the second half of 2022 and 
+2023, signals now point to"
+Crypto Asset Due Diligence Checklist_Crypto Asset Due Diligence Checklist.xlsx,general_document,,general,0,"PK                      xl/worksheets/sheet2.xmls8Paۀdt\gMX,$lecTdK?d6d
+J3)FNp;D$c&#w6TĔK#gmFN ٪˜#~r}C)rFNbLvy:J ""eZ.E$SO.,Og
+h\&kASfEVwzukYfamz6칲Y-k>7
+2FѳS>**.oB*aő""[""[&[%PmrebT)5BR37iF
+{b]q
+ӪOi6rX둓+qY).)?PC̩)pj:aN:0f)0`1rg<lcX<g1*IUG_X<>x}.KHss-/dW21#'֖SHr]HrN3
+YP!QL+}	c""ۑ8$eͮwfVHf3UF*sƌϘѭ2gU3f3UŊ/B)R?Z=xc{Uv)5t<TrS^SE?Ut0*rJk0䖦0EV%ز]$-%?D<mi.LAlwV`5lg[v˜S#Վjrm!\egXNS'PHxc%@F3PjM
+}W4劙cf*#@7vOf""yIeʛAbzEֺ'ZOͻpj8	3d"
+crypto-futures-services-terms-of-use.pdf,general_document,,general,0,"CRYPTO FUTURES 
+AGREEMENT  
+ 
+ 
+ 
+ 
+PrimeXBT | CRYPTO FUTURES AGREEMENT    2/35 
+ 
+ 
+ 
+PrimeXBT Crypto Futures Services Terms of Use  
+ 
+Dated: 1/6/2024 
+ 
+These Terms & Conditions (henceforth the “Crypto Futures Agreement” or “Terms of 
+Use”) shall govern the provision of Crypto Futures Services by  
+ 
+A. Prime XBT Trading Services Ltd, a company incorporated and existing under the 
+laws of Saint Lucia, with Registration No. 2024 -00343, having its registered office 
+address at PKF Corporate Se"
+"Cryptoasset Reporting Framework, Common.pdf",general_document,,general,0,"ds GOV.UK 
+HM Revenue 
+& Customs 
+Consultation outcome 
+Cryptoasset Reporting Framework, Common 
+Reporting Standard amendments, and 
+seeking views on extension to domestic 
+reporting - summary of responses Updated 30 October 2024 
+Contents 
+Executive Summary 
+Introduction 
+Responses 
+Next steps 
+Annexe A: List of stakeholders consulted vOGL 
+© Crown copyright 2024 
+This publication is licensed under the terms of the Open Government Licence v3.0 except where otherwise stated. To view this licence"
+Cryptocurrencies_legal_regulation.pdf,general_document,,legal,0,"BRICS LAW JOURNAL    Volume V (2018) Issue 2
 CRYPToCuRREnCIES LEGaL REGuL aTIon
 IRINA CVETKOVA,
 Baltic International Academy (Riga, Latvia)
 Doi: 10.21684/2412-2343-2018-5-2-128-153
 This article evaluates the legal framework of cryptocurrency in various countries. The new 
-currency instrument is abst"
-d693146dex99g2.pdf,general_document,,general,"EX-99.(G)(2)	
+currency instrument is abstract currencies. They are currencies in the sense that they can 
+be exchanged peer-to-peer. They are representations of numbers, i.e. abstract objects. An 
+abstract currency system is a self-enforcing"
+d693146dex99g2.pdf,general_document,,general,0,"EX-99.(G)(2)	
 3	
 d693146dex99g2.htm	
 FORM	OF	INVESTMENT	MANAGEMENT	AGREEMENT
@@ -91,8 +301,10 @@ INVESTMENT	MANAGEMENT	AGREEMENT
 NYDIG	Bitcoin	Strategy	Sub	Fund	Ltd
 This	
 INVESTMENT	MANAGEMENT	AGREEMENT
-,	dated	and	effective	as	of	[												],	2019	(the	“Agreement”),	is	by	and	between	Stone	Ridge	Asse"
-DASCPWhitePaper.pdf,whitepaper,,general,"Building the Digital Asset 
+,	dated	and	effective	as	of	[												],	2019	(the	“Agreement”),	is	by	and	between	Stone	Ridge	Asset
+Management	LLC,	a	Delaware	limited	liability	company	(the	“Investment	Manager”)	and	NYDIG	Bitcoin	Strategy	Sub	Fund	Ltd	(“Bitcoin	Strategy	Sub	Fund”	or
+the	“Fund”),	a	Cayman	Islands	exempted	company"
+DASCPWhitePaper.pdf,whitepaper,,general,0,"Building the Digital Asset 
 Securities Ecosystem
 DIGITAL ASSET SECURITIES CONTROL PRINCIPLES: A FRAMEWORK FOR ADOPTION
 In collaboration with
@@ -107,8 +319,15 @@ Ecosystem
 An Industry 
 Paper from                       
 DTCC, Clearstream, 
-and "
-Digital_Assets_Legal_Regulation_and_Estimation_of_.pdf,general_document,,legal,"123
+and Euroclear with the 
+collaboration of BCG
+BUILDING THE DIGITAL ASSET SECURITIES ECOSYSTEM
+2
+Letter from the CEOs
+Dear industry colleagues,
+Time and again, the global financial markets have 
+leaned on f"
+Digital_Assets_Legal_Regulation_and_Estimation_of_.pdf,general_document,,legal,0,"123
 https://lawjournal.digital   
 Research article
 DOI: https://doi.org/10.21202/jdtl.2023.5
@@ -117,8 +336,12 @@ Digital assets: legal Regulation
 and estimation of Risks
 Svetlana V. Muradyan 
 Vladimir Kikot Moscow University of the Ministry of Internal Affairs of Russia
-Moscow, Russian Federati"
-ey-token-due-diligence-a-structured-approach-to-evaluate-digital-asset-risk (1).pdf,general_document,,general,"Token due diligence:  
+Moscow, Russian Federation
+abstract
+Objective: to substantiate the need to create a universal mechanism of legal 
+regulation of digital currencies and tokenized assets, based on a uniform 
+categorization of digital assets an"
+ey-token-due-diligence-a-structured-approach-to-evaluate-digital-asset-risk (1).pdf,general_document,,general,0,"Token due diligence:  
 a structured approach 
 to evaluate digital 
 asset risk 
@@ -126,8 +349,14 @@ February 2024Token due diligence: a structured approach to evaluate digital asse
 Table of contents
 1. General token due diligence framework: a primer 3
 2.  Reputational and strategic 4 
-2.1 People and entity risk "
-ey-token-due-diligence-a-structured-approach-to-evaluate-digital-asset-risk.pdf,general_document,,general,"Token due diligence:  
+2.1 People and entity risk 4
+3.  Technical  4
+ 3.1 Network design 4
+  3.1.1  Decentralization 6
+                             3.1.2  Bridging 6
+                             3.1.3  Blockchain architecture 6
+                      "
+ey-token-due-diligence-a-structured-approach-to-evaluate-digital-asset-risk.pdf,general_document,,general,0,"Token due diligence:  
 a structured approach 
 to evaluate digital 
 asset risk 
@@ -135,8 +364,17 @@ February 2024Token due diligence: a structured approach to evaluate digital asse
 Table of contents
 1. General token due diligence framework: a primer 3
 2.  Reputational and strategic 4 
-2.1 People and entity risk "
-f8k060319ex10-2_phunwareinc.pdf,general_document,,general,"EX-10.2	
+2.1 People and entity risk 4
+3.  Technical  4
+ 3.1 Network design 4
+  3.1.1  Decentralization 6
+                             3.1.2  Bridging 6
+                             3.1.3  Blockchain architecture 6
+                      "
+f8k060319ex10-2_phunwareinc.doc,general_document,,general,0,"ࡱ                ;  	               |                                       	   
+      
+                                                             !   ""   #   $   %   &   '   (   )   *   +   ,   -   .   /   0   1   2   3   4   5   6   7   8   9   :   ;   <   =   >   ?   @   A   B   C   D   E   F   G   H   I   J   K   L   M   N   O   P   Q   R   S   T   U   V   W   X   Y   Z   [   \   ]   ^   _   `   a   b   c   d   e   f   g   h   i   j   k   l   m   n   o   p  "
+f8k060319ex10-2_phunwareinc.pdf,general_document,,general,0,"EX-10.2	
 4	
 f8k060319ex10-2_phunwareinc.htm	
 FORM	OF	CRYPTOCURRENCY	PAYMENT	AGREEMENT
@@ -149,8 +387,19 @@ Agreement
 ”)	is	made	as	of	________	__,	2019	(the	“
 Effective	Date
 ”),	by	and	among	Phunware,	Inc.,	a	Delaware
-corporat"
-FATF-Booklet_VA.pdf,general_document,,general,"1
+corporation	(the	“
+Company
+”),	and	the	persons	named	on	
+Schedule	I
+	attached	hereto	(the	“
+Schedule
+”)	(each,	a	“
+Named	Lender
+,”	and	collectively,	the	“
+Named	Lenders
+”).	Capitalized
+terms	not	otherwise	def"
+FATF-Booklet_VA.pdf,general_document,,general,55,"1
 EASY GUIDE TO             
 FATF STANDARDS 
 AND METHODOLOGY    
@@ -162,15 +411,36 @@ jurisdictions and face significant
 money laundering and terrorist 
 financing risks. The Financial 
 Action Task Force (F ATF) has 
-taken"
-FTI+Technology+-+Decentralized+Due+Diligence.pdf,general_document,,general,"ASSESSMENTS TAILORED TO THE UNIQUE TECHNOLOGICAL 
+taken action to respond to the 
+very real risk that legitimate 
+services offered by virtual asset 
+service providers will be abused 
+by criminals and terrorists to 
+launder money and finance 
+terrorist act"
+FinCEN_Alert_Pig_Butchering_FINAL_508c.pdf,general_document,,general,30,"1
+1. See 31 U.S.C. § 5312(a)(2); 31 CFR § 1010.100(t).
+2. United States Secret Service (USSS), “Cryptocurrency Investment Scams” (USSS Alert).  These scams are also called 
+“Sha Zhu Pan,” a Chinese term that loosely translates to pig butchering.  These scams may also be referred to, or 
+begin as, “confidence scams” (or in certain cases “romance scams”) because fraudsters gain the confidence of their 
+victims before eventually enticing them to make investments in fraudulent virtual currency tradi"
+FTI+Technology+-+Decentralized+Due+Diligence.pdf,general_document,,general,0,"ASSESSMENTS TAILORED TO THE UNIQUE TECHNOLOGICAL 
 NEEDS OF THE DIGITAL ASSETS ECOSYSTEM
 Due Diligence
 Decentralized  The decentralized nature of crypto-native companies poses 
 specific challenges that require technology-centered due 
 diligence. These challenges extend beyond traditional technology 
-"
-guide-to-regulation-on-cryptocurrency-and-digital-token.pdf,general_document,,legal," 
+and finance, including custody, layer-1 protocols, smart 
+contracts, dApps, token offerings, DeFi projects, crypto mining 
+operations, and crypto exchanges. FTI Technology’s services are 
+designed to "
+Gelato_Terms_of_Service.pdf,general_document,,general,0,"TERMSOF
+SERVICE
+Date:04December2024
+1. SCOPEOF
+APPLICATION
+1.1 Thefollowingprovisions(""Termsof Service"") applyto (i) theprovisionofGelato'swebsitehttp://gelato.network/andallassociatedsites(""Platform""),(ii)theprovisionofSoftware(asdefinedbelow),asmadeavailableviathePlatformas a cloud-basedsoftware-as-a-service(SaaS);(iii) the provisionofRollup-as-a-Service(RaaS)(asdefinedbelow);(iv)theprovisionofNetworkDeploymentServices(asdefinedbelow);and(v)allotherservicesrelatedtheretoorprovidedviathePlatfor"
+guide-to-regulation-on-cryptocurrency-and-digital-token.pdf,general_document,,legal,0," 
 A Complete Guide to the 
 Regulations on 
 Cryptocurrency and Digital 
@@ -182,8 +452,10 @@ ii A Complete Guide to the Regulations on Cryptocurrency and Digital Token Offer
 Digital assets in Thailand 
  
  
-In 2022 and 2023, follow"
-guide-to-the-vetting-of-digital-asset-and-digital-asset-exchanges.pdf,general_document,,general," 
+In 2022 and 2023, following the collapse of the key global players in the crypto industry, regulators around 
+the world closely scrutinized crypto activities and tightened the regulations for digital asset businesses. This 
+"
+guide-to-the-vetting-of-digital-asset-and-digital-asset-exchanges.pdf,general_document,,general,0," 
  
 lseg.com/en/ftse-russell 
 November 2023 Ground Rules 
@@ -196,8 +468,165 @@ v1.7
  
  Guide to the Vetting of Digital Assets and Digital Asset Exchanges, v1.7, November 2023 
 FTSE Russell  2 of 13 
-Conte"
-LinVCintheRiseofCryptoEco.pdf,general_document,,general,"See discussions, stats, and author profiles for this publication at: https://www.researchgate.net/publication/331284406
+Contents 
+ 
+Section 1 Introduction ......................................................................................................................................................... 3 
+Section 2 Man"
+ILPA-DDQ-2.0.pdf,general_document,,general,0," 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Due Diligence  
+Questionnaire 2.0 
+Updated November 2021  
+ 
+2 
+ 
+ILPA Due Diligence 2.0 – Questionnaire 
+ 
+ 
+Table of Contents 
+Overview ........................................................................................................................ 3 
+Glossary ......................................................................................................................... 4 
+Cover Sheet........."
+IOSCOPD747.pdf,general_document,,general,0,"  
+ 
+ 
+Policy Recommendations for Crypto and Digital Asset Markets 
+ 
+Final Report 
+ 
+ 
+  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+  
+ 
+ 
+ 
+ 
+THE BOARD 
+OF THE 
+INTERNATIONAL ORGANIZATION OF SECURITIES COMMISSIONS 
+ 
+ 
+FR11/2023 16 NOVEMBER 2023 
+ 
+ 
+ 
+ 
+ 
+  
+ 
+ii 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Copies of publications are available from:  
+The International Organization of Securities Commissions website: www.iosco.org  
+ 
+© Internati"
+LinVCintheRiseofCryptoEco.pdf,general_document,,general,0,"See discussions, stats, and author profiles for this publication at: https://www.researchgate.net/publication/331284406
 Venture Capital in the Rise of Crypto Economy
 Article · September 2019
 CITATIONS
@@ -207,8 +636,14 @@ READS
 1 author:
 Lin Lin
 National University of Singapore
-32 PUBLICATIONS   278 CITATIONS  "
-mpdf.pdf,general_document,,general,"Digital Assets: Regulation across
+32 PUBLICATIONS   278 CITATIONS   
+SEE PROFILE
+All content following this page was uploaded by Lin Lin on 21 September 2019.
+The user has requested enhancement of the downloaded file. 
+ 
+ 533 
+Venture Capital in the Rise of Crypto Ec"
+mpdf.pdf,general_document,,general,0,"Digital Assets: Regulation across
 jurisdictions  and  future
 considerations
 1. New regulation for digital assets is coming
@@ -216,8 +651,10 @@ into force from June
 2. Crypto-asset regulation differs per jurisdiction
 3. To invest in digital assets, managers need to
 consider knowledge gap and verification tools
-Investmen"
-Operational-Due-Diligence-on-Digital-Assets.pdf,general_document,,general,"1 
+Investment managers want to realise the potential of digital assets within their
+portfolios. But first, managers need to understand the regulatory landscape
+surrounding digital assets, and funds’ eligibility t"
+Operational-Due-Diligence-on-Digital-Assets.pdf,general_document,,general,0,"1 
 SBAI Toolbox - Operational Due Diligence of Digital Assets (November 2021) 
  
 STANDARDS BOARD FOR ALTERNATIVE INVESTMENTS 
@@ -225,9 +662,89 @@ Operational Due Diligence of
 Digital Assets 
 Introduction 
 Digital assets were once the purview of retail investors , but more recently the asset class has gained 
-attention"
-SAFT Template by Legal Nodes (2).docx,general_document,,general,"This Simple Agreement for Future Tokens (the “SAFT”) and the tokens issued on its exercise (the “SAFT and Tokens”) are not intended to be offered in any jurisdiction or under circumstances where not permitted under Applicable Law. Although the SAFT and Tokens are not intended to be a security, there"
-SSRN-id4594467.pdf,general_document,,general,"See discussions, stats, and author profiles for this publication at: https://www.researchgate.net/publication/375562126
+attention from institutional investors and asset managers. There are dedicated digital asset  funds 
+specialising solely in these assets, however more traditional hedge fund managers are now allocating to 
+thi"
+publication_0027426_ja_001.pdf,general_document,,general,0,"Contributing Editor: Josias N. Dewey
+Sixth Edition
+2024
+Blockchain & Cryptocurrency 
+RegulationCONTENTS 
+Preface Josias N. Dewey, Holland & Knight LLP 
+Glossary The Contributing Editor shares key concepts and definitions of blockchain 
+Foreword Daniel C. Burnett, Enterprise Ethereum Alliance 
+ A look at crypto’s horrible, no-good year, and what the future may hold  
+ Ron Quaranta, Wall Street Blockchain Alliance 1
+ Blockchain and intellectual property: A case study  
+ Ieuan G. Mahony, Brian J. C"
+pwc-global-crypto-regulation-report-2023.pdf,general_document,,legal,0,"PwC
+PwC Global 
+Crypto Regulation 
+Report 2023
+19 December 2022 (updated)PwC 2
+December 2022
+Contents
+Where is crypto regulation heading? 4
+Views from global standard-setters 9
+EU single market for digital assets 13
+Summaries from selected jurisdictions 18
+PwC services and capabilities 66
+PwC Global Crypto Regulation Report 2023PwC
+Purpose and objectives
+This PwC Global Crypto Regulation 2023 report 
+provides an overview of the crypto regulation 
+landscape, with a focus on financial services. It"
+SAFT Template by Legal Nodes (2).docx,general_document,,general,0,"This Simple Agreement for Future Tokens (the “SAFT”) and the tokens issued on its exercise (the “SAFT and Tokens”) are not intended to be offered in any jurisdiction or under circumstances where not permitted under Applicable Law. Although the SAFT and Tokens are not intended to be a security, there is some uncertainty about the application of securities laws to virtual assets in many jurisdictions. The SAFT and Tokens have not been registered with any authority and cannot be offered or sold exc"
+service-ll-llglrd-2018298387-2018298387.pdf,general_document,,general,0,"The Law Library of Congress, Global Legal Research  Directorate 
+(202) 707 -5080  (phone) • (866) 550-0442 (fax) • law@loc.gov • http://www.law.gov 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Regulation of Cryptocurrency 
+Around the World 
+ 
+June 2018 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+LL File No. 2018-016036 
+LRA-D-PUB-002438 
+ 
+ 
+ 
+ 
+ This report is provided for reference purposes only. 
+It does not constitute legal advice and does not represent the official 
+opinion of the United States Government. The information pr"
+small-firm-aml-template.docx,general_document,,general,30,"Updated Small Firm Template
+[Firm Name] 
+Anti-Money Laundering (AML) Program:  
+Compliance and Supervisory Procedures
+
+UPDATED AS OF MONTH DAY, YEAR
+
+This template is provided to assist small firms in fulfilling their responsibilities to establish an Anti-Money Laundering (AML) Program as required by the Bank Secrecy Act (BSA) and its implementing regulations and FINRA Rule 3310 (AML Compliance Program). Nothing in this template creates any new requirements for AML programs. Furthermore, followi"
+SSRN-id4594467.pdf,general_document,,general,0,"See discussions, stats, and author profiles for this publication at: https://www.researchgate.net/publication/375562126
 Mitigating Digital Asset Risks
 Article  in   SSRN Electronic Journal · January 2023
 DOI: 10.2139/ssrn.4594467
@@ -237,20 +754,68 @@ READS
 345
 31 authors, including:
 Huei-Wen Teng
-National Ya"
-The Doge of Wall Street_ Analysis and Detection of Pump and Dump Cryptocurrency Manipulations.pdf,general_document,,general,"If you cite this paper, please use the ACM Transactions on Internet Technology reference: Massimo La Morgia, Alessandro Mei,
+National Yang Ming Chiao Tung University
+35 PUBLICATIONS   133 CITATIONS   
+SEE PROFILE
+Wolfgang Karl Karl Härdle
+Humboldt-Universität zu Berlin
+990 PUBLICATIONS   27,714 CITATIONS   
+SEE PROFILE
+Vassilios G. Pa"
+survey on central bank digital currencies and crypto.pdf,general_document,,general,0,"  
+  
+BIS Papers 
+No 147 
+ 
+ Embracing diversity, advancing 
+together – results of the 2023 
+BIS survey on central bank 
+digital currencies and crypto  
+by Alberto Di Iorio, Anneke Kosse and Ilaria Mattei 
+ 
+Monetary and Economic Department 
+June 2024 
+   
+  JEL classification: E42, E58, O33. 
+Keywords: central bank digital currencies, CBDC, digital 
+innovation, cryptoassets, stablecoins, cross-border 
+payments, interoperability, financial stability, regulation. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+"
+The Doge of Wall Street_ Analysis and Detection of Pump and Dump Cryptocurrency Manipulations.pdf,general_document,,general,0,"If you cite this paper, please use the ACM Transactions on Internet Technology reference: Massimo La Morgia, Alessandro Mei,
 Francesco Sassi, and Julinda Stefa. 2023. The Doge of Wall Street: Analysis and Detection of Pump and Dump Cryptocurrency
-Manipulations. ACM Trans. Internet Technol. 23, 1, Ar"
-Token Sale Agreement Template by Legal Nodes.docx,contract,,general,"This Token Sale Agreement (the “Agreement”) and the Tokens sold under it are not intended to be offered in any jurisdiction or under circumstances where not permitted under Applicable Law. Although the Agreement and Tokens are not intended to be a security, there is some uncertainty about the applic"
-Token Side Letter Template by Legal Nodes.docx,general_document,,general,"[Project Name]
+Manipulations. ACM Trans. Internet Technol. 23, 1, Article 11 (feb 2023), 28 pages. https://doi.org/10.1145/3561300
+The Doge of Wall Street: Analysis and Detection of Pump and Dump
+Cryptocurrency Manipulations
+MASSIMO LA MORGIA, Sapienza University of R"
+Token Sale Agreement Template by Legal Nodes.docx,contract,,general,0,"This Token Sale Agreement (the “Agreement”) and the Tokens sold under it are not intended to be offered in any jurisdiction or under circumstances where not permitted under Applicable Law. Although the Agreement and Tokens are not intended to be a security, there is some uncertainty about the application of securities laws to virtual assets in many jurisdictions. The Agreement and Tokens have not been registered with any authority and cannot be offered or sold except with a registration, an offe"
+Token Side Letter Template by Legal Nodes.docx,general_document,,general,0,"[Project Name]
 TOKEN SIDE LETTER
 of [date] [month] 202[y]
 
 
 Legal Status & Definitions
 This Token Side Letter is entered in connection with a convertible equity instrument between the Company and the Investor of [date] (the “Convertible Agreement”).
-Capitalised terms in this Token Side Letter have t"
-us-crypto-regulatory-whitepaper.pdf,whitepaper,,general,"Market Integrity 
+Capitalised terms in this Token Side Letter have the same meaning as in the Convertible Agreement, unless another definition is given to them in the Token Side Letter.
+
+Exercise
+If another legal entity in the Ecosystem (the “Token Entity”) launches o"
+us-crypto-regulatory-whitepaper.pdf,whitepaper,,general,30,"Market Integrity 
 Considerations for 
 Digital Assets
 December 2021
@@ -259,8 +824,11 @@ Market Integrity Considerations for Digital Assets
 ""[Digital assets are] rife with fraud, scams and 
 abuses in certain applications. There’s a great deal 
 of hype and spin about how crypto assets work. In 
-many cases, investors are"
-usa_v._capuci_jr.pdf,general_document,,general,"UNITED STATES DISTRICT COURT
+many cases, investors aren’t able to get rigorous, 
+balanced, and complete information.”
+—Gary Gensler, Chairman of the US Securities and Exchange Commission 1
+The institutional and retail demand for cryptocurrencies continue"
+usa_v._capuci_jr.pdf,general_document,,general,0,"UNITED STATES DISTRICT COURT
 SOUTHERN DISTRICT OF FLORIDA
 Case No.
 18 U. S. C.  j 1349
@@ -273,8 +841,17 @@ VS.
 LUIZ CARLOS CAPUCI JR. ,
 a/k/ a Rlunior, ' '
 a/k/ a K ç lunior Caputt i, ' '
-a/k/ a"
-usa_v._crater.pdf,general_document,,general,"UNITED STATES DISTRICT COURT
+a/k/ a E ç lunior Capuci , ' '
+a/k/ a d E capuci , ' '
+Defendant.
+/
+INDICTM ENT '
+The Grand Jury charges t hat:
+GENERAL ALLEGATIONS
+At  a1 l  ti mes relevant  to t his Indictment:
+Enti tv
+1.  Mi ni ng Capi "
+usa_v._crater.pdf,general_document,,general,55,"UNITED STATES DISTRICT COURT
 DISTRICT OF MASSACHUSETTS
 UNITED STATES OF AMERICA
 V.
@@ -288,8 +865,14 @@ Counts Five - Seven: Unlawful Monetary
 Transactions
 (I8U.S.C.§ 1957)
 ForfeitureAllegations:
-(18 U.S.C. §§ 981(a)(1)(C)"
-usa_v._demarr.pdf,general_document,,general,"AES /DCP :KTF /HM 
+(18 U.S.C. §§ 981(a)(1)(C),982(a)(1)and
+28 U.S.C. § 2461)
+INDICTMENT
+At alltimes relevantto thisIndictment:
+General Allegations
+1. Defendant Randall Crater(""CRATER"") was a residentofNew York. CRATER
+was theprincipaloperatorofM"
+usa_v._demarr.pdf,general_document,,general,0,"AES /DCP :KTF /HM 
 F. #2019R0810 
 UNITED STATES DISTRICT COURT 
 EASTERN DISTRICT OF NEW YORK 
@@ -303,8 +886,13 @@ THE GRAND JURY CHARGES:
 COUNT ONE 
 INDICTMENT 
 Cr. No. ___________ _ 
-(T. 15, U .S"
-usa_v._kumbhani.pdf,general_document,,general,"• 
+(T. 15, U .S.C., §§ 78j(b) and 78ff; 
+T. 18, U.S.C., §§ 371, 981(a)(l)(C), 
+982(a)(l), 982(b)(l), 1349, l 956(h), 2 
+and 3551 et~.; T. 21, U .S.C., § 853(p); 
+T. 28, U.S .C., § 2461 (c)) 
+(Conspiracy to Commit Se"
+usa_v._kumbhani.pdf,general_document,,general,55,"• 
 1 
 2 
 3 
@@ -332,8 +920,13 @@ August 2021 Grand Jury
 INDICTMENT 
 V. 
 SATISH KURJIBHAI KUMBHAN1, Title 18, U.S.C., Sec. 1349 -Conspiracy to 
-Commit "
-usa_v._pires_et_al.pdf,general_document,,general,"UM TED STATES DI STRICT COURT
+Commit Wire Fraud; Title 18, U.S.C., aka ""Vindee,"" 
+aka ""VND"" ' aka ""vndbcc,"" 
+Defendant. 
+Sec. 1343 -Wire Fraud; Title 18, U.S.C., 
+Sec. 371 -Criminal Conspiracy; Title 18, 
+U.S.C., Sec. 1960 -Operation of "
+usa_v._pires_et_al.pdf,general_document,,general,0,"UM TED STATES DI STRICT COURT
 SOUTHERN DISTRICT OF FLORIDA
 Case No.
 18 U. S. C.  j 1349
@@ -347,8 +940,14 @@ S.
 EMERSON PI RE J S
 FLAVIO M ENDES GONCALVES,  and
 JOSHUA DAW D NICHOLAS,
-Defend"
-usa_v._saffron.pdf,general_document,,general,"1 
+Defendants.
+INDICTM ENT
+The Gr and Jur y char ges  t hat :
+GENERAI,  ALLEGATIONS
+At  a1 1  ti mes relevant to t his I ndi ctment:
+Relevant Enti ties
+1. Empi r esx,  a/ k/ a E c Empi r es  Consul t i ng Cor "
+usa_v._saffron.pdf,general_document,,general,30,"1 
 2 
 3 
 4 
@@ -386,8 +985,14 @@ DAVID GILBERT SAFFRON,
 Defendant. 
 CR 
 I N D I C T M E N T 
-[1"
-usa_v._stollery.pdf,general_document,,general,"1
+[18 U.S.C. § 1349: Conspiracy to 
+Commit Wire Fraud; 18 U.S.C. 
+§ 1343: Wire Fraud; 18 U.S.C.
+§ 371: Conspiracy to Commit
+Commodity Fraud; 18 U.S.C. 
+§ 1503(a): Obstruction of Justice;
+18 U.S.C. §§ 982 "
+usa_v._stollery.pdf,general_document,,general,30,"1
 2
 3
 4
@@ -425,12 +1030,19 @@ MICHAEL STOLLAIRE”),
 Defendant. 
  CR No. 
 I N F O R M A T I O N 
-[15 U.S.C. §§ 7"
-usa_v._tuan.pdf,general_document,,general,"2:22-cr-00273-JLS
+[15 U.S.C. §§ 78j(b), 78ff and 17 C.F.R. § 
+240.10b-5: Securities Fraud]  
+The United States of America charges: 
+[15 U.S.C. §§ 78j(b), 78ff and 17 C.F.R. § 240.10b-5] 
+A. INTRODUCTORY ALLEGATIONS
+At times relevant "
+usa_v._tuan.pdf,general_document,,general,0,"2:22-cr-00273-JLS
 6/28/2022
 VAV
-Case 2:22-cr-00273-JLS   Document 1   Filed 06/28/22   Page 1 of 15   Page ID #:1Case 2:22-cr-00273-JLS   Document 1   Filed 06/28/22   Page 2 of 15   Page ID #:2Case 2:22-cr-00273-JLS   Document 1   Filed 06/28/22   Page 3 of 15   Page ID #:3Case 2:22-cr-00273-JLS   "
-vaneckbitcoinstrategyetfar.pdf,general_document,,general,"497K	
+Case 2:22-cr-00273-JLS   Document 1   Filed 06/28/22   Page 1 of 15   Page ID #:1Case 2:22-cr-00273-JLS   Document 1   Filed 06/28/22   Page 2 of 15   Page ID #:2Case 2:22-cr-00273-JLS   Document 1   Filed 06/28/22   Page 3 of 15   Page ID #:3Case 2:22-cr-00273-JLS   Document 1   Filed 06/28/22   Page 4 of 15   Page ID #:4Case 2:22-cr-00273-JLS   Document 1   Filed 06/28/22   Page 5 of 15   Page ID #:5Case 2:22-cr-00273-JLS   Document 1   Filed 06/28/22   Page 6 o"
+User Agreement.docx,contract,,general,0,"This is an agreement between the Bitcoin.com entity identified in the table below (“Bitcoin.com”, “we”, “us”, or “our”) and you (together with Bitcoin.com, the “Parties” and each a “Party”). By using the Bitcoin.com website (the “Site”) and any services available within the Site (collectively the “Services”), you agree that you have read, understood, and accept all of the terms and conditions contained herein (the ""User Agreement""), as well as our Privacy Policy, and Cookie Policy.
+You may conta"
+vaneckbitcoinstrategyetfar.pdf,general_document,,general,0,"497K	
 1	
 vaneckbitcoinstrategyetfar.htm	
 497K	AS	REVISED	SUMMARY	PROSPECTUS
@@ -440,15 +1052,33 @@ Ticker:	XBTF
 Principal	U.S.	Listing	Exchange:	Cboe	BZX	Exchange,	Inc.
 SUMMARY	PROSPECTUS
 NOVEMBER	3,	2021
-Before	you	invest,	you	may	want	to	review	the	Fund’s	prospectus,	which	contains	more	info"
-Virtual-Assets-Red-Flag-Indicators.pdf.coredownload.pdf,general_document,,general,"FATF REPORT
+Before	you	invest,	you	may	want	to	review	the	Fund’s	prospectus,	which	contains	more	information	about	the	Fund	and	its	risks.	You	can	find	the	Fund’s
+prospectus	and	other	information	about	the	Fund	online	at	https://www.vaneck.com/resources/documents/equity-etfs-literature/.	You	can	also"
+Virtual-Assets-Red-Flag-Indicators.pdf.coredownload.pdf,general_document,,general,30,"FATF REPORT
 Virtual Assets 
 Red Flag Indicators
 of Money Laundering and 
 Terrorist Financing
 September 2020The Financial Action Task Force (FATF) is an independent inter -governmental body that develops and promotes 
-policies to protect the global financial system against money laundering, terrorist"
-WEF_Digital_Assets_Regulation_2024.pdf,general_document,,legal,"Digital Assets Regulation: 
+policies to protect the global financial system against money laundering, terrorist financing and the financing of 
+proliferation of weapons of mass destruction.  The FATF Recommendations are recognised as the global anti -money 
+laundering (AML) and counter-terrorist financing (CFT"
+virtual_currency_guidance_brochure.pdf,general_document,,general,0,"CONTENTS
+Introduction ...........................................................................1
+What Is OFAC? ........................................................................2
+What Are OFAC Sanctions? ......................................................3
+     The SDN List ......................................................................4
+     How Do You Block Virtual Currency? ...................................5
+       Case Study:   
+OFAC Sanctions Involving  
+Virtual Currency"
+wallet-coinbase-terms-of-service.pdf,general_document,,general,0,"Coinbase Wallet Terms of Service
+Last Updated: October 8, 2024
+Coinbase Bermuda Technologies Limited (“CBTL” or “we” or “us” or “our”) makes available to users certain software
+services accessible via web browser and/or a mobile device application, including self-custody externally owned accounts
+(EOA) and smart contract wallets (commonly known as Coinbase Wallet) (the “Product”). CBTL is a wholly owned
+subsidiary of Coinbase Global, Inc. The Product enables users to (i) store digital assets; (i"
+WEF_Digital_Assets_Regulation_2024 (1).pdf,general_document,,legal,0,"Digital Assets Regulation: 
 Insights from Jurisdictional Approaches
 INSIGHT REPORT
 OCTOBER 2024Images: Getty Images
@@ -457,4 +1087,85 @@ This document is published by the
 World Economic Forum as a contribution 
 to a project, insight area or interaction. 
 The findings, interpretations and 
-conclusions expre"
+conclusions expressed herein are a result 
+of a collaborative process facilitated and 
+endorsed by the World Economic Forum 
+but whose results do not necessarily 
+represent the views of the World Economic 
+Forum, nor "
+WEF_Digital_Assets_Regulation_2024.pdf,general_document,,legal,0,"Digital Assets Regulation: 
+Insights from Jurisdictional Approaches
+INSIGHT REPORT
+OCTOBER 2024Images: Getty Images
+Disclaimer 
+This document is published by the  
+World Economic Forum as a contribution 
+to a project, insight area or interaction. 
+The findings, interpretations and 
+conclusions expressed herein are a result 
+of a collaborative process facilitated and 
+endorsed by the World Economic Forum 
+but whose results do not necessarily 
+represent the views of the World Economic 
+Forum, nor "
+www-sec-gov-Archives-edgar-data-1725882-000121390019016285-ff12019ex4-1_inxlimit....pdf,general_document,,general,0,"EX-4.1 4 ff12019ex4-1_inxlimited.htm FORM OF INX TOKEN PURCHASE AGREEMENT
+Exhibit 4.1
+ 
+INX LIMITED
+INX TOKEN PURCHASE AGREEMENT
+ 
+ 
+ 
+NOTICE:
+ 
+THE TERMS OF THIS AGREEMENT FORM A BINDING LEGAL CONTRACT BETWEEN YOU AND INX LIMITED
+(THE “COMPANY”). CAREFULLY READ ALL OF THE TERMS OF THIS AGREEMENT BEFORE CLICKING THE “I
+AGREE” BUTTON. BY CLICKING THE “I AGREE” BUTTON YOU ACKNOWLEDGE YOUR CONSENT AND
+AGREEMENT TO ALL THE TERMS AND CONDITIONS SET FORTH IN THIS AGREEMENT. IF YOU DO NOT AGREE
+TO ALL "
+www-sec-gov-Archives-edgar-data-1767057-000093041321001296-c101984_ex10-1-htm_ut....pdf,general_document,,general,0,"EX-10.1 3 c101984_ex10-1.htm
+Exhibit 10.1
+ 
+CUSTODIAL SERVICES AGREEMENT
+ 
+Osprey Bitcoin Trust
+ 
+&
+Fidelity Digital Asset Services, LLC
+ THIS CUSTODIAL SERVICES AGREEMENT (this “Agreement”) is made on May 18, 2020 (the “Effective
+Date”), by and between Osprey Bitcoin Trust, (the “Client”), and Fidelity Digital Asset Services, LLC (the “Custodian”,
+and collectively with the Client, the “Parties,” and each individually, a “Party”).
+ 
+1. DEFINITIONS AND INTERPRETATION
+ 
+A. Definitions. For purpose"
+www-sec-gov-divisions-investment-noaction-2018-cryptocurrency.pdf,general_document,,business,0,"Home | Previous Page
+Staff Letter: Engaging on Fund Innovation andCryptocurrency-related Holdings
+January 18, 2018
+Paul Schott StevensPresident & CEOInvestment Company Institute1401 H St., NW, Suite 1200Washington, DC 20005
+Timothy W. CameronAsset Management Group – HeadSecurities Industry and Financial Markets Association1101 New York Avenue, NW, 8th FloorWashington, DC 20005
+Re: Engaging on Fund Innovation and Cryptocurrency-related Holdings
+Dear [Mr. Stevens/Mr. Cameron]:
+As you know, the U.S"
+www-sec-gov-newsroom-speeches-statements-statement-clayton.pdf,general_document,,general,0,"An ofﬁcial website of the United States government Here’s how you know
+More in this Section
+STATEMENT Copy Link
+Statement on Cryptocurrencies
+and Initial Coin Oﬀerings
+Chairman Jay Clayton
+Dec. 11, 2017
+The world’s social media platforms and ﬁnancial markets are abuzz about
+cryptocurrencies and “initial coin offerings” (ICOs).  There are tales of fortunes made
+and dreamed to be made.  We are hearing the familiar refrain, “this time is different.”
+The cryptocurrency and ICO markets have grown rap"
+zeth_cryptocurrency_security_agreement.pdf,contract,,general,0," 
+1 
+ 
+CRYPTOCURRENCY SECURITY AGREEMENT 
+(SERIES ZETH) 
+ 
+This CRYPTOCURRENCY SECURITY AGREEMENT (this “Agreement”) dated as of 22 
+February  2021 (the “Effective Date”), is made by and between ETC Issuance GmbH, a limited 
+liability company organised under the laws of the Federal Republic of Germany, having its 
+corporate seat  at Thurn- und Taxis -Platz 6, 60313  Frankfurt am Main, Germany, which is 
+registered in the  commercial register of the  local court of Frankfurt am Main under number "

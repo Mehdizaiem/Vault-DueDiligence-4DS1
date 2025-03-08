@@ -6,6 +6,7 @@ from typing import Dict, List, Any, Optional, Union
 from datetime import datetime
 import json
 from datetime import timedelta
+from weaviate.classes.query import Sort
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -459,13 +460,23 @@ class StorageManager:
             # Get the collection
             collection = self.client.collections.get("CryptoTimeSeries")
             
-            # Build filter
-            from weaviate.classes.query import Filter
+            # Build filter using the proper Weaviate v4 syntax
+            from weaviate.classes.query import Filter, Sort
+            
+            # Create filter for symbol and interval
+            filter_query = Filter.by_property("symbol").equal(symbol)
+            if interval:
+                filter_query = filter_query & Filter.by_property("interval").equal(interval)
+            
+            # Create a Sort object with the correct boolean parameter
+            # Use True for ascending, False for descending
+            sort = Sort.by_property("timestamp", ascending=True)
+            
+            # Execute query with proper sort format
             response = collection.query.fetch_objects(
-                filters=Filter.by_property("symbol").equal(symbol) & 
-                       Filter.by_property("interval").equal(interval),
+                filters=filter_query,
                 limit=limit,
-                sort=[{"path": ["timestamp"], "order": "asc"}]
+                sort=sort  # Use the Sort object with boolean parameter
             )
             
             # Format results

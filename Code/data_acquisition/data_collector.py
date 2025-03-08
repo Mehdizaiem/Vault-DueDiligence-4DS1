@@ -106,7 +106,7 @@ class DataCollector:
         
         Args:
             symbols (List[str], optional): List of symbols to fetch data for
-                                          Default: ["BTC", "ETH", "SOL", "BNB", "ADA"]
+                                        Default: ["BTC", "ETH", "SOL", "BNB", "ADA"]
         
         Returns:
             List[Dict]: Market data for each symbol
@@ -118,7 +118,7 @@ class DataCollector:
         
         all_market_data = []
         
-        # Try CoinGecko first (it has good free tier limits)
+        # Try CoinGecko first (it has good free tier limits but enforce proper free usage)
         try:
             # Convert symbols to coingecko IDs
             symbol_ids = {
@@ -143,9 +143,13 @@ class DataCollector:
                 "include_24hr_change": "true"
             }
             
-            # Add API key if available
-            if self.api_keys["coingecko"]:
-                params["x_cg_pro_api_key"] = self.api_keys["coingecko"]
+            # For free tier, DON'T add the API key parameter at all
+            # Only add the key param if using Pro and have the correct key
+            api_key = self.api_keys["coingecko"]
+            if api_key and api_key.startswith("CG-"):  # Pro API keys start with CG-
+                # Using Pro API - change URL and add key
+                url = "https://pro-api.coingecko.com/api/v3/simple/price"
+                params["x_cg_pro_api_key"] = api_key
                 
             # Make request
             response = self._make_request(url, params)
@@ -170,7 +174,6 @@ class DataCollector:
                     all_market_data.append(market_data)
                     
                 logger.info(f"Fetched {len(all_market_data)} records from CoinGecko")
-                    
         except Exception as e:
             logger.error(f"Error in CoinGecko API: {str(e)}")
             

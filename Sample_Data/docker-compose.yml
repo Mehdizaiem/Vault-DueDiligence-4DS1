@@ -1,37 +1,27 @@
 # File path: docker-compose.yml
 version: '3.4'
 services:
-  weaviate:
-    image: semitechnologies/weaviate:1.24.0
-    ports:
-      - "9090:8080"
-      - "50051:50051"
-    restart: on-failure:0
-    environment:
-      QUERY_DEFAULTS_LIMIT: 25
-      AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: 'true'
-      PERSISTENCE_DATA_PATH: '/var/lib/weaviate'
-      DEFAULT_VECTORIZER_MODULE: 'none'  # Using 'none' so we can handle embeddings in our Python code
-      CLUSTER_HOSTNAME: 'node1'
-      TRANSFORMERS_INFERENCE_API: 'http://t2v-transformers:8080'
-    volumes:
-      - weaviate_data:/var/lib/weaviate
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/v1/.well-known/ready"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - weaviate-network
-
-  # Optional: Include text2vec-transformers for MPNet embedding generation within Weaviate
-  t2v-transformers:
-    image: semitechnologies/transformers-inference:sentence-transformers-all-mpnet-base-v2
-    environment:
-      ENABLE_CUDA: '0'
-    networks:
-      - weaviate-network
-
+ weaviate:
+  image: semitechnologies/weaviate:1.24.0
+  ports:
+    - "9090:8080"
+    - "50051:50051"
+  restart: on-failure:0
+  environment:
+    QUERY_DEFAULTS_LIMIT: 25
+    AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: 'true'
+    PERSISTENCE_DATA_PATH: '/var/lib/weaviate'
+    DEFAULT_VECTORIZER_MODULE: 'none'  # Using 'none' since we're generating embeddings in Python
+    CLUSTER_HOSTNAME: 'node1'
+  volumes:
+    - weaviate_data:/var/lib/weaviate
+  healthcheck:
+    test: ["CMD", "curl", "-f", "http://localhost:8080/v1/.well-known/ready"]
+    interval: 10s
+    timeout: 5s
+    retries: 5
+  networks:
+    - weaviate-network
 volumes:
   weaviate_data:
 

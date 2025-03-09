@@ -1,8 +1,7 @@
 import weaviate
-from vector_store.embed import generate_embedding, process_document
 from weaviate.exceptions import WeaviateBaseError
 import logging
-
+from vector_store.embed import generate_mpnet_embedding as generate_embedding, process_document
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

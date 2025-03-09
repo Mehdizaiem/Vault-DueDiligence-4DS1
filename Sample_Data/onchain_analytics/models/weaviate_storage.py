@@ -1,14 +1,15 @@
 # Sample_Data/onchain_analytics/models/weaviate_storage.py
-
 import logging
 from typing import Dict, Any
 from datetime import datetime
 import sys
 import os
 
-# First, get the absolute path to the project root
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
-sys.path.append(project_root)
+# Add path to find vector_store
+parent_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+sys.path.append(parent_path)
+
+# Then import using the full path
 from Sample_Data.vector_store.weaviate_client import get_weaviate_client
 from Sample_Data.vector_store.embed import generate_embedding
 from .weaviate_schema import create_onchain_schema

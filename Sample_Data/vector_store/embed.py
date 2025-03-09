@@ -1,9 +1,12 @@
+# File path: Sample_Data/vector_store/embed.py
 import os
-from transformers import BertTokenizer, BertModel
-import torch
-from dotenv import load_dotenv
-from feature_extraction import CryptoFeatureExtractor
+import numpy as np
 import logging
+from typing import Optional, Dict, List, Union, Any, Tuple
+import torch
+from sentence_transformers import SentenceTransformer
+from transformers import AutoTokenizer, AutoModel
+from dotenv import load_dotenv
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -12,25 +15,38 @@ logger = logging.getLogger(__name__)
 # Load environment variables
 load_dotenv()
 
-# Get the embedding model name from environment variables
-# Default to 'bert-base-uncased' if not specified
-EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "bert-base-uncased")
+# Constants
+MPNET_MODEL_NAME = "sentence-transformers/all-mpnet-base-v2"
+FINBERT_MODEL_NAME = "yiyanghkust/finbert-tone"
+MPNET_DIMENSION = 768
+FINBERT_DIMENSION = 768
 
-# Initialize the tokenizer and model
-tokenizer = BertTokenizer.from_pretrained(EMBEDDING_MODEL)
-model = BertModel.from_pretrained(EMBEDDING_MODEL)
+# Initialize models
+mpnet_model = None
+finbert_model = None
+finbert_tokenizer = None
 
-# Move model to GPU if available
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model = model.to(device)
-model.eval()  # Set model to evaluation mode
+def initialize_models():
+    """Initialize all embedding models"""
+    global mpnet_model, finbert_model, finbert_tokenizer
+    
+    try:
+        logger.info(f"Loading all-MPNet model: {MPNET_MODEL_NAME}")
+        mpnet_model = SentenceTransformer(MPNET_MODEL_NAME)
+        
+        logger.info(f"Loading FinBERT model: {FINBERT_MODEL_NAME}")
+        finbert_tokenizer = AutoTokenizer.from_pretrained(FINBERT_MODEL_NAME)
+        finbert_model = AutoModel.from_pretrained(FINBERT_MODEL_NAME)
+        
+        logger.info("All embedding models loaded successfully")
+        return True
+    except Exception as e:
+        logger.error(f"Error initializing embedding models: {e}")
+        return False
 
-# Initialize the feature extractor
-feature_extractor = CryptoFeatureExtractor()
-
-def generate_embedding(text):
+def generate_mpnet_embedding(text: str) -> List[float]:
     """
-    Generate an embedding vector for the given text using BERT.
+    Generate an embedding vector for the given text using all-MPNet.
     
     Args:
         text (str): The text to embed
@@ -38,73 +54,265 @@ def generate_embedding(text):
     Returns:
         list: The embedding vector as a list of floats
     """
-    # Tokenize the text and prepare for model
-    inputs = tokenizer(text, 
-                      padding=True, 
-                      truncation=True, 
-                      max_length=512, 
-                      return_tensors="pt")
+    global mpnet_model
     
-    # Move inputs to the same device as model
-    inputs = {k: v.to(device) for k, v in inputs.items()}
+    if not text or not isinstance(text, str):
+        logger.warning("Invalid text provided for embedding")
+        return [0.0] * MPNET_DIMENSION
     
-    # Generate embeddings
-    with torch.no_grad():  # Disable gradient calculations
-        outputs = model(**inputs)
+    if mpnet_model is None:
+        initialize_models()
+    
+    try:
+        # Truncate text to avoid potential memory issues
+        text = text[:100000]  # Limit to 100K characters
         
-        # Use the [CLS] token embedding as the document embedding
-        embeddings = outputs.last_hidden_state[:, 0, :].squeeze()
+        # Generate embeddings
+        with torch.no_grad():  # Disable gradient calculation for inference
+            embeddings = mpnet_model.encode(text, show_progress_bar=False)
         
-        # Convert to list and move back to CPU if necessary
-        if device.type == "cuda":
-            embeddings = embeddings.cpu()
-            
-        return embeddings.numpy().tolist()
+        # Convert to list if it's a numpy array
+        return embeddings.tolist() if isinstance(embeddings, np.ndarray) else embeddings
+    except Exception as e:
+        logger.error(f"Error generating MPNet embedding: {str(e)}")
+        # Return a zero vector with the correct dimension in case of error
+        return [0.0] * MPNET_DIMENSION
 
-def extract_features(text, document_type=None):
+def generate_finbert_embedding(text: str) -> List[float]:
     """
-    Extract features from text using the CryptoFeatureExtractor.
+    Generate an embedding vector for the given text using FinBERT.
     
     Args:
-        text (str): The text to extract features from
-        document_type (str, optional): Type of document
+        text (str): The text to embed
         
     Returns:
-        dict: Dictionary of extracted features
+        list: The embedding vector as a list of floats
     """
-    return feature_extractor.extract_features(text, document_type)
+    global finbert_model, finbert_tokenizer
+    
+    if not text or not isinstance(text, str):
+        logger.warning("Invalid text provided for FinBERT embedding")
+        return [0.0] * FINBERT_DIMENSION
+    
+    if finbert_model is None or finbert_tokenizer is None:
+        initialize_models()
+    
+    try:
+        # Truncate text if needed
+        text = text[:500]  # FinBERT has a more limited context window
+        
+        # Tokenize and get input tensors
+        inputs = finbert_tokenizer(text, return_tensors="pt", padding=True, truncation=True, max_length=512)
+        
+        # Generate embeddings
+        with torch.no_grad():
+            outputs = finbert_model(**inputs)
+            
+        # Use the CLS token embedding as the document representation
+        cls_embedding = outputs.last_hidden_state[:, 0, :].numpy()
+        
+        # Normalize the embedding
+        embedding = cls_embedding[0]
+        embedding_norm = np.linalg.norm(embedding)
+        if embedding_norm > 0:
+            embedding = embedding / embedding_norm
+            
+        return embedding.tolist()
+    except Exception as e:
+        logger.error(f"Error generating FinBERT embedding: {str(e)}")
+        return [0.0] * FINBERT_DIMENSION
 
-def process_document(text, document_type=None):
+def process_document_for_due_diligence(text: str, document_type: Optional[str] = None) -> Tuple[List[float], Dict[str, Any]]:
     """
-    Process a document by generating its embedding and extracting features.
+    Process a document for the CryptoDueDiligenceDocuments collection.
     
     Args:
         text (str): The document text
         document_type (str, optional): Type of document
         
     Returns:
-        tuple: (embedding, features) where embedding is a list of floats
+        tuple: (embedding, features) where embedding is the document vector
                and features is a dictionary of extracted features
     """
-    logger.info(f"Processing document of type: {document_type or 'unknown'}")
+    # Generate embedding using all-MPNet
+    embedding = generate_mpnet_embedding(text)
     
-    # Generate embedding
-    embedding = generate_embedding(text)
-    
-    # Extract features
-    features = extract_features(text, document_type)
+    # Extract features (simplified here, you might want to use your feature extractor)
+    features = {
+        "word_count": len(text.split()),
+        "keywords": extract_keywords(text),
+        "risk_score": calculate_risk_score(text)
+    }
     
     return embedding, features
 
+def process_news_for_sentiment(text: str, title: Optional[str] = None) -> Tuple[List[float], Dict[str, Any]]:
+    """
+    Process a news article for the CryptoNewsSentiment collection.
+    
+    Args:
+        text (str): The article text
+        title (str, optional): The article title
+        
+    Returns:
+        tuple: (embedding, sentiment) where embedding is the document vector
+               and sentiment is a dictionary with sentiment analysis results
+    """
+    # Combine title and text for better embedding if title is provided
+    if title:
+        combined_text = f"{title}\n\n{text}"
+    else:
+        combined_text = text
+    
+    # Generate embedding using FinBERT
+    embedding = generate_finbert_embedding(combined_text)
+    
+    # Analyze sentiment using a simplified approach
+    # In a real scenario, you should use the FinBERT model for sentiment analysis
+    sentiment_score = calculate_sentiment(combined_text)
+    if sentiment_score > 0.6:
+        sentiment_label = "POSITIVE"
+    elif sentiment_score < 0.4:
+        sentiment_label = "NEGATIVE"
+    else:
+        sentiment_label = "NEUTRAL"
+    
+    sentiment = {
+        "sentiment_score": sentiment_score,
+        "sentiment_label": sentiment_label,
+        "analyzed_at": datetime.now().isoformat()
+    }
+    
+    return embedding, sentiment
+
+def extract_keywords(text: str, max_keywords: int = 10) -> List[str]:
+    """
+    Extract keywords from text (simplified implementation).
+    
+    Args:
+        text (str): The text to extract keywords from
+        max_keywords (int): Maximum number of keywords to extract
+        
+    Returns:
+        list: List of keywords
+    """
+    # This is a placeholder implementation
+    # In a real application, use a proper keyword extraction algorithm
+    common_words = set(['the', 'and', 'a', 'to', 'of', 'in', 'that', 'is', 'for', 'it', 'with', 'as', 'be', 'on', 'at'])
+    words = text.lower().split()
+    # Filter out common words and count occurrences
+    word_counts = {}
+    for word in words:
+        if len(word) > 3 and word not in common_words:
+            word_counts[word] = word_counts.get(word, 0) + 1
+    
+    # Sort by count and get top keywords
+    keywords = sorted(word_counts.items(), key=lambda x: x[1], reverse=True)[:max_keywords]
+    return [keyword for keyword, _ in keywords]
+
+def calculate_risk_score(text: str) -> float:
+    """
+    Calculate a risk score for a document (simplified implementation).
+    
+    Args:
+        text (str): The document text
+        
+    Returns:
+        float: Risk score (0-100)
+    """
+    # This is a placeholder implementation
+    # In a real application, use a proper risk assessment algorithm
+    text_lower = text.lower()
+    
+    # Risk categories with associated terms
+    risk_categories = {
+        "regulatory": ["regulatory", "regulation", "compliance", "legal", "jurisdiction", 
+                     "restriction", "prohibited", "banned", "illegal", "unauthorized"],
+        "financial": ["loss", "bankrupt", "insolvency", "debt", "liability", "expense", 
+                    "cost", "inflation", "devaluation", "depreciation"],
+        "technical": ["hack", "exploit", "vulnerability", "attack", "breach", "bug", 
+                    "glitch", "failure", "malfunction", "error"],
+        "operational": ["delay", "failure", "disruption", "interruption", "downtime", 
+                      "outage", "maintenance", "discontinue", "cease", "halt"],
+        "fraud": ["scam", "fraud", "phishing", "fake", "counterfeit", "impersonation",
+                 "ponzi", "pyramid", "mlm", "money laundering"]
+    }
+    
+    # Count risk terms by category
+    risk_counts = {category: 0 for category in risk_categories}
+    
+    for category, terms in risk_categories.items():
+        for term in terms:
+            risk_counts[category] += text_lower.count(term)
+    
+    # Calculate overall risk score (weighted)
+    weights = {
+        "regulatory": 1.2,
+        "financial": 1.0,
+        "technical": 1.1,
+        "operational": 0.9,
+        "fraud": 1.3
+    }
+    
+    total_weight = sum(weights.values())
+    weighted_sum = sum(risk_counts[cat] * weights[cat] for cat in risk_counts)
+    max_possible = 10 * total_weight  # Assuming max 10 mentions per category
+    
+    # Scale to 0-100
+    risk_score = min(100, (weighted_sum / max_possible) * 100)
+    
+    return risk_score
+
+def calculate_sentiment(text: str) -> float:
+    """
+    Calculate sentiment score (simplified implementation).
+    
+    Args:
+        text (str): The text to analyze
+        
+    Returns:
+        float: Sentiment score (0-1)
+    """
+    # This is a placeholder implementation
+    # In a real application, use FinBERT for sentiment analysis
+    text_lower = text.lower()
+    
+    # Simple dictionary-based approach
+    positive_words = ["bullish", "growth", "profit", "gain", "surge", "rise", "positive", 
+                     "promising", "success", "opportunity", "uptrend", "breakthrough", 
+                     "milestone", "achievement", "progress", "improve", "advantage"]
+    
+    negative_words = ["bearish", "crash", "loss", "decline", "fall", "drop", "negative", 
+                     "concern", "risk", "threat", "downtrend", "failure", "problem", 
+                     "issue", "disaster", "crisis", "danger", "worry"]
+    
+    # Count positive and negative words
+    positive_count = sum(text_lower.count(word) for word in positive_words)
+    negative_count = sum(text_lower.count(word) for word in negative_words)
+    
+    # Calculate sentiment score
+    total_count = positive_count + negative_count
+    if total_count == 0:
+        return 0.5  # Neutral if no sentiment words found
+    
+    sentiment_score = positive_count / total_count
+    return sentiment_score
+
+# Initialize models on module import
+initialize_models()
+
+# Example usage
 if __name__ == "__main__":
-    # Test the embedding and feature extraction
-    test_text = "This is a test document about cryptocurrency regulations."
+    # Test MPNet embedding
+    sample_text = "This is a sample document about cryptocurrency markets. Bitcoin and Ethereum are popular cryptocurrencies."
+    embedding = generate_mpnet_embedding(sample_text)
     
-    embedding, features = process_document(test_text, "regulatory_filing")
+    logger.info(f"Generated MPNet embedding with {len(embedding)} dimensions")
+    logger.info(f"First few embedding values: {embedding[:5]}")
     
-    print(f"Generated embedding with {len(embedding)} dimensions")
-    print(f"First few values: {embedding[:5]}")
+    # Test FinBERT embedding
+    news_text = "Bitcoin price surges to new all-time high as institutional adoption increases."
+    finbert_embedding = generate_finbert_embedding(news_text)
     
-    print("\nExtracted features:")
-    for key, value in features.items():
-        print(f"{key}: {value}")
+    logger.info(f"Generated FinBERT embedding with {len(finbert_embedding)} dimensions")
+    logger.info(f"First few FinBERT embedding values: {finbert_embedding[:5]}")

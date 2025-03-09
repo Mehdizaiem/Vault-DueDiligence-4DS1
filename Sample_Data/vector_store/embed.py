@@ -1,4 +1,5 @@
 # File path: Sample_Data/vector_store/embed.py
+import datetime
 import os
 import numpy as np
 import logging

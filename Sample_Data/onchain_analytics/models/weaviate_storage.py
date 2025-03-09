@@ -11,7 +11,8 @@ sys.path.append(parent_path)
 
 # Then import using the full path
 from Sample_Data.vector_store.weaviate_client import get_weaviate_client
-from Sample_Data.vector_store.embed import generate_embedding
+# In weaviate_storage.py
+from Sample_Data.vector_store.embed import generate_mpnet_embedding
 from .weaviate_schema import create_onchain_schema
 
 logger = logging.getLogger(__name__)
@@ -44,7 +45,7 @@ def store_wallet_analysis(wallet_data: Dict[str, Any], related_fund: str = None)
         """
         
         # Generate embedding
-        vector = generate_embedding(description)
+        vector = generate_mpnet_embedding(description)
         
         # Convert timestamps to ISO format
         first_tx = analytics.get("first_transaction_timestamp")

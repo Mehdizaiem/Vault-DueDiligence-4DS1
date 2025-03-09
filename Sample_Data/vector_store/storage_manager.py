@@ -241,7 +241,7 @@ class StorageManager:
     
     def store_time_series(self, time_series_data: List[Dict]) -> bool:
         """
-        Store time series data in the CryptoTimeSeries collection
+        Store time series data in the CryptoTimeSeries collection with improved error handling
         
         Args:
             time_series_data (List[Dict]): Time series data points
@@ -260,31 +260,72 @@ class StorageManager:
             # Process data points in batches
             batch_size = 100
             success_count = 0
+            error_count = 0
+            
+            # Track data types for logging
+            data_types = {}
             
             for i in range(0, len(time_series_data), batch_size):
                 batch = time_series_data[i:i+batch_size]
                 objects_to_insert = []
                 
                 for data in batch:
-                    # Prepare properties
-                    properties = {
-                        "symbol": data.get("symbol", "UNKNOWN"),
-                        "exchange": data.get("exchange", "unknown"),
-                        "timestamp": data.get("timestamp", datetime.now().isoformat()),
-                        "open": data.get("open", 0.0),
-                        "high": data.get("high", 0.0),
-                        "low": data.get("low", 0.0),
-                        "close": data.get("close", 0.0),
-                        "volume": data.get("volume", 0.0),
-                        "interval": data.get("interval", "1d")
-                    }
-                    
-                    objects_to_insert.append(properties)
+                    # Ensure all numeric fields are properly converted to float/int
+                    try:
+                        # Prepare properties with correct data types
+                        properties = {
+                            "symbol": str(data.get("symbol", "UNKNOWN")),
+                            "exchange": str(data.get("exchange", "unknown")),
+                            "timestamp": data.get("timestamp", datetime.now().isoformat()),
+                            "open": float(data.get("open", 0.0)),
+                            "high": float(data.get("high", 0.0)),
+                            "low": float(data.get("low", 0.0)),
+                            "close": float(data.get("close", 0.0)),
+                            "volume": float(data.get("volume", 0.0)),
+                            "interval": str(data.get("interval", "1d"))
+                        }
+                        
+                        # For debugging, track data types
+                        if len(data_types) == 0:
+                            for key, value in properties.items():
+                                data_types[key] = type(value).__name__
+                        
+                        objects_to_insert.append(properties)
+                    except Exception as e:
+                        logger.error(f"Error preparing data point: {e}")
+                        error_count += 1
+                        continue
                 
                 # Insert batch
                 if objects_to_insert:
-                    collection.data.insert_many(objects_to_insert)
-                    success_count += len(objects_to_insert)
+                    try:
+                        response = collection.data.insert_many(objects_to_insert)
+                        
+                        # Check for errors
+                        if hasattr(response, 'has_errors') and response.has_errors:
+                            logger.error(f"Batch insert had errors: {response.errors}")
+                            error_count += len(objects_to_insert)
+                        else:
+                            success_count += len(objects_to_insert)
+                            logger.info(f"Inserted batch of {len(objects_to_insert)} time series points")
+                    except Exception as e:
+                        logger.error(f"Error inserting batch: {e}")
+                        
+                        # Try one by one in case batch insertion fails
+                        partial_success = 0
+                        for obj in objects_to_insert:
+                            try:
+                                collection.data.insert(properties=obj)
+                                partial_success += 1
+                            except Exception:
+                                error_count += 1
+                        
+                        if partial_success > 0:
+                            success_count += partial_success
+                            logger.info(f"Inserted {partial_success}/{len(objects_to_insert)} time series points individually")
+                        
+            # Log data types for debugging
+            logger.debug(f"Data types for time series data: {data_types}")
             
             logger.info(f"Successfully stored {success_count}/{len(time_series_data)} time series data points")
             return success_count > 0
@@ -442,7 +483,7 @@ class StorageManager:
     
     def retrieve_time_series(self, symbol: str, interval: str = "1d", limit: int = 100) -> List[Dict]:
         """
-        Retrieve time series data for a specific symbol and interval
+        Retrieve time series data for a specific symbol and interval with improved debugging.
         
         Args:
             symbol (str): Cryptocurrency symbol
@@ -453,43 +494,103 @@ class StorageManager:
             List[Dict]: Time series data
         """
         if not self.connect():
-            logger.error("Failed to connect to Weaviate")
+            logger.error(f"Failed to connect to Weaviate when retrieving data for {symbol}")
             return []
             
         try:
             # Get the collection
             collection = self.client.collections.get("CryptoTimeSeries")
             
-            # Build filter using the proper Weaviate v4 syntax
-            from weaviate.classes.query import Filter, Sort
+            # Log the request
+            logger.debug(f"Retrieving time series data for symbol={symbol}, interval={interval}, limit={limit}")
             
-            # Create filter for symbol and interval
-            filter_query = Filter.by_property("symbol").equal(symbol)
-            if interval:
-                filter_query = filter_query & Filter.by_property("interval").equal(interval)
+            # Normalize the symbol name for consistency
+            if not symbol.upper().endswith("USDT") and not symbol.upper().endswith("USD"):
+                symbol = f"{symbol.upper()}USDT"
+            symbol = symbol.upper()
             
-            # Create a Sort object with the correct boolean parameter
-            # Use True for ascending, False for descending
-            sort = Sort.by_property("timestamp", ascending=True)
+            # Also try with alternative symbol notation
+            alt_symbol = symbol.replace("USDT", "USD") if "USDT" in symbol else symbol.replace("USD", "USDT")
             
-            # Execute query with proper sort format
-            response = collection.query.fetch_objects(
-                filters=filter_query,
-                limit=limit,
-                sort=sort  # Use the Sort object with boolean parameter
-            )
-            
-            # Format results
-            results = []
-            for obj in response.objects:
-                result = {
-                    "id": str(obj.uuid),
-                    **obj.properties
-                }
-                results.append(result)
-            
-            return results
-            
+            try:
+                # First try to count how many records exist for this symbol
+                from weaviate.classes.query import Filter
+                
+                # Create filter for symbol
+                main_filter = Filter.by_property("symbol").equal(symbol)
+                alt_filter = Filter.by_property("symbol").equal(alt_symbol)
+                combined_filter = main_filter | alt_filter
+                
+                # Add interval filter if specified
+                if interval:
+                    interval_filter = Filter.by_property("interval").equal(interval)
+                    combined_filter = combined_filter & interval_filter
+                
+                # Count matches
+                count_result = collection.query.aggregate.with_where(
+                    filter=combined_filter
+                ).total_count
+                
+                logger.info(f"Found {count_result} time series data points for {symbol}/{alt_symbol}")
+                
+                # If no matches found, log more details
+                if count_result == 0:
+                    # Get all symbol entries to see what's available
+                    all_symbols_result = collection.query.aggregate.over_all(
+                        group_by="symbol"
+                    )
+                    
+                    if all_symbols_result and hasattr(all_symbols_result, 'groups'):
+                        available_symbols = [group.grouped_by.value for group in all_symbols_result.groups]
+                        logger.info(f"Available symbols in CryptoTimeSeries: {available_symbols}")
+                        
+                        # Check if symbol might be formatted differently
+                        symbol_base = symbol.replace("USDT", "").replace("USD", "")
+                        similar_symbols = [s for s in available_symbols if symbol_base in s]
+                        
+                        if similar_symbols:
+                            logger.info(f"Found similar symbols to {symbol}: {similar_symbols}")
+                            
+                            # Try with the first similar symbol
+                            symbol = similar_symbols[0]
+                            logger.info(f"Trying again with symbol: {symbol}")
+                            main_filter = Filter.by_property("symbol").equal(symbol)
+                            
+                            if interval:
+                                combined_filter = main_filter & Filter.by_property("interval").equal(interval)
+                            else:
+                                combined_filter = main_filter
+                    else:
+                        logger.warning("No symbols found in CryptoTimeSeries collection")
+                        return []
+                
+                # Execute query with proper sort format
+                from weaviate.classes.query import Sort
+                
+                response = collection.query.fetch_objects(
+                    filters=combined_filter,
+                    limit=limit,
+                    sort=[Sort.by_property("timestamp", ascending=True)]
+                )
+                
+                # Format results
+                results = []
+                for obj in response.objects:
+                    result = {
+                        "id": str(obj.uuid),
+                        **obj.properties
+                    }
+                    results.append(result)
+                
+                logger.info(f"Retrieved {len(results)} time series data points for {symbol}")
+                return results
+                
+            except Exception as e:
+                logger.error(f"Error building query for time series: {e}")
+                import traceback
+                logger.error(traceback.format_exc())
+                return []
+                
         except Exception as e:
             logger.error(f"Error retrieving time series: {e}")
             return []

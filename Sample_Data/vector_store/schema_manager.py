@@ -240,6 +240,7 @@ def create_market_metrics_schema(client):
 def create_crypto_time_series_schema(client):
     """
     Create the CryptoTimeSeries collection without embeddings.
+    Fixed to use correct data types.
     """
     try:
         # Check if collection already exists
@@ -258,47 +259,47 @@ def create_crypto_time_series_schema(client):
                 properties=[
                     {
                         "name": "symbol",
-                        "data_type": DataType.TEXT,
+                        "dataType": ["text"],
                         "description": "Cryptocurrency symbol (e.g., BTCUSDT)"
                     },
                     {
                         "name": "exchange",
-                        "data_type": DataType.TEXT,
+                        "dataType": ["text"],
                         "description": "Exchange (e.g., Binance, Coinbase)"
                     },
                     {
                         "name": "timestamp",
-                        "data_type": DataType.DATE,
+                        "dataType": ["date"],
                         "description": "Data timestamp"
                     },
                     {
                         "name": "open",
-                        "data_type": DataType.NUMBER,
+                        "dataType": ["number"],  # Using number type for price values
                         "description": "Opening price"
                     },
                     {
                         "name": "high",
-                        "data_type": DataType.NUMBER,
+                        "dataType": ["number"],  # Using number type for price values
                         "description": "Highest price"
                     },
                     {
                         "name": "low",
-                        "data_type": DataType.NUMBER,
+                        "dataType": ["number"],  # Using number type for price values
                         "description": "Lowest price"
                     },
                     {
                         "name": "close",
-                        "data_type": DataType.NUMBER,
+                        "dataType": ["number"],  # Using number type for price values
                         "description": "Closing price"
                     },
                     {
                         "name": "volume",
-                        "data_type": DataType.NUMBER,
+                        "dataType": ["number"],  # Using number type for volume (FIXED)
                         "description": "Trading volume"
                     },
                     {
                         "name": "interval",
-                        "data_type": DataType.TEXT,
+                        "dataType": ["text"],
                         "description": "Time interval (e.g., 1d, 1h, 15m)"
                     }
                 ]
@@ -307,8 +308,9 @@ def create_crypto_time_series_schema(client):
             logger.info("Successfully created CryptoTimeSeries collection")
             return collection
         except Exception as e:
-            logger.error(f"Failed to create CryptoTimeSeries collection: {e}")
+            logger.error(f"Failed to create CryptoTimeSeries collection: {str(e)}")
             raise
+
 
 def create_onchain_analytics_schema(client):
     """

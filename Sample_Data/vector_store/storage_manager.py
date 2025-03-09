@@ -6,6 +6,7 @@ from typing import Dict, List, Any, Optional, Union
 from datetime import datetime
 import json
 from datetime import timedelta
+import weaviate
 from weaviate.classes.query import Sort
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -498,7 +499,7 @@ class StorageManager:
             return []
             
         try:
-            # Get the collection
+            # Use CryptoTimeSeries for time series data
             collection = self.client.collections.get("CryptoTimeSeries")
             
             # Log the request
@@ -512,87 +513,68 @@ class StorageManager:
             # Also try with alternative symbol notation
             alt_symbol = symbol.replace("USDT", "USD") if "USDT" in symbol else symbol.replace("USD", "USDT")
             
-            try:
-                # First try to count how many records exist for this symbol
-                from weaviate.classes.query import Filter
-                
-                # Create filter for symbol
-                main_filter = Filter.by_property("symbol").equal(symbol)
-                alt_filter = Filter.by_property("symbol").equal(alt_symbol)
-                combined_filter = main_filter | alt_filter
-                
-                # Add interval filter if specified
-                if interval:
-                    interval_filter = Filter.by_property("interval").equal(interval)
-                    combined_filter = combined_filter & interval_filter
-                
-                # Count matches
-                count_result = collection.query.aggregate.with_where(
-                    filter=combined_filter
-                ).total_count
-                
-                logger.info(f"Found {count_result} time series data points for {symbol}/{alt_symbol}")
-                
-                # If no matches found, log more details
-                if count_result == 0:
-                    # Get all symbol entries to see what's available
-                    all_symbols_result = collection.query.aggregate.over_all(
-                        group_by="symbol"
-                    )
-                    
-                    if all_symbols_result and hasattr(all_symbols_result, 'groups'):
-                        available_symbols = [group.grouped_by.value for group in all_symbols_result.groups]
-                        logger.info(f"Available symbols in CryptoTimeSeries: {available_symbols}")
-                        
-                        # Check if symbol might be formatted differently
-                        symbol_base = symbol.replace("USDT", "").replace("USD", "")
-                        similar_symbols = [s for s in available_symbols if symbol_base in s]
-                        
-                        if similar_symbols:
-                            logger.info(f"Found similar symbols to {symbol}: {similar_symbols}")
-                            
-                            # Try with the first similar symbol
-                            symbol = similar_symbols[0]
-                            logger.info(f"Trying again with symbol: {symbol}")
-                            main_filter = Filter.by_property("symbol").equal(symbol)
-                            
-                            if interval:
-                                combined_filter = main_filter & Filter.by_property("interval").equal(interval)
-                            else:
-                                combined_filter = main_filter
-                    else:
-                        logger.warning("No symbols found in CryptoTimeSeries collection")
-                        return []
-                
-                # Execute query with proper sort format
-                from weaviate.classes.query import Sort
-                
-                response = collection.query.fetch_objects(
-                    filters=combined_filter,
-                    limit=limit,
-                    sort=[Sort.by_property("timestamp", ascending=True)]
+            # Create filter for symbol
+            from weaviate.classes.query import Filter
+            main_filter = Filter.by_property("symbol").equal(symbol)
+            alt_filter = Filter.by_property("symbol").equal(alt_symbol)
+            combined_filter = main_filter | alt_filter
+            
+            # Add interval filter if specified
+            if interval:
+                interval_filter = Filter.by_property("interval").equal(interval)
+                combined_filter = combined_filter & interval_filter
+            
+            # Count matches
+            count_result = collection.aggregate.over_all(filters=combined_filter, total_count=True)
+            total_count = count_result.total_count
+            
+            logger.info(f"Found {total_count} data points for {symbol}/{alt_symbol}")
+            
+            # If no matches found, log more details
+            if total_count == 0:
+                all_symbols_result = collection.aggregate.over_all(
+                    group_by=weaviate.classes.aggregate.GroupByAggregate(prop="symbol"),
+                    total_count=True
                 )
-                
-                # Format results
-                results = []
-                for obj in response.objects:
-                    result = {
-                        "id": str(obj.uuid),
-                        **obj.properties
-                    }
-                    results.append(result)
-                
-                logger.info(f"Retrieved {len(results)} time series data points for {symbol}")
-                return results
-                
-            except Exception as e:
-                logger.error(f"Error building query for time series: {e}")
-                import traceback
-                logger.error(traceback.format_exc())
-                return []
-                
+                if all_symbols_result.groups:
+                    available_symbols = [group.grouped_by.value for group in all_symbols_result.groups]
+                    logger.info(f"Available symbols in CryptoTimeSeries: {available_symbols}")
+                    
+                    # Check if symbol might be formatted differently
+                    symbol_base = symbol.replace("USDT", "").replace("USD", "")
+                    similar_symbols = [s for s in available_symbols if symbol_base in s]
+                    
+                    if similar_symbols:
+                        logger.info(f"Found similar symbols to {symbol}: {similar_symbols}")
+                        symbol = similar_symbols[0]
+                        logger.info(f"Trying again with symbol: {symbol}")
+                        main_filter = Filter.by_property("symbol").equal(symbol)
+                        combined_filter = main_filter & (interval_filter if interval else None)
+            
+            # Execute query with proper sort (corrected to not use a list)
+            from weaviate.classes.query import Sort
+            response = collection.query.fetch_objects(
+                filters=combined_filter,
+                limit=limit,
+                sort=Sort.by_property("timestamp", ascending=True)  # Removed list brackets
+            )
+            
+            # Format results
+            results = []
+            for obj in response.objects:
+                result = {
+                    "id": str(obj.uuid),
+                    **obj.properties
+                }
+                results.append(result)
+            
+            logger.info(f"Retrieved {len(results)} data points for {symbol}")
+            return results
+            
         except Exception as e:
             logger.error(f"Error retrieving time series: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
             return []
     
     def retrieve_onchain_analytics(self, address: str) -> Optional[Dict]:

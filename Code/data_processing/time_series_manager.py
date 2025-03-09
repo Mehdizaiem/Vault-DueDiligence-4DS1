@@ -141,6 +141,9 @@ class TimeSeriesManager:
                 logger.info(f"Symbol {symbol} already processed, skipping")
                 return True
             
+            # Normalize symbol format (strip USDT if present)
+            csv_symbol = symbol.replace("USDT", "")
+            
             # Check if data already exists in Weaviate
             existing_data = self.storage.retrieve_time_series(symbol, limit=1)
             if existing_data and not force:
@@ -148,12 +151,18 @@ class TimeSeriesManager:
                 self.processed_symbols.add(symbol)
                 return True
             
-            # Load data from CSV
-            data = self.csv_loader.load_historical_data(symbol)
+            # Load data from CSV using the normalized symbol
+            data = self.csv_loader.load_historical_data(csv_symbol)
             
             if not data:
-                logger.warning(f"No data found for {symbol}")
+                logger.warning(f"No data found for {csv_symbol}")
                 return False
+            
+            # Ensure all data points have the correct symbol format (with USDT)
+            for point in data:
+                # Make sure the symbol is consistently formatted with USDT
+                if "symbol" in point and not point["symbol"].endswith("USDT"):
+                    point["symbol"] = f"{point['symbol']}USDT"
             
             # Store in Weaviate
             success = self.storage.store_time_series(data)
@@ -169,7 +178,7 @@ class TimeSeriesManager:
         except Exception as e:
             logger.error(f"Error processing {symbol}: {e}")
             return False
-    
+        
     def get_processed_symbols(self) -> List[str]:
         """Get list of processed symbols"""
         return list(self.processed_symbols)

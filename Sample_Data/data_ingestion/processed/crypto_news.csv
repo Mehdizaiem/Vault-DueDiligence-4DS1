@@ -1,48 +1,23 @@
 id,source,title,url,content,date,authors,image_url,scraped_at
-b58552c6e28ae6cc89ff69b5b4c784ca,Cointelegraph,Bitcoin slides another 3% — Is BTC price headed for $69K next?,https://cointelegraph.com/news/bitcoin-slides-3-btc-price-69k-next," Bitcoin bears are stopping at nothing to seal some last-minute BTC price downside into the weekly close — but how much? 
-Bitcoin (BTC) still risks a crash to $75,000 as BTC price weakness accelerates into the weekly close.
-How low can BTC price action go before finding a bottom? Popular market participants weigh in as data from Cointelegraph Markets Pro and TradingView shows BTC/USD down over 3% on March 9.
-Exchange order books are forming an area of intense interest among Bitcoin traders as the weekly candle close nears.
-Liquidation levels on either side of the spot price look ripe for the taking, with longs already paying as BTC/USD sags to $83,000.
-“Liquidation map says: Whales hunting stops!” popular trader TheKingfisher wrote in a warning to X followers on the day.
-Bitcoin exchange liquidity data. Source: TheKingfisher/X
-Data from monitoring resource CoinGlass currently puts aggregate 24-hour crypto liquidations at over $300 million.
-The thickest bid liquidity across exchanges stood at just below $83,000 at the time of writing, with the spot price dangerously close to breaking lower.
-BTC liquidation heatmap (screenshot). Source: CoinGlass
-Could February’s multimonth lows of $78,000 be just the start?
-A bearish BTC price take suggests that the market is not done retesting levels not seen since November last year.
-For popular trader Mikybull Crypto, there is a clear chance that Bitcoin will retest its 50-week simple moving average (SMA).
-“$BTC likely heading for the MA support for a potential local bottom,” he predicted.
-BTC/USD 1-week chart with 50SMA. Source: Mikybull Crypto/X
-BTC/USD last interacted with the 50-week SMA in September but has avoided a weekly candle close below it since March 2023.
-The 200-day SMA, meanwhile, is also back on the radar as price challenges it as support for the first time since October.
-BTC/USD 1-week chart with 50-week, 200-day SMA. Source: Cointelegraph/TradingView
-As Cointelegraph reported last week, a historically accurate BTC price mechanism suggests that the real floor now lies at around $69,000.
-Related: Bitcoin gets March 25 'blast-off date' as US dollar hits 4-month low
-This would take BTC/USD back to its old 2021 all-time high and mark a 37% correction versus its current one.
-The Lowest Price Forward tool gives 95% certainty that Bitcoin will not go any lower. Its track record is impressive, having correctly stated that BTC/USD would never revisit $10,000 after September 2020.
-Bitcoin Lowest Price Forward chart. Source: Timothy Peterson/X
-This article does not contain investment advice or recommendations. Every investment and trading move involves risk, and readers should conduct their own research when making a decision.
-
-",1741544063784,[],,2025-03-09T18:14:23.784360
-7d92f6aa1b6b66eb8d3e34528debcc08,Cointelegraph,Only 4% of the world's population holds Bitcoin in 2025: Report,https://cointelegraph.com/news/only-4-world-population-holds-bitcoin-2025," Despite the growing popularity of Bitcoin, the number of individuals who own it worldwide is minuscule — leaving plenty of room for growth. 
-Only 4% of the global population currently holds Bitcoin (BTC), with the highest concentration of ownership in the United States, where an estimated 14% of individuals own BTC.
-According to a research report from River, a BTC financial services company, North America remains the continent with the highest adoption rate among individuals and institutions, while Africa is currently the lowest at only 1.6%.
-Overall, BTC adoption tended to be higher in more developed regions than in developing regions. River estimates that BTC has only achieved 3% of its maximum adoption potential — signaling that the digital currency is still in the early stages of global adoption.
-Bitcoin’s adoption path is still only at 3%. Source: River
-The financial services company arrived at the 3% figure by calculating Bitcoin's total addressable market, which includes governments, corporations, and institutions — at only 1%. 
-River also took institutional underallocation and individual ownership rates into account to arrive at the 3% metric.
-Although Bitcoin has come a long way since its early cypherpunk days, recently becoming a US government reserve asset, several hurdles stand in the way of Bitcoin mass adoption on a global scale.
-Estimated Bitcoin ownership by geographic region. Source: River
-Related: Bitcoin risks weekly close below $82K on US BTC reserve disappointment
-Bitcoin stands at the intersection of technology and finance — two topics that are dense enough on their own, let alone together.
-The biggest problem facing Bitcoin's mass adoption is a lack of financial and technical education, which fuels misconceptions about BTC — including the idea that it is a scam or a Ponzi Scheme.
-Digital assets are also notorious for their high volatility — a friend of the short-term trader but the enemy of anyone using BTC as a medium of exchange or a store of value.
-A 2023 report from Chainalysis revealed that stablecoins were the most widely transferred digital asset in Latin American counties. Source: Chainalysis
-High volatility disproportionality affects residents in developing economies, who have turned to US dollar stablecoins as a digital store of value due to their low transaction fees and relative stability compared to other cryptocurrencies.
-During the recent White House Crypto Summit on March 7, United States Treasury Secretary Scott Bessent announced that the US will use stablecoins to ensure US dollar hegemony and protect its status as the global reserve currency.
-Magazine: Bitcoin payments are being undermined by centralized stablecoins
-",1741544067652,[],,2025-03-09T18:14:27.652487
+13bb70cf1e366fa890e4cab6a955bb4c,Cointelegraph,European lawmakers silent on US Bitcoin reserve amid digital euro push,https://cointelegraph.com/news/european-lawmakers-silent-trump-bitcoin-reserve-amid-cbdc-push," European lawmakers have yet to respond to Trump’s Bitcoin reserve order as the ECB pushes ahead with its digital euro plans for an October 2025 launch. 
+European lawmakers have remained silent on the United States’ Strategic Bitcoin Reserve order, a landmark policy shift favoring early adopters of Bitcoin due to its economic model.
+US President Donald Trump’s March 7 executive order outlined a plan to create a Bitcoin reserve using cryptocurrency seized in criminal cases rather than purchasing Bitcoin (BTC) on the market.
+Despite the significance of this move, European policymakers have yet to make any major public statements regarding Bitcoin reserves, raising questions about their stance on integrating BTC into national reserves.
+This may signal a lack of European Bitcoin reserve-related efforts due to the lengthy process of adding new national reserve assets, according to Anastasija Plotnikova, co-founder and CEO of blockchain regulatory firm Fideum. She said:
+“[The] ECB [European Central Bank] historically and currently is very critical of BTC as a reserve asset, so it effectively closes the doors to all EU member states,” Plotnikova added.
+Meanwhile, European lawmakers are preparing to launch the digital euro, a central bank digital currency (CBDC).
+Related: US Bitcoin reserve marks ‘real step’ toward global financial integration
+European lawmakers’ silence on Trump’s Bitcoin reserve order is likely due to its focus on the digital euro, according to James Wo, the founder and CEO of venture capital firm DFG.
+“This stems from the ECB’s firm stance against holding Bitcoin in its reserves, as reiterated by ECB President Christine Lagarde,” Wo told Cointelegraph, adding:
+Related: Bitcoin reserve backlash signals unrealistic industry expectations
+Despite skepticism, ECB President Christine Lagarde is pushing ahead with the digital euro’s rollout, expected in October 2025. Lagarde has emphasized that the CBDC will coexist with cash and offer privacy protections to address concerns about government overreach.
+“The European Union is looking to launch the digital euro, our central bank digital currency, by October this year,” Lagarde said during a press conference, adding:
+Source: Cointelegraph
+The United States and the European Union are taking opposite approaches to digital assets. While the EU is working to integrate a centralized digital currency, Trump has taken a firm stance against CBDCs.
+While CBDCs have been praised for their potential to increase financial inclusion, critics have raised concerns about their surveillance capabilities and the potential for government overreach.
+In July 2023, Brazil’s central bank published the source code for its CBDC pilot, and it took just four days for people to notice the surveillance and control mechanisms embedded within its code, allowing the central bank to freeze or reduce user funds within CBDC wallets.
+Magazine: SCB tips $500K BTC, SEC delays Ether ETF options, and more: Hodler’s Digest, Feb. 23 – Mar. 1
+",1741616515255,[],,2025-03-10T14:21:55.255144
 c43f72eb84509cddc953e82486627eca,Cointelegraph,Here’s what happened in crypto today,https://cointelegraph.com/news/what-happened-in-crypto-today," Need to know what happened in crypto today? Here is the latest news on daily trends and events impacting Bitcoin price, blockchain, DeFi, NFTs, Web3 and crypto regulation. 
 Today in crypto, the Chicago Mercantile Exchange (CME) Group announced the launch of Solana futures contracts in March. Meanwhile, global trade concerns continue pressuring investor sentiment, risking a potential Bitcoin correction below the key $75,000 support level. In addition, the US Securities and Exchange Commission has released a statement saying it does not view memecoins as securities.
 The Chicago Mercantile Exchange (CME) Group, a globally recognized derivatives exchange, announced it will launch Solana (SOL) futures contracts on March 17, pending a review by United States financial regulators.
@@ -63,129 +38,164 @@ Source: David Sacks
 “As such, persons who participate in the offer and sale of meme coins do not need to register their transactions with the Commission,” the SEC said.
 It added that memecoin buyers and holders wouldn’t be protected by US securities laws but said the fraudulent offer and sale of memecoins “may be subject to enforcement action or prosecution by other federal or state agencies.”
 ",1740780816989,[],,2025-02-28T22:13:36.989672
-d66dfaa66a50a65e2a5640b598a4e73e,Cointelegraph,Bitcoin reserve backlash signals unrealistic industry expectations,https://cointelegraph.com/news/us-bitcoin-reserve-disappoints-investors-trump-crypto-summit," “Not that long ago, even the idea of BTC Reserve held and supported by a federal government was a revolutionary idea,” a blockchain regulatory expert told Cointelegraph. 
-The widespread disappointment surrounding the US Strategic Bitcoin Reserve — hailed as a historic step for Bitcoin adoption — suggests unrealistic investor expectations, according to regulatory experts.
-President Donald Trump signed an executive order on March 7, which will utilize Bitcoin (BTC) seized in government criminal cases rather than purchasing the asset directly from the market. The announcement triggered a more than 6% drop in Bitcoin’s price, falling from $90,400 to $84,979, according to Cointelegraph Markets Pro data.
-The reaction signals unrealistic industry expectations, according to Anastasija Plotnikova, co-founder and CEO of Fideum, a regulatory and blockchain infrastructure firm focused on institutions.
-BTC/USD, 1-month chart. Source: Cointelegraph
-“It was very clear that the US government could utilize the existing BTC in their possession, aka seized funds,” she told Cointelegraph, adding:
-The Bitcoin reserve is a “cautious” approach with taxpayer funds, which “make this decision well aligned with the messaging from this administration,” added the regulatory expert.
-Source: Margo Martin
-Although the current plan does not involve government Bitcoin purchases, the order does not rule them out in the future. The order authorizes the US Treasury and Commerce secretaries to develop “budget-neutral strategies” to buy more Bitcoin for the reserve, provided there are no additional costs to taxpayers.
-Still, the short-term investor disappointment paired with ongoing macroeconomic concerns related to import tariffs may push Bitcoin to a weekly close below $82,000, risking more downside volatility, analysts told Cointelegraph. 
-Related: US Bitcoin reserve marks ‘real step’ toward global financial integration
-Trump signed the historic Bitcoin reserve order a day ahead of hosting the first White House Crypto Summit, which also received mixed reactions from the crypto community.
-Despite its divided reception, the summit marks a pivotal moment for the White House’s engagement with the crypto industry, according to Alexander Urbelis, general counsel and chief information security officer at Ethereum Name Service.
-Urbelis told Cointelegraph:
-Related: Trump turned crypto from ‘oppressed industry’ to ‘centerpiece’ of US strategy
-“There are high hopes for the outcome of the Crypto Summit. One of those hopes is that engagement like this with the White House will continue long after the initial meeting,” he added.
-Magazine: SCB tips $500K BTC, SEC delays Ether ETF options, and more: Hodler’s Digest, Feb. 23 – Mar. 1
-",1741531229029,[],,2025-03-09T14:40:29.029747
-a459072d362210bea4ac07f999d7f937,Cointelegraph,Bitcoin risks weekly close below $82K on US BTC reserve disappointment,https://cointelegraph.com/news/bitcoin-risks-close-below-82k-btc-reserve-disappointment," Bitcoin risks triggering $1.13 billion worth of cumulative leveraged long liquidations if it falls below the $82,000 price support. 
-Bitcoin could face increased downside volatility if it closes the week below the key $82,000 support level as investor sentiment remains subdued following short-term disappointment in the US Strategic Bitcoin Reserve.
-President Donald Trump’s executive order, signed on March 7, outlined a plan to create a Bitcoin reserve using cryptocurrency forfeited in government criminal cases rather than actively acquiring Bitcoin (BTC) through market purchases.
-The lack of direct federal Bitcoin investment has “led to a near-term negative market reaction and a decline in Bitcoin’s price,” according to Bitfinex analysts.
-Bitcoin needs to close the week above the key $82,000 support to avoid a further decline due to this short-term investor disappointment, the analysts told Cointelegraph, adding:
-“It demonstrates the sensitivity of cryptocurrency markets to government actions and policies,” the analysts added.
-BTC/USD, 1-month chart. Source: Cointelegraph
-Meanwhile, Bitcoin has lacked significant price momentum, trading under the $90,000 psychological mark since March 7, when Trump hosted the first White House Crypto Summit.
-Closing the week above the key $82,000 support may signal a shift in Bitcoin sentiment as investors digest the nuances of Trump’s Bitcoin reserve proposition, which may still see the inclusion of “budget-neutral strategies” to buy more Bitcoin.
-Related: Trump turned crypto from ‘oppressed industry’ to ‘centerpiece’ of US strategy
-Beyond crypto-related legislation announcements, Bitcoin price continues to be pressured by macroeconomic developments and global trade concerns, according to Iliya Kalchev, dispatch analyst at digital asset investment platform Nexo.
-Bitcoin’s “short-term movements will be heavily influenced by macroeconomic factors,” the analyst told Cointelegraph:
-Related: Rising Bitcoin activity hints at market bottom, potential reversal
-Still, a weekly close below $82,000 may introduce significant volatility for crypto markets.
-Bitcoin Exchange Liquidation Map. Source: CoinGlass 
-A potential Bitcoin correction below this level would trigger over $1.13 billion worth of cumulative leveraged long liquidations across all exchanges, CoinGlass data shows.
-On the bright side, Bitcoin may be nearing its local bottom based on a key technical indicator, the relative strength index (RSI), which measures whether an asset is oversold or overbought.
-BTC/USD, 1-day chart, RSI. Source: Rekt Capital
-Bitcoin’s RSI stood at 28 on the daily chart, signaling that the asset is oversold. Each time Bitcoin’s RSI reached 28 during this current cycle, Bitcoin price would “either bottom or be between -2% to -8% away from a bottom,” popular crypto analyst Rekt Capital wrote in a March 8 X post.
-Magazine: Bitcoin vs. the quantum computer threat: Timeline and solutions (2025–2035)
-",1741531232558,[],,2025-03-09T14:40:32.558682
-1c4e18f9a2aa0ae6996b36157ffd6e5f,Cointelegraph,Michael Saylor pushes US gov’t to purchase up to 25% of Bitcoin supply,https://cointelegraph.com/news/strategy-michael-saylor-bitcoin-purchase-us-government-donald-trump," Strategy founder Michael Saylor says the US government should aim to hold a quarter of Bitcoin’s entire supply by 2035, when 99% of all BTC will have been issued. 
-Strategy founder Michael Saylor has proposed that the United States government acquire up to 25% of Bitcoin’s total supply over the next decade for its Strategic Bitcoin Reserve.
-“Acquire 5-25% of the Bitcoin network in trust for the nation through consistent, programmatic daily purchases between 2025 and 2035, when 99% of all BTC will have been issued,” Saylor wrote in a document titled “A Digital Assets Strategy to Dominate the 21st Century Global Economy.” 
-Saylor presented the document to US President Donald Trump, government executives, and global crypto leaders at the White House Crypto Summit on March 7.
-He explained that the government should stick to a “Never sell your Bitcoin” policy, predicting that by 2045, the Strategic Bitcoin Reserve could generate over $10 trillion annually, and serve as a “perpetual source of prosperity” for Americans.
-Up until 2045, Saylor said the Reserve could generate between $16 trillion and $81 trillion for the US Treasury, potentially easing the national debt.
-Source: Michael Saylor
-Earlier that day, Trump signed an executive order establishing a “Strategic Bitcoin Reserve” and a “Digital Asset Stockpile,” initially funded with cryptocurrency seized in criminal cases.
-While it didn’t include an immediate plan to buy more Bitcoin, the order stated that the Treasury and Commerce secretaries would develop “budget-neutral strategies” for acquiring more Bitcoin, ensuring no added costs for taxpayers.
-If the US government acquired 25% of Bitcoin’s total supply, it would hold 5.25 million BTC — far more than the 1 million BTC (5% of the supply) that Wyoming Senator Cynthia Lummis proposed in the Bitcoin Act introduced in July 2024.
-Related: Michael Saylor’s Strategy bags first Bitcoin purchase under new name
-Meanwhile, Saylor has continued accumulating Bitcoin, having purchased an additional $2 billion worth on Feb. 24. This brings Strategy’s total holdings to nearly 500,000 BTC.
-The acquisition came after Strategy raised another $2 billion in a senior convertible note offering to purchase more Bitcoin.
-Magazine: SEC’s U-turn on crypto leaves key questions unanswered
-",1741531236079,[],,2025-03-09T14:40:36.079548
-3f736f81be92ca52a376ed7a2aa8c204,Cointelegraph,Fed not cutting rates 'at all' in 2025 may trigger a bear market — Analyst,https://cointelegraph.com/news/federal-reserve-rate-cuts-delay-may-trigger-bear-market-analyst," Network economist Timothy Peterson's model suggests Bitcoin could bottom at $57,000 in the next bear market, but he said it’s unlikely as too many investors ""hover over Bitcoin like vultures."" 
-Network economist Timothy Peterson warns that if the US Federal Reserve holds off on rate cuts in 2025, it may cause a broader market downturn, potentially dragging Bitcoin back toward $70,000.
-“What it needs is a trigger. I think that trigger may be as simple as the Fed not cutting rates at all this year,” Peterson said in a March 8 X post. Peterson’s comment comes just a day after Federal Reserve chair Jerome Powell reiterated that he's in no hurry to adjust interest rates.
-""We do not need to be in a hurry and are well-positioned to wait for greater clarity,” Powell said in a speech in New York on March 7.
-Source: Timothy Peterson
-Peterson, who is the author of the paper “Metcalfe’s Law as a Model for Bitcoin’s Value,” estimated how low the Nasdaq could fall to predict Bitcoin’s (BTC) potential bottom in “the next bear market.”
-Using Peterson’s Nasdaq lowest price forward model, he estimated that once the bear market begins, the Nasdaq would decline 17% over roughly seven months before finding a bottom.
-Applying a “1.9” times multiplier to that amount for Bitcoin’s decline, he estimated a 33% decline in Bitcoin, bringing it down to $57,000 from its current price at publication, $86,199, according to CoinMarketCap data.
-Source: Timothy Peterson
-However, he said Bitcoin likely won’t drop that far, expecting a floor price closer to the low $70,000 range based on historical trends from 2022.
-“Traders and opportunists hover over Bitcoin like vultures,” he said, explaining that once the market expects Bitcoin to hit $57,000, “it won’t get there because there are always some investors who step in because the price is ‘low enough.”
-“I remember in 2022 when everyone said the bottom would be $12k.  It only went to $16k, 25% higher than expected,” he said before pointing out that the 25% increase from $57,000 is $71,000. 
-The last time Bitcoin traded near the $71,000 price level was on Nov. 6, after Donald Trump won the US election, before rallying for a month and reaching $100,000 by Dec. 5.
-Related: Bitcoin investors share mixed reactions to White House Crypto Summit
-In January 2025, BitMEX co-founder Arthur Hayes echoed a similar price prediction.
-“I am calling for a $70k to $75k correction in BTC a mini financial crisis, and a resumption of money printing that will send us to $250k by the end of the year,” Hayes said in a Jan. 27 X post.
-In December 2024, crypto mining firm Blockware Solutions said Bitcoin’s “bear case” for 2025 would be $150,000, assuming the Federal Reserve reverses course on interest rate cuts.
-Magazine: Meet lawyer Max Burwick — ‘The ambulance chaser of crypto’
-",1741531239412,[],,2025-03-09T14:40:39.412784
-24a9f31cd4ab81b30e504a1fdf17acc9,Cointelegraph,"El Salvador acquired over 13 BTC since March 1, despite IMF deal",https://cointelegraph.com/news/el-salvador-acquires-13-btc-past-week-despite-imf-deal," President Nayib Bukele shows no sign of abandoning the BTC treasury strategy as Bitcoin continues to gain international legitimacy. 
-El Salvador acquired 13 Bitcoin (BTC) since March 1, despite International Monetary Fund (IMF) pressure on the country's public sector to stop accumulating the decentralized store of value asset.
-According to the El Salvador Bitcoin Office, the country's Bitcoin treasury holds a total of over 6,105 BTC, valued at more than $527 million at current prices.
-The Central American country typically acquires BTC at a steady pace of 1 coin every 24 hours. However, on March 3, El Salvador purchased 5 BTC in a single day.
-El Salvador struck a deal with the IMF in December 2024 for a $1.4 billion loan from the organization. As part of that deal, the government of El Salvador agreed to rescind the status of BTC as legal tender in the country and scale back public sector involvement with Bitcoin.
-El Salvador Bitcoin holdings. Source: El Salvador Bitcoin Office
-Related: How can Bukele still stack Bitcoin after IMF loan agreement?
-El Salvador's Congress amended its Bitcoin laws in January 2025 to comply with the IMF loan agreement. Lawmakers repealed the previous version of the law in a 55-2 vote.
-Despite the repeal, the government continued stacking Bitcoin, purchasing two BTC in a single day on Feb. 1 and continuing its daily accumulation of the digital currency.
-On March 3, the IMF issued a new request pressuring El Salvador to stop accumulating BTC and stipulated that the country could not issue debt or tokenized securities tied to Bitcoin.
-President Nayib Bukele responded to the IMF pressure and said that El Salvador will continue buying BTC — characterizing the IMF's continued pressure as ""whining.""
-Source: Nayib Bukele
-“If it didn’t stop when the world ostracized us and most 'bitcoiners' abandoned us, it won’t stop now, and it won’t stop in the future,"" Bukele emphatically stated.
-The government of El Salvador's unapologetic pro-Bitcoin stance caused several major crypto firms to announce that they are relocating to the Central American country.
-On Jan. 7, Bitfinex Derivatives announced it was relocating from Seychelles to El Salvador. Stablecoin issuer Tether followed suit on Jan. 13 by announcing it was moving its headquarters to El Salvador.
-Magazine: El Salvador’s national Bitcoin chief has been orange-pilling Argentina
-",1741531242574,[],,2025-03-09T14:40:42.574971
-75f70b665e1a144affcefce150463444,Cointelegraph,Bitcoin investors share mixed reactions to White House Crypto Summit,https://cointelegraph.com/news/bitcoin-investors-mixed-reactions-white-house-crypto-summit," Institutional crypto investors tended to view the White House Crypto Summit more favorably than retail traders and BTC maximalists. 
-The Bitcoin (BTC) community voiced mixed reactions to the March 7 White House Crypto Summit, with some investors characterizing it as a historic day for Bitcoin and cryptocurrencies, while others called the event underwhelming.
-Crypto trader Miles Deutscher said the event was a ""massive net positive"" for Bitcoin, despite the mixed reactions.
-Kyle Samani, the managing partner at Multicoin Capital and an attendee of the summit, characterized it as a ""historic moment"" for the cryptocurrency industry.
-Following the event, Coin Bureau founder and CEO Nic Puckrin asked, ""Just looking at the charts, I can assume that nothing groundbreaking came from the White House summit?""
-President Trump and cabinet members deliver comments to the White House Crypto Summit. Source: The White House
-Bitcoin maximalist Justin Bechler was highly critical of the meeting. ""The White House 'crypto summit' is a gathering of rent-seeking lobbyists pushing state-approved surveillance tokens,"" Bechler wrote on X.
-The Trump administration's White House Crypto Summit represented a drastic departure from the previous administration's stance toward the industry and followed President Trump's executive order establishing a Bitcoin strategic reserve.
-Related: Trump turned crypto from ‘oppressed industry’ to ‘centerpiece’ of US strategy
-The price of Bitcoin declined by approximately 7.3% following the Bitcoin strategic reserve order and the White House Crypto Summit in a widely interpreted sell-the-news event.
-President Trump's executive order authorized the US government to acquire additional BTC only through asset forfeiture and budget-neutral strategies that do not create additional debt, deficits, or a burden on the taxpayer.
-This caveat was met with disappointment from some Bitcoin maximalists, who hoped the US government would actively purchase additional BTC for the reserve.
-Bitcoin’s current price action. Source: TradingView
-Bitcoin exchange-traded funds (ETFs) recorded $370 million in outflows in the wake of the announcement, as traders viewed the executive order as underwhelming.
-A majority of investors now predict that Bitcoin will crash to the $70,000 price level in March before reclaiming $100,000.
-The disappointment from the recent executive order and the ensuing negative price action sparked debate about whether Bitcoin has reached its cycle top or can still reach new heights in 2025.
-Magazine: Bitcoin dominance will fall in 2025: Benjamin Cowen, X Hall of Flame
-",1741531246033,[],,2025-03-09T14:40:46.033225
-554e9c6a5f65af55b9da7b743314ab6a,Cointelegraph,Trump turned crypto from ‘oppressed industry’ to ‘centerpiece’ of US strategy,https://cointelegraph.com/news/trump-crypto-summit-us-bitcoin-policy-shift," The White House Crypto Summit marked a “truly historic day at the White House,” according to Crypto.com CEO Kris Marszalek. 
-US President Donald Trump has placed cryptocurrency at the center of his economic strategy, marking a major policy shift for the US blockchain industry, according to Crypto.com CEO Kris Marszalek.
-Trump hosted a White House Crypto Summit on March 7, signaling that he intends to make crypto policy a national priority and make the US a global hub for blockchain innovation. 
-The summit marked a “truly historic day at the White House,” Marszalek said in a March 8 X post.
-Source: Kris|Crypto.com
-Marszalek credited Trump with reversing policies like Operation Chokepoint 2.0, which allegedly led to crypto and tech firms being denied banking services under the Biden administration.
-The difficulties of finding banking partners may indeed be a thing of the past for crypto firms after the US Office of the Comptroller of the Currency (OCC) eased its stance on how banks can engage with crypto just hours after Trump vowed to end the prolonged crackdown restricting crypto firms’ access to banking services
-Related: US Bitcoin reserve marks ‘real step’ toward global financial integration
-The crypto summit also comes as two major bills await congressional approval: the Stablecoin bill and the Market Structure bill, aiming to help lift the regulatory uncertainty around the US crypto industry.
-Marszalek said ongoing dialogue with key regulators, such as the Commodity Futures Trading Commission (CFTC) and the Securities and Exchange Commission (SEC), could see “landmark legislation” pass. He added:
-The CEO’s comments come a day after Trump signed an executive order on March 7, which outlined a plan to establish a Bitcoin reserve using cryptocurrency forfeited in government criminal cases rather than actively acquiring Bitcoin (BTC) through market purchases, Cointelegraph reported.
-While no direct BTC purchases were announced, the bill added that the US Treasury and Commerce secretaries could make “budget-neutral strategies” to buy more Bitcoin for the reserve, “provided that those strategies impose no incremental costs on American taxpayers.”
-Some analysts see the US Bitcoin reserve plan as the first “real step” for Bitcoin’s integration into the global financial system.
-“The US has taken its first real step toward integrating Bitcoin into the fabric of global finance, acknowledging its role as a foundational asset for a more stable and sound monetary system,” Joe Burnett, head of market research at Unchained, told Cointelegraph.
-Related: FDIC resists transparency on Operation Chokepoint 2.0 — Coinbase CLO
-While Trump has previously highlighted his intentions to bolster crypto innovation in the US, issuing regulatory frameworks takes time and setting the “right regulatory tone” will be crucial for the administration, according to Anastasija Plotnikova, co-founder and CEO of Fideum — a regulatory and blockchain infrastructure firm focused on institutions.
-Magazine: Meet lawyer Max Burwick — ‘The ambulance chaser of crypto’
-",1741454969081,[],,2025-03-08T17:29:29.081355
+94c12da125c5bf8e30117dbf94629660,Cointelegraph,Why is the crypto market down today?,https://cointelegraph.com/news/why-is-the-crypto-market-down-today," The cryptocurrency market is down today as investors view crypto products funds outflows and Trump’s policies as cues for bearish market momentum. 
+The cryptocurrency market erased all gains from President Trump’s US Crypto Strategic Reserve announcement, plunging by over 14.7% in seven days to reach $2.7 trillion on March 10.
+Top cryptocurrencies and their 24-hour performances. Source: Coin360
+Several factors have contributed to the latest drop in crypto prices, including:
+Trump’s acknowledgement that his policies will cause short-term pain to the economy.
+Investors are risk-off amid the continued outflows from crypto investment products.
+TOTAL drops toward the technical target of a descending triangle.
+President Trump’s recent statements have cast a shadow over the crypto market, tempering the enthusiasm that followed his pro-crypto rhetoric earlier in 2025. 
+Key points:
+Bitcoin  (BTC) declined 4% in the last 24 hours.
+Ether (ETH) is down 3.2% over the last 24 hours to trade just above $2,000.
+Solana (SOL) and XRP (XRP) have also recorded losses, down 7.2% and 4.5%, respectively.
+Compounding the issue are the significant liquidations in the derivatives market. 
+A total of $650.80 million in liquidations has been recorded in the past 24 hours.
+Long positions took the hardest hit, with $595.75 million liquidated.
+Crypto market liquidation heatmap. Source: CoinGlass
+Bitcoin and Ethereum were the biggest casualties, with $264.22 million and $114.76 million in liquidations, respectively.
+When long positions are liquidated, traders’ holdings are automatically sold, increasing market supply and driving prices lower.
+More critically, US President Donald Trump acknowledged that markets could see short-term pain from his policies, including the trade tariffs on Canada, Mexico, and China and budget-cutting plans.
+“There could be a little disruption,"" said Trump in an interview with Fox News, adding:
+The market, which surged post-election on hopes of a deregulated, crypto-friendly administration, is now grappling with the reality that Trump’s broader economic agenda may introduce headwinds before any crypto-specific benefits materialize.
+The crypto market’s ongoing correction aligns with the huge capital outflows from crypto investment products. 
+Key takeaways:
+Digital asset investment products saw outflows for the fourth week in a row, totaling $876 million during the week ending March 7, as per CoinShares report.
+This brings outflows to $4.75 billion in the last four weeks, reducing the year-to-date inflows to $2.6 billion.
+This indicates institutional investors decreased their exposure to digital assets.
+Bitcoin saw the biggest share of outflows, totaling $756 million.
+Total assets under management have declined by $39 billion from their peak to the current value of $142 billion, the lowest point since mid-November 2024. 
+Capital flows for crypto investment products. Source: CoinShares
+CoinShares head of research James Butterfill attributed this to “negative sentiment,” suggesting “capitulation” among investors.
+Additionally, the Crypto Fear & Greed Index plummeted to 10 on March 10, its lowest since July 2022, indicating “extreme fear.”
+The Crypto Fear & Greed Index. Source: Alternative.me
+From a technical perspective, today’s crypto market’s decline is part of a correction trend that saw TOTAL—the total market capitalization of all cryptocurrencies—drop below a descending triangle pattern.
+A descending triangle is a bearish continuation pattern, forming when the price makes lower highs while maintaining a flat support level at the bottom.
+The pattern is confirmed when the price breaks below the support level with high volume and drops by as much as the triangle’s maximum height.
+As of March 10, TOTAL had fallen to the pattern’s target of $2.6 trillion at the 50-weekly simple moving average (SMA).
+TOTAL/USD weekly chart. Source: Cointelegraph/TradingView
+If selling pressure persists, the 100–week SMA at $2 trillion could become the next downside target.
+Holding the 50-week SMA as support may strengthen the ongoing rebound toward the pattern’s lower trendline, aligning with the $3.1 trillion level.
+This article does not contain investment advice or recommendations. Every investment and trading move involves risk, and readers should conduct their own research when making a decision.
+",1741616518702,[],,2025-03-10T14:21:58.702429
+2a0abf444c286a4fc02534da110cbd42,Cointelegraph,Michael Saylor’s Strategy to raise up to $21B to purchase more Bitcoin,https://cointelegraph.com/news/michael-saylor-strategy-raise-21-billion-purchase-bitcoin," Currently holding around 499,000 BTC, Michael Saylor’s Strategy plans to keep stacking Bitcoin with its new “ATM Program.” 
+Michael Saylor’s Strategy, the world’s largest public corporate Bitcoin holder, is looking to raise up to $21 billion in fresh capital to purchase more BTC.
+On March 10, Strategy officially announced that it entered into a new sales agreement that would allow the firm to issue and sell shares of its 8% Series A perpetual strike preferred stock to raise funds for general corporate purposes, including potential Bitcoin (BTC) acquisitions.
+As part of the agreement deal, dubbed the “ATM Program,” Strategy expects to make sales “in a disciplined manner over an extended period,” taking into account the trading price and volumes of the perpetual strike preferred stock at the time of sale.
+“Strategy intends to use the net proceeds from the ATM Program for general corporate purposes, including the acquisition of Bitcoin and for working capital,” the firm said in the filing with the Securities and Exchange Commission (SEC).
+The announcement comes amid Strategy holding 499,096 BTC ($41.2 billion), which it acquired for an aggregate amount of $33.1 billion at an average price of $66,423 per BTC.
+The company previously disclosed plans to issue and sell shares of its class A common stock to raise up to $21 billion in equity and $21 billion in fixed-income securities over the next three years in order to accumulate more Bitcoin under its “21/21 plan.”
+This is a developing story, and further information will be added as it becomes available.
+Magazine: Crypto has 4 years to grow so big ‘no one can shut it down’: Kain Warwick, Infinex
+",1741616522560,[],,2025-03-10T14:22:02.560808
+f21e65fcd2f2b1cf8ba74d75c8c10d91,Cointelegraph,Singapore Exchange to list Bitcoin futures in H2 2025: Report,https://cointelegraph.com/news/singapore-exchange-bitcoin-futures-second-half-2025," Futures have emerged as a growing crypto trend, with major global groups, such as SGX and Japan’s Osaka Dojima, reportedly looking to introduce Bitcoin futures in 2025. 
+Singapore Exchange (SGX), the largest exchange group in Singapore, reportedly plans to debut Bitcoin perpetual futures in the second half of 2025.
+SGX is working to introduce Bitcoin (BTC) perpetual futures for institutional and professional investors in an effort to “expand institutional market access,” Bloomberg reported on March 10.
+A spokesperson at SGX reportedly said that the company expects to offer a trusted alternative for trading cryptocurrency futures, with its Aa2 rating by Moody’s.
+Strictly restricting retail investors, SGX’s planned Bitcoin products are awaiting approval from the Monetary Authority of Singapore (MAS), the report stated.
+Bitcoin futures fall under the category of cryptocurrency derivatives, which offer investors the ability to trade on the value derived from the price of an underlying cryptocurrency and speculate on future price movements without holding the asset.
+Crypto futures allow investors to speculate on the price by a certain date and time, while perpetual futures offer no expiration date.
+The potential arrival of perpetual Bitcoin futures to SGX comes amid Singapore becoming a global leader in cryptocurrency and blockchain acceptance, with the MAS adopting crypto-friendly regulations and doubling the number of crypto licenses in 2024.
+According to Bloomberg, SGX is not the only exchange seeking the launch of Bitcoin futures trading in Singapore.
+EDX Markets, a crypto asset firm backed by Citadel Securities, reportedly announced plans to offer crypto futures in the city-state in January 2025.
+Related: Sygnum adds off-exchange crypto custody to Deribit with Fireblocks tech
+On March 4, Bloomberg News also reported that Japan’s Osaka Dojima Exchange — a Japanese-listed derivatives exchange — was also looking for approval to list Bitcoin futures in Japan.
+If approved, Dojima could become one of the first traditional exchanges in Asia to handle Bitcoin futures.
+Cointelegraph approached SGX and the MAS for a comment regarding the potential introduction of Bitcoin perpetual futures on the exchange but did not receive a response by the time of publication.
+Magazine: Bitcoin’s odds of June highs, SOL’s $485M outflows, and more: Hodler’s Digest, March 2 – 8
+",1741616526519,[],,2025-03-10T14:22:06.519519
+0ba2a491986556cf2d52501af28c364d,Cointelegraph,Strategy’s Bitcoin stash still up over $7B despite market downturn,https://cointelegraph.com/news/strategy-bitcoin-stash-up-7-billion-500k-btc-holdings," Michael Saylor’s Strategy holds almost 500,000 Bitcoin worth over $41 billion at current market prices. 
+Software intelligence firm turned Bitcoin investment behemoth Strategy remains $7.8 billion in profit on its Bitcoin holdings despite the cryptocurrency’s recent drop to $80,000.
+On March 10, Bitcoin (BTC) recorded its largest weekly decline on record, shedding more value in the past seven days than at any other time in its trading history. Cointelegraph Markets Pro data shows that BTC went from $93,379 on March 3 to a low of $80,610 on March 10, a 13.6% drop in Bitcoin prices in one week. At the time of writing, Bitcoin had recovered slightly to trade at around $82,000. 
+Despite the market downturn, Michael Saylor’s Strategy remained ahead on its BTC purchases. The company held 499,096 BTC, purchased at an average of $66,423 per token. In total, Strategy has spent $33.1 billion on Bitcoin purchases, while its holdings are now valued at $41.2 billion — a 24% unrealized gain even amid the correction.
+Strategy’s Bitcoin investments highlight the importance of the dollar-cost averaging tactic in investing. Instead of buying at a lump sum, the company divided its BTC purchases at different times and continued to buy the tokens despite the prices. 
+While Strategy’s Bitcoin holdings remain in the green, other companies that recently entered the Bitcoin market are seeing losses.
+According to Bitcoin holdings tracker BitcoinTreasuries.NET, healthcare tech and software firm Semler Scientific, which started holding BTC on May 28, is down by 6.25% on its purchases. 
+The company holds 3,192 BTC bought at an average price of $87,850. This means that its BTC purchased with over $280 million is now only worth around $262 million. 
+Related: Michael Saylor pushes US gov’t to purchase up to 25% of Bitcoin supply
+Metaplanet, dubbed “Asia’s Strategy,” is slightly down on its Bitcoin holdings. The company started to add Bitcoin to its balance sheet in April 2023, copying Strategy’s playbook. 
+Metaplanet holds 2,888 bought at an average price of $83,049. It’s down by over $2 million, nearly 1%, on its Bitcoin investments. 
+According to blockchain analytics firm Lookonchain, Strategy has spent $23 billion on Bitcoin purchases since November 2024. However, with the recent price drop, the BTC acquired during this period is now worth only about $20 billion, implying an unrealized loss of over $3 billion on these recent acquisitions.
+Strategy’s Bitcoin purchases since November 2024. Source: Lookonchain
+Magazine: Mystery celeb memecoin scam factory, HK firm dumps Bitcoin: Asia Express
+",1741616530052,[],,2025-03-10T14:22:10.052144
+1b0b3b2cdb351648a39e0afe31ffc197,Cointelegraph,"Crypto firms spent $134M on 2024 US elections, raising influence concerns",https://cointelegraph.com/news/crypto-firms-134m-election-spending-regulatory-concerns," Some industry watchers say political donations are necessary for the emergence of more regulatory clarity around cryptocurrencies. 
+Cryptocurrency companies spent more than $134 million on the 2024 US elections, fueling concerns about their growing political influence and potential risks to regulatory stability, according to a report by the Center for Political Accountability (CPA).
+The growing connection of crypto firms with US politics is raising newfound concerns for regulators, investors and the wider financial system, according to a report released by the Center for Political Accountability (CPA).
+Cryptocurrency firms shelled out a cumulative $134 million on the 2024 US elections in “unchecked political spending,” which presents some critical challenges, the March 7 report stated.
+“While the companies making these contributions may be seeking a favorable regulatory environment, these political donations further erode public trust and expose companies to legal, reputational, and business risks that cannot be ignored,” the report added.
+Cryptocurrency regulation has taken center stage over the past week following a historic executive order from US President Donald Trump to create a Strategic Bitcoin (BTC) Reserve ahead of the first White House Crypto Summit on March 7.
+Source: politicalaccountability.net
+Fairshake, a political action committee (PAC) backed by major crypto firms including Coinbase, Ripple and Andreessen Horowitz, was one of the largest contributors, spending more than $40 million to support candidates aligned with pro-crypto policies.
+Fairshake and affiliated PACs were active in key congressional races, attempting to shape legislation favorable to digital assets.
+“As the industry continues to seek influence through vast contributions and opaque financial maneuvers, the risks of instability, regulatory backlash, and public distrust only grow,” the report said.
+Fairshake donations. Source: politicalaccountability.net
+The influx of crypto money into politics did not go unnoticed by regulators. In August 2024, the consumer advocacy group Public Citizen filed a complaint with the Federal Election Commission (FEC), alleging that Coinbase’s corporate contributions to Fairshake and the Congressional Leadership Fund constituted a violation of federal election law due to their status as a federal contractor.
+Related: Bitcoin reserve backlash signals unrealistic industry expectations
+Coinbase has committed an additional $25 million to Fairshake for the 2026 midterm election cycle.
+Coinbase commits $25 million to Fairshake. Source: Coinbase
+“The stakes are too high for us to stand on the sidelines, and that’s why we at Coinbase are proud to help do our part,” the company wrote in an October 2024 blog post.
+Related: Bitcoin risks deeper drop if $75K support fails amid macro concerns
+Despite the risks highlighted by the report, some regulatory experts see the donations as necessary for advancing more innovation-friendly regulations.
+“As someone deeply involved in crypto, I see this spending as necessary for regulatory clarity, crucial for stability and growth,” according to Anndy Lian, author and intergovernmental blockchain expert:
+Still, risks, including “regulatory capture,” where the interests of large firms take priority, may present challenges and erode crypto investor trust. Still, this is part of the organic growth of the emerging crypto industry, Lian said, adding:
+The debate over crypto’s role in politics follows the high-profile collapse of the Libra (LIBRA) token, a memecoin endorsed by Argentine President Javier Milei. The project’s insiders allegedly siphoned over $107 million worth of liquidity in a rug pull, triggering a 94% price collapse within hours and wiping out $4 billion.
+Over 100 governmental fraud complaints have been opened in Argentina since the Libra memecoin’s scandal, illustrating the risks of a country’s executive branch promoting “any kind of unregulated security,” the CPA’s report states.
+Magazine: Unstablecoins: Depegging, bank runs and other risks loom
+",1741616533493,[],,2025-03-10T14:22:13.493314
+0f1ea1f794677df459ac4dcb76dee0f8,Cointelegraph,Bitcoin ‘Monte Carlo’ model forecasts $713K peak in 6 months,https://cointelegraph.com/news/bitcoin-monte-carlo-model-forecasts-713k-peak-6-months," The statistical tool highlighted a broad price target for Bitcoin, which ranged between $51,430 and $713,000, with a mean average of $258,445 by September 2025. 
+Bitcoin (BTC) registered a daily and weekly close at $80,688 on March 9, the lowest close since Nov. 11, 2024. 
+Bitcoin also dropped below its key 200-day exponential moving average (200-D EMA) for the second time in two weeks, indicating further high time frame (HTF) weakness in the charts. 
+Bitcoin 1-day chart. Source: Cointelegraph/TradingView
+While the Crypto Fear & Greed Index continues to show “extreme fear” on March 10, one BTC market simulation still highlights bullish projections for the latter half of 2025. 
+Mark Quant, a crypto researcher, performed a Monte Carlo simulation to analyze Bitcoin's price, providing a six-month forecast for the crypto asset.
+The Monte Carlo model is a computational method using random sampling to simulate price projections and assess risk. It can generate multiple possible scenarios based on variable factors such as volatility and market trends. 
+Bitcoin Monte Carlo projections by Mark Quant. Source: X.com
+Based on the initial price of $82,655, the study estimated a mean final price of $258,445 by the end of September 2025. However, on a broader scale, the price was expected to fluctuate between $51,430, i.e., a 5th percentile return and $713,000 at the 95th percentile.  
+Related: Bitcoin slides another 3% — Is BTC price headed for $69K next?
+However, it is important to note that a Monte Carlo model relies strongly on the Geometric Brownian Motion (GBM) model, which assumes that the asset value follows a random path with a constant parameter drift. 
+In this analysis, Bitcoin's inherent volatility is built into the model, capturing long-term historical performance and patterns while adapting to future shifts. Essentially, the Monte Carlo analysis remains as fitting as “rolling the dice.""
+Last week, Quant also highlighted a correlation between the total crypto market cap and the global liquidity index, indicating that the TOTAL market cap value may reach new highs above $4 trillion in Q2 2025. 
+Bitcoin price dropped 6.38% over the weekend, creating a fresh CME futures gap in the charts. The CME Bitcoin futures gap describes the price difference between the closing of CME Bitcoin futures trading on Friday and its reopening on Sunday evening.
+Bitcoin CME gap. Source: Cointelegraph/TradingView
+As illustrated in the chart, the CME gap currently lies between $83,000 and $86,000, a fairly large gap of $3,000. Based on past behavior, Bitcoin tends to “fill” or return into these gaps on the higher time frame charts, with the previous seven gaps filled out in the past four months. 
+Mark Cullen, a technical analyst, also highlighted the CME gap, which took form over the weekend, and speculated the possibility of a short squeeze before the US markets open on March 10. However, the trader added, 
+Related: US dollar plunge powers Bitcoin bull case, but other metrics concern: Analyst
+This article does not contain investment advice or recommendations. Every investment and trading move involves risk, and readers should conduct their own research when making a decision.
+",1741616537170,[],,2025-03-10T14:22:17.170033
+c1032fb9984030e39c27a08ff0ead532,Cointelegraph,"Crypto ETPs see 4th straight week of outflows, totaling $876M — CoinShares",https://cointelegraph.com/news/crypto-etps-4th-consecutive-outflows-at-876m-coin-shares," With cumulative outflows reaching $4.75 billion over the past four weeks, the year-to-date inflows have dropped to $2.6 billion, according to CoinShares. 
+Cryptocurrency exchange-traded products (ETPs) recorded a fourth straight week of outflows, with $876 million in losses during the past trading week.
+After posting record weekly outflows of $2.9 billion last week, crypto ETPs continued their downward trend, bringing the four-week total outflows to $4.75 billion, CoinShares reported on March 10.
+While the pace of outflows slowed, investor sentiment remained bearish, according to James Butterfill, head of research at CoinShares.
+The analyst also suggested that the market has shown signs of capitulation.
+Bitcoin (BTC) ETPs were the primary driver of outflows, accounting for $756 million, or 85% of last week’s total. Short-Bitcoin ETPs also saw outflows of $19.8 million, the most since December 2024. 
+With cumulative outflows reaching $4.75 billion over the past four weeks, the year-to-date inflows dropped to $2.6 billion.
+Weekly crypto ETP flows since late 2024. Source: CoinShares
+Total assets under management (AUM) declined by $39 billion to $142 billion, the lowest point since mid-November 2024, driven by both negative price movements and sustained outflows, Butterfill noted.
+This bearish sentiment was also observed among a wide range of altcoins last week, with Ether (ETH) ETPs seeing $89 million of outflows.
+Tron (TRX) and Aave (AAVE) were also among the most notable ETP losers, seeing $32 million and $2.4 million in outflows, respectively, according to the report.
+Flows by asset (in millions of US dollars). Source: CoinShares
+Conversely, Solana (SOL), XRP (XRP) and Sui (SUI) continued to see inflows totaling $16.4 million, $5.6 million and $2.7 million, respectively, Butterfill wrote.
+Among crypto ETP issuers, Fidelity Investments saw the largest outflows last week at $201 million, bringing its YTD outflows to $159 million.
+BlackRock’s iShares exchange-traded funds (ETF) were the second largest loser, with weekly outflows amounting to $193 million.
+Related: US Bitcoin reserve prompts $370 million in ETF outflows: Farside
+Despite seeing significant selling in the past few weeks, BlackRock is still the biggest crypto holder among other issuers, with $52.8 billion in AuM and $3 billion in YTD outflows.
+Flows by issuer (in millions of US dollars). Source: CoinShares
+Other major losses in the United States were seen by ARK Invest and 21Shares, which recorded $164 million in outflows, with YTD flows still standing positive at $110 million.
+ProShares ETFs were again among the few US crypto ETFs that did not see outflows, recording $15 million of inflows.
+Magazine: Bitcoin’s odds of June highs, SOL’s $485M outflows, and more: Hodler’s Digest, March 2 – 8
+",1741616540707,[],,2025-03-10T14:22:20.707611
+e0c74406d23d81bdc1182d599c4a5b91,Cointelegraph,BBVA gets regulatory nod to offer Bitcoin and Ether trading in Spain,https://cointelegraph.com/news/bbva-bitcoin-ether-trading-spain-regulatory-approval," Spain’s second-largest lender will allow its clients to buy, sell and manage cryptocurrencies on its mobile banking app. 
+Banco Bilbao Vizcaya Argentaria (BBVA) announced on March 10 that it had received the nod from Spain’s securities regulator, the Comisión Nacional del Mercado de Valores (CNMV), to offer Bitcoin (BTC) and Ether (ETH) trading services to its customers. 
+Spain’s second-largest bank’s crypto offerings in Spain will enable users to buy, sell and manage digital assets through its mobile app. The lender said it will use its own cryptographic key custody platform to maintain full control over customer holdings without third-party involvement. 
+Initially, the rollout will be limited to a select group of users before gradually expanding to all private customers across the Iberian nation in the coming months.
+Related: Bitcoin and Ether can ‘greatly improve’ portfolio performance: BBVA
+BBVA’s foray into crypto began in Switzerland, where it launched Bitcoin custody and trading services for private banking clients in June 2021. The Swiss branch has since broadened its offerings to include Ether and the USDC (USDC) stablecoin.
+In January 2025, BBVA’s Turkish subsidiary Garanti BBVA Kripto launched its crypto trading services to the public. With Spain now entering the fold, BBVA is broadening its crypto services in line with evolving European regulations.
+BBVA’s expansion comes as the Markets in Crypto-Assets Regulation (MiCA) reached full implementation at the end of 2024. While the framework is now in effect, crypto companies in the EU have until July 2026 to fully comply with its requirements under an 18-month transitional phase.
+The grandfather period, or transitional phase, for crypto firms to become MiCA-compliant lasts until July 2026. Source: ESMA
+Since MiCA’s rollout, traditional finance firms have accelerated their efforts to secure MiCA licenses and integrate crypto services. Prime brokerage Hidden Road obtained its MiCA license in the Netherlands on Dec. 30, 2024. Standard Chartered followed on Jan. 9, receiving approval in Luxembourg, while Boerse Stuttgart Digital Custody became Germany’s first MiCA-licensed crypto service provider on Jan. 17.
+Crypto-native companies are also adjusting to the new regulatory landscape. In January 2025, major exchanges OKX, Crypto.com and HashKey all secured MiCA approval. Bybit, which suffered the largest hack in crypto history, was recently removed from France’s blacklist and has expressed intent to obtain a MiCA license next.
+Magazine: SEC’s U-turn on crypto leaves key questions unanswered 
+",1741616544574,[],,2025-03-10T14:22:24.574496

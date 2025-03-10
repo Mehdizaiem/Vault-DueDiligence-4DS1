@@ -32,23 +32,35 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# Python pycache files  <--- Add these lines
+# Python pycache files
 __pycache__/
 *.pyc
 *.pyo
 
-# Compiled Python files (more general)  <--- Add this if you use other compilation methods
+# Compiled Python files (more general)
 *.pyd  # Windows
 *.so   # Linux/macOS
 
-# IDE files (if applicable)  <--- Consider adding these if you use specific IDEs
+# IDE files (if applicable)
 .idea/      # IntelliJ IDEA
 .vscode/    # VS Code
-*.pyc      # PyCharm
 
 # OS generated files (if applicable)
 .AppleDouble
 Thumbs.db
 
+# Generated JSON feature files from extraction
+Sample_Data/extracted_features/*.json
+Sample_Data/**/*.json  # Ignores JSON files in any subdirectory of Sample_Data, if applicable
+
+# Generated CSV and JSON files from processing/visualization
+Sample_Data/extraction_summary.csv
+Sample_Data/visualizations/documents_export.json
+
+# Python scripts (if you want to ignore specific scripts like feature_extraction.py)
+Sample_Data/feature_extraction.py
+
+# Ignore all log files
+*.log
 
 venv/

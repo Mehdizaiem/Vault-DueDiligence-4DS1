@@ -1,603 +1,798 @@
+# File path: agentic_rag.py
 #!/usr/bin/env python
 import os
-import logging
-from datetime import datetime
-import argparse
 import sys
-from pathlib import Path
-import pandas as pd
-import threading
+import logging
+import argparse
+from datetime import datetime, timedelta
 import time
-import traceback
+import threading
 import json
-
-# Add project root to path
-project_root = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(project_root)
+from typing import Dict, List, Any, Optional, Union
 
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler("agent_rag.log"),
+        logging.FileHandler("crypto_due_diligence.log"),
         logging.StreamHandler()
     ]
 )
 logger = logging.getLogger(__name__)
 
-# Try importing optional LangChain components
-LANGCHAIN_AVAILABLE = False
-try:
-    from langchain.agents import AgentExecutor, create_openai_functions_agent
-    from langchain.tools import Tool
-    from langchain_openai import ChatOpenAI
-    from langchain_core.prompts import ChatPromptTemplate
-    LANGCHAIN_AVAILABLE = True
-    logger.info("LangChain successfully imported")
-except ImportError:
-    logger.warning("LangChain not available. Agentic features will be limited.")
+# Add project root to path
+project_root = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(project_root)
 
-class AgenticRagSystem:
-    """Orchestrates the agentic RAG system for crypto due diligence"""
+class CryptoDueDiligenceSystem:
+    """
+    Main orchestrator for the Crypto Due Diligence system.
     
-    def __init__(self):
-        """Initialize components and tools"""
-        self.client = None
-        self.scraper = None
-        self.sentiment_analyzer = None
-        self.forecaster = None
-        self.agent_executor = None
-        self.config = self._load_config()
+    Manages data acquisition, processing, storage, retrieval, and analysis
+    across all collections:
+    - CryptoDueDiligenceDocuments (using all-MPNet embeddings)
+    - CryptoNewsSentiment (using FinBERT embeddings)
+    - MarketMetrics (no embeddings)
+    - CryptoTimeSeries (no embeddings)
+    - OnChainAnalytics (no embeddings)
+    """
+    
+    def __init__(self, config_path: str = "config.json"):
+        """
+        Initialize the system with configuration.
         
-        # Track system state
-        self.is_initialized = False
-        self.last_scrape_time = None
-        self.last_sentiment_time = None
-        self.last_forecast_time = None
+        Args:
+            config_path (str): Path to configuration file
+        """
+        self.config = self._load_config(config_path)
+        self.collector = None
+        self.processor = None
+        self.storage = None
+        self.time_series_manager = None
+        self.onchain_manager = None
+        
+        # Create data directory
+        os.makedirs(self.config.get("data_dir", "data"), exist_ok=True)
+        
+        # Track last operation times
+        self.last_news_scrape = None
+        self.last_market_update = None
+        self.last_forecast_update = None
+        
+        # Initialize embeddings
+        self._initialize_embeddings()
     
-    def _load_config(self):
-        """Load configuration from config file"""
-        config_path = os.path.join(project_root, "config.json")
+    def _load_config(self, config_path: str) -> Dict:
+        """Load configuration from file"""
         default_config = {
             "crypto_symbols": ["BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "ADAUSDT"],
             "news_sources": ["CoinDesk", "Cointelegraph"],
             "scrape_interval_hours": 4,
-            "sentiment_interval_hours": 6,
+            "market_update_interval_minutes": 15,
             "forecast_interval_hours": 12,
             "forecast_days_ahead": 7,
-            "use_openai": False,
-            "data_dir": "data"
+            "data_dir": "data",
+            "use_finbert": True
         }
         
         if os.path.exists(config_path):
             try:
                 with open(config_path, "r") as f:
                     config = json.load(f)
-                    # Update with any missing default values
-                    for key, value in default_config.items():
-                        if key not in config:
-                            config[key] = value
+                    
+                # Update with any missing defaults
+                for key, value in default_config.items():
+                    if key not in config:
+                        config[key] = value
+                        
                 return config
             except Exception as e:
                 logger.error(f"Error loading config: {e}")
                 return default_config
         else:
             # Save default config
-            os.makedirs(os.path.dirname(config_path), exist_ok=True)
-            with open(config_path, "w") as f:
-                json.dump(default_config, f, indent=2)
+            try:
+                with open(config_path, "w") as f:
+                    json.dump(default_config, f, indent=2)
+            except Exception as e:
+                logger.error(f"Error saving default config: {e}")
+                
             return default_config
     
+    def _initialize_embeddings(self):
+        """Initialize embedding models"""
+        try:
+            # Import the embedding module to trigger initialization
+            from Sample_Data.vector_store.embed import (
+                initialize_models, 
+                generate_mpnet_embedding, 
+                generate_finbert_embedding
+            )
+            
+            # Explicitly initialize models
+            initialize_models()
+            logger.info("Embedding models initialized successfully")
+            
+        except Exception as e:
+            logger.error(f"Error initializing embedding models: {e}")
+    
     def initialize(self):
-        """Initialize all components of the system"""
-        if self.is_initialized:
-            return
-            
+        """Initialize all system components"""
         try:
-            logger.info("Initializing Agentic RAG System...")
+            # Initialize data collector
+            from Code.data_acquisition.data_collector import DataCollector
+            self.collector = DataCollector()
+            logger.info("Data collector initialized")
             
-            # Create data directory
-            os.makedirs(self.config["data_dir"], exist_ok=True)
+            # Initialize data processor
+            from Code.data_processing.processor import DataProcessor
+            self.processor = DataProcessor(use_finbert=self.config.get("use_finbert", True))
+            logger.info("Data processor initialized")
             
-            # Initialize Weaviate client
-            from Sample_Data.vector_store.weaviate_client import get_weaviate_client
-            self.client = get_weaviate_client()
+            # Initialize storage manager
+            from Sample_Data.vector_store.storage_manager import StorageManager
+            self.storage = StorageManager()
             
-            # Initialize components
-            from Code.data_acquisition.blockchain_collectors.news_scraper import CryptoNewsScraper
-            from Code.data_processing.sentiment_analyzer import CryptoSentimentAnalyzer
-            from Code.data_processing.crypto_forecaster import CryptoForecaster
+            # Initialize time series manager
+            from Code.data_processing.time_series_manager import TimeSeriesManager
+            self.time_series_manager = TimeSeriesManager(storage_manager=self.storage)
+            logger.info("Time series manager initialized")
             
-            self.scraper = CryptoNewsScraper()
-            self.sentiment_analyzer = CryptoSentimentAnalyzer()
-            self.forecaster = CryptoForecaster(model_dir=os.path.join(self.config["data_dir"], "models"))
-            
-            # Set up LangChain agent tools if available
-            if LANGCHAIN_AVAILABLE and self.config["use_openai"]:
-                self._setup_agent_tools()
-            
-            self.is_initialized = True
-            logger.info("Agentic RAG System initialized successfully")
-            
-        except Exception as e:
-            logger.error(f"Initialization error: {e}")
-            logger.error(traceback.format_exc())
-            raise
-    
-    def _setup_agent_tools(self):
-        """Set up LangChain agent tools for the agentic RAG system"""
-        if not LANGCHAIN_AVAILABLE:
-            logger.warning("LangChain not available. Skipping agent setup.")
-            return
-            
-        # Define tools for the agent
-        tools = [
-            Tool(
-                name="search_crypto_documents",
-                func=lambda query: self._search_documents(query),
-                description="Search for information in the crypto due diligence documents. Input should be a search query."
-            ),
-            Tool(
-                name="get_market_data",
-                func=lambda symbol: self._get_market_data(symbol),
-                description="Get current market data for a cryptocurrency symbol (e.g., BTCUSDT, ETHUSDT)."
-            ),
-            Tool(
-                name="get_sentiment_analysis",
-                func=lambda symbol: self._get_sentiment(symbol),
-                description="Get recent sentiment analysis for a cryptocurrency (e.g., BTC, ETH)."
-            ),
-            Tool(
-                name="get_price_forecast",
-                func=lambda symbol: self._get_forecast(symbol),
-                description="Get price forecast for a cryptocurrency symbol (e.g., BTCUSDT, ETHUSDT)."
-            )
-        ]
-        
-        # Only create the LangChain agent if OpenAI is enabled in config
-        if self.config["use_openai"]:
+            # Initialize on-chain manager - UNCOMMENTED THIS SECTION
             try:
-                # Create LangChain agent
-                llm = ChatOpenAI(temperature=0)
-                prompt = ChatPromptTemplate.from_messages([
-                    ("system", "You are a crypto due diligence agent with access to market data, news sentiment, and forecasting tools. Help users make informed decisions about crypto investments."),
-                    ("user", "{input}")
-                ])
-                agent = create_openai_functions_agent(llm, tools, prompt)
-                self.agent_executor = AgentExecutor(agent=agent, tools=tools)
-                logger.info("LangChain agent set up successfully")
-            except Exception as e:
-                logger.error(f"Error setting up LangChain agent: {e}")
-                logger.info("LangChain agent will not be available")
-        else:
-            logger.info("OpenAI integration disabled in config")
-    
-    def _search_documents(self, query):
-        """Search crypto documents based on a query"""
-        try:
-            from Sample_Data.retrieval.search import search_documents
-            results = search_documents(self.client, query, top_k=5)
+                from Code.data_processing.onchain_manager import OnChainManager
+                self.onchain_manager = OnChainManager(storage_manager=self.storage)
+                logger.info("OnChain manager initialized")
+            except ImportError as e:
+                logger.warning(f"OnChain manager could not be initialized: {e}")
+                self.onchain_manager = None
             
-            if not results:
-                return "No matching documents found."
-                
-            formatted_results = []
-            for idx, doc in enumerate(results):
-                content_preview = doc['content'][:300] + "..." if len(doc['content']) > 300 else doc['content']
-                formatted_results.append(f"Result {idx + 1} from {doc['source']}:\n{content_preview}\n")
-                
-            return "\n".join(formatted_results)
+            # Set up schemas
+            self.storage.setup_schemas()
+            logger.info("Storage manager initialized and schemas set up")
             
-        except Exception as e:
-            logger.error(f"Document search error: {e}")
-            return f"Error searching documents: {str(e)}"
-    
-    def _get_market_data(self, symbol):
-        """Get current market data for a crypto symbol"""
-        try:
-            # Query MarketMetrics collection
-            collection = self.client.collections.get("MarketMetrics")
-            
-            # Build query
-            from weaviate.classes.query import Filter
-            response = collection.query.fetch_objects(
-                filters=Filter.by_property("symbol").equal(symbol),
-                return_properties=["symbol", "price", "market_cap", 
-                                  "volume_24h", "price_change_24h", "timestamp"],
-                limit=1,
-                sort=[{"path": ["timestamp"], "order": "desc"}]
-            )
-            
-            if not response.objects:
-                return f"No market data found for {symbol}"
-                
-            data = response.objects[0].properties
-            
-            formatted_response = (
-                f"Market data for {symbol}:\n"
-                f"Price: ${data['price']:,.2f}\n"
-                f"Market Cap: ${data['market_cap']:,.2f}\n"
-                f"24h Volume: ${data['volume_24h']:,.2f}\n"
-                f"24h Change: {data['price_change_24h']}%\n"
-                f"Timestamp: {data['timestamp']}"
-            )
-            
-            return formatted_response
-            
-        except Exception as e:
-            logger.error(f"Market data error: {e}")
-            return f"Error getting market data: {str(e)}"
-    
-    def _get_sentiment(self, symbol):
-        """Get recent sentiment analysis for a crypto symbol"""
-        try:
-            from Sample_Data.vector_store.sentiment_store import get_sentiment_stats
-            
-            # Get sentiment stats for the symbol
-            stats = get_sentiment_stats(symbol, days=7)
-            
-            if stats["total_articles"] == 0:
-                return f"No sentiment data found for {symbol}"
-            
-            # Format the response
-            formatted_response = f"Sentiment analysis for {symbol}:\n"
-            formatted_response += f"Overall sentiment score: {stats['avg_sentiment']:.2f}\n"
-            
-            # Convert score to label
-            if stats['avg_sentiment'] > 0.6:
-                sentiment_label = "POSITIVE"
-            elif stats['avg_sentiment'] < 0.4:
-                sentiment_label = "NEGATIVE"
-            else:
-                sentiment_label = "NEUTRAL"
-                
-            formatted_response += f"Overall sentiment: {sentiment_label}\n"
-            formatted_response += f"Based on {stats['total_articles']} recent articles\n\n"
-            
-            # Add distribution
-            formatted_response += "Sentiment distribution:\n"
-            for label, count in stats['sentiment_distribution'].items():
-                percentage = (count / stats['total_articles']) * 100 if stats['total_articles'] > 0 else 0
-                formatted_response += f"{label}: {count} articles ({percentage:.1f}%)\n"
-            
-            return formatted_response
-            
-        except Exception as e:
-            logger.error(f"Sentiment analysis error: {e}")
-            return f"Error getting sentiment analysis: {str(e)}"
-    
-    def _get_forecast(self, symbol):
-        """Get price forecast for a crypto symbol"""
-        try:
-            predictions = self.forecaster.predict(symbol, days_ahead=self.config["forecast_days_ahead"])
-            
-            if predictions is None:
-                return f"No forecast available for {symbol}"
-            
-            # Create forecast response
-            formatted_response = f"Price forecast for {symbol} (next {len(predictions)} days):\n"
-            
-            for _, row in predictions.iterrows():
-                formatted_response += f"- {row['date'].strftime('%Y-%m-%d')}: ${row['predicted_price']:.2f} "
-                formatted_response += f"({row['change_pct']:+.2f}%)\n"
-            
-            # Add path to saved plot
-            plot_path = f"{symbol}_forecast.png"
-            if os.path.exists(plot_path):
-                formatted_response += f"\nForecast chart saved to: {plot_path}"
-            
-            return formatted_response
-            
-        except Exception as e:
-            logger.error(f"Forecast error: {e}")
-            return f"Error generating forecast: {str(e)}"
-    
-    def scrape_news(self):
-        """Scrape crypto news"""
-        if not self.is_initialized:
-            self.initialize()
-            
-        logger.info("Starting news scraping...")
-        
-        try:
-            # Set output file in data directory
-            output_file = os.path.join(self.config["data_dir"], "crypto_news.csv")
-            
-            # Run scraper
-            news_df = self.scraper.run(limit_per_source=10, output_file=output_file)
-            
-            self.last_scrape_time = datetime.now()
-            logger.info(f"News scraping completed. Scraped {len(news_df)} articles.")
-            
-            return news_df
-            
-        except Exception as e:
-            logger.error(f"News scraping error: {e}")
-            logger.error(traceback.format_exc())
-            return None
-    
-    def analyze_sentiment(self):
-        """Analyze sentiment of scraped news"""
-        if not self.is_initialized:
-            self.initialize()
-            
-        logger.info("Starting sentiment analysis...")
-        
-        try:
-            # Check if we have news data
-            input_file = os.path.join(self.config["data_dir"], "crypto_news.csv")
-            if not os.path.exists(input_file):
-                logger.warning("No news data found. Run scrape_news first.")
-                return None
-                
-            # Run sentiment analysis
-            results_df = self.sentiment_analyzer.run(input_file=input_file, store_in_db=True)
-            
-            self.last_sentiment_time = datetime.now()
-            logger.info(f"Sentiment analysis completed. Analyzed {len(results_df)} articles.")
-            
-            return results_df
-            
-        except Exception as e:
-            logger.error(f"Sentiment analysis error: {e}")
-            logger.error(traceback.format_exc())
-            return None
-    
-    def update_forecasts(self):
-        """Update price forecasts for configured symbols"""
-        if not self.is_initialized:
-            self.initialize()
-            
-        logger.info("Updating price forecasts...")
-        
-        results = {}
-        for symbol in self.config["crypto_symbols"]:
-            try:
-                logger.info(f"Generating forecast for {symbol}...")
-                
-                # Train/update model
-                self.forecaster.train(symbol)
-                
-                # Generate predictions
-                predictions = self.forecaster.predict(symbol, days_ahead=self.config["forecast_days_ahead"])
-                
-                if predictions is not None:
-                    # Plot predictions
-                    self.forecaster.plot_predictions(symbol, predictions)
-                    results[symbol] = predictions
-                    logger.info(f"Forecast for {symbol} completed successfully")
-                else:
-                    logger.warning(f"No predictions generated for {symbol}")
-                
-            except Exception as e:
-                logger.error(f"Error forecasting {symbol}: {e}")
-                continue
-        
-        self.last_forecast_time = datetime.now()
-        logger.info(f"Forecast updates completed for {len(results)} symbols")
-        
-        return results
-    
-    def process_user_query(self, query):
-        """Process a user query using the agent"""
-        if not self.is_initialized:
-            self.initialize()
-            
-        # If LangChain agent is available, use it
-        if self.agent_executor:
-            try:
-                logger.info(f"Processing user query with agent: {query}")
-                result = self.agent_executor.invoke({"input": query})
-                return result["output"]
-            except Exception as e:
-                logger.error(f"Agent error: {e}")
-                # Fall back to simple document search if agent fails
-                logger.info("Falling back to simple document search")
-                return self._search_documents(query)
-        else:
-            # If no agent is available, just do a document search
-            logger.info(f"Processing user query with document search: {query}")
-            return self._search_documents(query)
-    
-    def store_document(self, text, filename, document_type=None):
-        """Store a document in the vector store"""
-        if not self.is_initialized:
-            self.initialize()
-            
-        try:
-            from Sample_Data.vector_store.store import store_document
-            
-            logger.info(f"Storing document: {filename}")
-            store_document(self.client, text, filename, document_type)
-            logger.info(f"Document stored successfully: {filename}")
+            logger.info("All system components initialized successfully")
             return True
+            
+        except Exception as e:
+            logger.error(f"Error initializing system: {e}")
+            return False
+    
+    def update_market_data(self, force: bool = False):
+        """
+        Update market data for all configured symbols.
+        
+        Args:
+            force (bool): Force update even if interval hasn't elapsed
+        """
+        # Check if update is needed
+        now = datetime.now()
+        interval_minutes = self.config.get("market_update_interval_minutes", 15)
+        
+        if not force and self.last_market_update and \
+           (now - self.last_market_update).total_seconds() < interval_minutes * 60:
+            logger.info(f"Market data update skipped (last update: {self.last_market_update})")
+            return
+        
+        logger.info("Updating market data")
+        
+        try:
+            # Get symbols from config
+            symbols = [s.replace("USDT", "") for s in self.config.get("crypto_symbols", [])]
+            
+            # Fetch market data
+            market_data = self.collector.fetch_market_data(symbols)
+            
+            if market_data:
+                # Store in Weaviate
+                success = self.storage.store_market_data(market_data)
+                
+                if success:
+                    logger.info(f"Market data updated successfully for {len(market_data)} symbols")
+                    self.last_market_update = now
+                else:
+                    logger.error("Failed to store market data")
+            else:
+                logger.warning("No market data retrieved")
+                
+        except Exception as e:
+            logger.error(f"Error updating market data: {e}")
+    
+    def update_historical_data(self, force: bool = False):
+        """
+        Update historical time series data from CSV files.
+        
+        Args:
+            force (bool): Force update even if data exists
+        """
+        logger.info("Updating historical data from CSV files")
+        
+        try:
+            # Use the time series manager to load and store CSV data
+            results = self.time_series_manager.load_and_store_all(force=force)
+            
+            logger.info(f"Historical data update completed:")
+            logger.info(f"  Successfully processed {results['success_count']}/{results['total_symbols']} symbols")
+            logger.info(f"  Total data points stored: {results['total_data_points']}")
+                
+        except Exception as e:
+            logger.error(f"Error updating historical data: {e}")
+    
+    def update_news(self, force: bool = False):
+        """
+        Update crypto news with sentiment analysis.
+        
+        Args:
+            force (bool): Force update even if interval hasn't elapsed
+        """
+        # Check if update is needed
+        now = datetime.now()
+        interval_hours = self.config.get("scrape_interval_hours", 4)
+        
+        if not force and self.last_news_scrape and \
+           (now - self.last_news_scrape).total_seconds() < interval_hours * 3600:
+            logger.info(f"News update skipped (last update: {self.last_news_scrape})")
+            return
+        
+        logger.info("Updating crypto news")
+        
+        try:
+            # Fetch news
+            limit_per_source = self.config.get("news_limit_per_source", 10)
+            news_articles = self.collector.fetch_news(limit_per_source=limit_per_source)
+            
+            if news_articles:
+                # Process with sentiment analysis
+                processed_articles = self.processor.analyze_news_batch(news_articles)
+                
+                # Store in Weaviate
+                stored_count = 0
+                for article in processed_articles:
+                    if self.storage.store_news_article(article):
+                        stored_count += 1
+                
+                logger.info(f"News updated successfully ({stored_count}/{len(processed_articles)} articles stored)")
+                self.last_news_scrape = now
+            else:
+                logger.warning("No news articles retrieved")
+                
+        except Exception as e:
+            logger.error(f"Error updating news: {e}")
+    
+    def update_forecasts(self, force: bool = False):
+        """
+        Update price forecasts for all configured symbols.
+        
+        Args:
+            force (bool): Force update even if interval hasn't elapsed
+        """
+        # Check if update is needed
+        now = datetime.now()
+        interval_hours = self.config.get("forecast_interval_hours", 12)
+        
+        if not force and self.last_forecast_update and \
+           (now - self.last_forecast_update).total_seconds() < interval_hours * 3600:
+            logger.info(f"Forecast update skipped (last update: {self.last_forecast_update})")
+            return
+        
+        logger.info("Updating price forecasts")
+        
+        try:
+            # Get symbols from config
+            symbols = self.config.get("crypto_symbols", [])
+            days_ahead = self.config.get("forecast_days_ahead", 7)
+            
+            for symbol in symbols:
+                try:
+                    # Get historical data for forecasting
+                    historical_data = self.storage.retrieve_time_series(symbol, interval="1d", limit=100)
+                    
+                    if not historical_data:
+                        logger.warning(f"No historical data available for {symbol}, skipping forecast")
+                        continue
+                    
+                    # Generate forecast
+                    forecast = self.processor.forecast_prices(
+                        symbol=symbol,
+                        historical_data=historical_data,
+                        days_ahead=days_ahead,
+                        use_sentiment=True
+                    )
+                    
+                    if "error" in forecast:
+                        logger.error(f"Error forecasting {symbol}: {forecast['error']}")
+                        continue
+                    
+                    # TODO: Store forecast in Weaviate (when forecast schema is implemented)
+                    logger.info(f"Forecast generated for {symbol} ({days_ahead} days ahead)")
+                    
+                except Exception as e:
+                    logger.error(f"Error forecasting {symbol}: {e}")
+                    continue
+                
+                # Slight delay between symbols
+                time.sleep(1)
+            
+            self.last_forecast_update = now
+            
+        except Exception as e:
+            logger.error(f"Error updating forecasts: {e}")
+    
+    def analyze_onchain(self, address: str, blockchain: str = "ethereum", 
+                        related_fund: Optional[str] = None) -> Dict:
+        """
+        Analyze on-chain data for a specific address.
+        
+        Args:
+            address (str): Blockchain address
+            blockchain (str): Blockchain name
+            related_fund (str, optional): Related fund name
+            
+        Returns:
+            Dict: Analysis results
+        """
+        logger.info(f"Analyzing on-chain data for {address} on {blockchain}")
+        
+        try:
+            # Check if onchain_manager is available
+            if self.onchain_manager is None:
+                # Try direct analysis as a fallback
+                try:
+                    from Sample_Data.onchain_analytics.analyzers.wallet_analyzer import WalletAnalyzer
+                    from Sample_Data.onchain_analytics.models.weaviate_storage import store_wallet_analysis
+                    
+                    analyzer = WalletAnalyzer()
+                    analysis = analyzer.analyze_ethereum_wallet(address)
+                    
+                    if "error" not in analysis and related_fund:
+                        store_wallet_analysis(analysis, related_fund)
+                    
+                    return analysis
+                except Exception as direct_error:
+                    logger.error(f"Error in direct wallet analysis: {direct_error}")
+                    return {"error": f"OnChain manager not available and direct analysis failed: {str(direct_error)}"}
+            
+            # Use the onchain manager to analyze and store the data
+            return self.onchain_manager.analyze_and_store(address, blockchain, related_fund)
+                
+        except Exception as e:
+            logger.error(f"Error analyzing on-chain data: {e}")
+            return {"error": str(e)}
+    
+    def store_document(self, content: str, filename: str, document_type: Optional[str] = None,
+                     title: Optional[str] = None, metadata: Optional[Dict] = None):
+        """
+        Store a document in the CryptoDueDiligenceDocuments collection.
+        
+        Args:
+            content (str): Document content
+            filename (str): Source filename
+            document_type (str, optional): Document type
+            title (str, optional): Document title
+            metadata (Dict, optional): Additional metadata
+            
+        Returns:
+            bool: Success status
+        """
+        logger.info(f"Storing document: {filename}")
+        
+        try:
+            # Determine document type if not provided
+            if not document_type:
+                document_type = self._infer_document_type(filename)
+            
+            # Use filename as title if not provided
+            if not title:
+                title = os.path.splitext(os.path.basename(filename))[0]
+            
+            # Extract features from document
+            features = self.processor.extract_features_from_document({
+                "content": content,
+                "document_type": document_type
+            })
+            
+            # Prepare document with features
+            document = {
+                "content": content,
+                "source": filename,
+                "document_type": document_type,
+                "title": title,
+                "risk_score": features.get("risk_score", 0)
+            }
+            
+            # Add keywords if available
+            if "keywords" in features:
+                document["keywords"] = features["keywords"]
+            
+            # Add additional metadata if provided
+            if metadata:
+                document.update(metadata)
+            
+            # Store in Weaviate
+            success = self.storage.store_due_diligence_document(document)
+            
+            if success:
+                logger.info(f"Document {filename} stored successfully")
+                return True
+            else:
+                logger.error(f"Failed to store document {filename}")
+                return False
+                
         except Exception as e:
             logger.error(f"Error storing document: {e}")
             return False
     
-    def start_background_services(self):
-        """Start background services for periodic data updates"""
-        if not self.is_initialized:
-            self.initialize()
+    def _infer_document_type(self, filename: str) -> str:
+        """
+        Infer document type from filename.
+        
+        Args:
+            filename (str): Source filename
             
+        Returns:
+            str: Inferred document type
+        """
+        filename_lower = filename.lower()
+        
+        if "whitepaper" in filename_lower:
+            return "whitepaper"
+        elif "audit" in filename_lower:
+            return "audit_report"
+        elif "regulation" in filename_lower or "compliance" in filename_lower:
+            return "regulatory_filing"
+        elif "report" in filename_lower or "analysis" in filename_lower:
+            return "due_diligence_report"
+        else:
+            return "project_documentation"  # Default
+    
+    def search(self, query: str, collection: Optional[str] = None, limit: int = 5) -> List[Dict]:
+        """
+        Search for content across collections.
+        
+        Args:
+            query (str): Search query
+            collection (str, optional): Specific collection to search
+            limit (int): Maximum number of results
+            
+        Returns:
+            List[Dict]: Search results
+        """
+        logger.info(f"Searching for: {query}")
+        
+        try:
+            # If collection specified, search only that collection
+            if collection:
+                return self.storage.retrieve_documents(query, collection_name=collection, limit=limit)
+            
+            # Otherwise, search across collections
+            results = []
+            
+            # Search CryptoDueDiligenceDocuments
+            doc_results = self.storage.retrieve_documents(
+                query, collection_name="CryptoDueDiligenceDocuments", limit=limit
+            )
+            for result in doc_results:
+                result["type"] = "document"
+                results.append(result)
+            
+            # Search CryptoNewsSentiment
+            news_results = self.storage.retrieve_documents(
+                query, collection_name="CryptoNewsSentiment", limit=limit
+            )
+            for result in news_results:
+                result["type"] = "news"
+                results.append(result)
+            
+            # Sort results by relevance (if available)
+            if results and "relevance" in results[0]:
+                results.sort(key=lambda x: x.get("relevance", 0), reverse=True)
+            
+            # Limit to requested number
+            return results[:limit]
+            
+        except Exception as e:
+            logger.error(f"Error searching: {e}")
+            return []
+    
+    def get_market_data(self, symbol: str) -> Dict:
+        """
+        Get latest market data for a symbol.
+        
+        Args:
+            symbol (str): Cryptocurrency symbol
+            
+        Returns:
+            Dict: Market data
+        """
+        logger.info(f"Getting market data for {symbol}")
+        
+        try:
+            # Format symbol
+            if not symbol.upper().endswith("USDT"):
+                symbol = f"{symbol.upper()}USDT"
+            
+            # Get latest data from storage
+            results = self.storage.retrieve_market_data(symbol, limit=1)
+            
+            if results:
+                return results[0]
+            
+            # If no data in storage, fetch from API
+            market_data = self.collector.fetch_market_data([symbol.replace("USDT", "")])
+            
+            if market_data:
+                for data in market_data:
+                    if data.get("symbol") == symbol:
+                        # Store for future queries
+                        self.storage.store_market_data(data)
+                        return data
+            
+            return {"error": f"No market data found for {symbol}"}
+            
+        except Exception as e:
+            logger.error(f"Error getting market data: {e}")
+            return {"error": str(e)}
+    
+    def get_historical_data(self, symbol: str, interval: str = "1d", limit: int = 100) -> List[Dict]:
+        """
+        Get historical time series data for a symbol.
+        
+        Args:
+            symbol (str): Cryptocurrency symbol
+            interval (str): Time interval (e.g., "1d", "1h")
+            limit (int): Maximum number of data points
+            
+        Returns:
+            List[Dict]: Historical data
+        """
+        logger.info(f"Getting historical data for {symbol}")
+        
+        try:
+            # Format symbol
+            if not symbol.upper().endswith("USDT"):
+                symbol = f"{symbol.upper()}USDT"
+            
+            # Retrieve from Weaviate
+            return self.storage.retrieve_time_series(symbol, interval=interval, limit=limit)
+            
+        except Exception as e:
+            logger.error(f"Error getting historical data: {e}")
+            return []
+    
+    def get_sentiment_analysis(self, asset: str) -> Dict:
+        """
+        Get sentiment analysis for a specific asset.
+        
+        Args:
+            asset (str): Cryptocurrency asset (e.g., "bitcoin")
+            
+        Returns:
+            Dict: Sentiment analysis results
+        """
+        logger.info(f"Getting sentiment analysis for {asset}")
+        
+        try:
+            # Get sentiment stats from storage
+            return self.storage.get_sentiment_stats(asset, days=7)
+            
+        except Exception as e:
+            logger.error(f"Error getting sentiment analysis: {e}")
+            return {"error": str(e)}
+    
+    def start_background_services(self):
+        """Start background services for data updates"""
         def background_worker():
+            """Background worker function to update data periodically"""
             while True:
                 try:
-                    # Check if we need to scrape news
-                    if (self.last_scrape_time is None or 
-                        (datetime.now() - self.last_scrape_time).total_seconds() > 
-                        self.config["scrape_interval_hours"] * 3600):
-                        logger.info("Starting scheduled news scraping")
-                        self.scrape_news()
+                    # Update market data
+                    self.update_market_data()
                     
-                    # Check if we need to analyze sentiment
-                    if (self.last_sentiment_time is None or 
-                        (datetime.now() - self.last_sentiment_time).total_seconds() > 
-                        self.config["sentiment_interval_hours"] * 3600):
-                        logger.info("Starting scheduled sentiment analysis")
-                        self.analyze_sentiment()
+                    # Update news (less frequently)
+                    self.update_news()
                     
-                    # Check if we need to update forecasts
-                    if (self.last_forecast_time is None or 
-                        (datetime.now() - self.last_forecast_time).total_seconds() > 
-                        self.config["forecast_interval_hours"] * 3600):
-                        logger.info("Starting scheduled forecast updates")
-                        self.update_forecasts()
+                    # Update forecasts (even less frequently)
+                    self.update_forecasts()
                     
                 except Exception as e:
-                    logger.error(f"Background service error: {e}")
-                    logger.error(traceback.format_exc())
+                    logger.error(f"Error in background worker: {e}")
                 
-                # Sleep for 15 minutes before checking again
-                time.sleep(15 * 60)
+                # Sleep before next update cycle (use market update interval as base)
+                time.sleep(self.config.get("market_update_interval_minutes", 15) * 60)
         
         # Start background thread
-        logger.info("Starting background services")
         thread = threading.Thread(target=background_worker, daemon=True)
         thread.start()
         
+        logger.info("Background services started")
         return thread
     
     def run_cli(self):
-        """Run the system in command-line interface mode"""
-        if not self.is_initialized:
+        """Run an interactive CLI for the system"""
+        if not self.collector or not self.processor or not self.storage:
             self.initialize()
-            
+        
         # Start background services
         self.start_background_services()
         
-        print("\n=== Crypto Due Diligence Agentic RAG System ===")
-        print("Type 'help' for available commands or 'exit' to quit")
+        print("\n=== Crypto Due Diligence System ===")
+        print("Type 'help' for commands or 'exit' to quit")
         
         while True:
             try:
-                command = input("\nEnter command or query: ").strip()
+                command = input("\nCommand: ").strip()
                 
-                if command.lower() == 'exit':
+                if command.lower() == "exit":
+                    print("Exiting...")
                     break
                     
-                elif command.lower() == 'help':
+                elif command.lower() == "help":
                     print("\nAvailable commands:")
-                    print("  scrape      - Scrape latest crypto news")
-                    print("  sentiment   - Analyze sentiment of scraped news")
-                    print("  forecast    - Update price forecasts")
-                    print("  market BTC  - Get market data (replace BTC with any symbol)")
-                    print("  sentiment BTC - Get sentiment analysis (replace BTC with any symbol)")
-                    print("  forecast BTC - Get price forecast (replace BTC with any symbol)")
-                    print("  store [file] [type] - Store a document (provide path and optional type)")
-                    print("  exit        - Exit the program")
-                    print("\nOr enter any question to search the knowledge base")
+                    print("  market <symbol>   - Get market data for symbol")
+                    print("  history <symbol>  - Get historical data for symbol")
+                    print("  news              - Update news data")
+                    print("  sentiment <asset> - Get sentiment analysis for asset")
+                    print("  forecast <symbol> - Get price forecast for symbol")
+                    print("  onchain <address> - Analyze blockchain address")
+                    print("  search <query>    - Search for content")
+                    print("  document <file>   - Store a document")
+                    print("  load-csv          - Load historical data from CSV files")
+                    print("  exit              - Exit the program")
+                
+                elif command.lower().startswith("market "):
+                    symbol = command.split(" ", 1)[1]
+                    result = self.get_market_data(symbol)
+                    print(json.dumps(result, indent=2))
+                
+                elif command.lower().startswith("history "):
+                    symbol = command.split(" ", 1)[1]
+                    result = self.get_historical_data(symbol, limit=10)  # Limit to 10 for display
+                    print(json.dumps(result, indent=2))
+                
+                elif command.lower() == "news":
+                    self.update_news(force=True)
+                    print("News update initiated")
+                
+                elif command.lower().startswith("sentiment "):
+                    asset = command.split(" ", 1)[1]
+                    result = self.get_sentiment_analysis(asset)
+                    print(json.dumps(result, indent=2))
+                
+                elif command.lower().startswith("forecast "):
+                    symbol = command.split(" ", 1)[1]
                     
-                elif command.lower() == 'scrape':
-                    news_df = self.scrape_news()
-                    if news_df is not None:
-                        print(f"Scraped {len(news_df)} articles")
-                        
-                elif command.lower() == 'sentiment':
-                    results_df = self.analyze_sentiment()
-                    if results_df is not None:
-                        sentiment_counts = results_df['sentiment_label'].value_counts()
-                        print(f"Sentiment analysis results:")
-                        for label, count in sentiment_counts.items():
-                            print(f"  {label}: {count}")
-                            
-                elif command.lower() == 'forecast':
-                    results = self.update_forecasts()
-                    if results:
-                        print(f"Updated forecasts for {len(results)} symbols")
-                        
-                elif command.lower().startswith('market '):
-                    symbol = command.split(' ')[1].upper()
-                    result = self._get_market_data(symbol)
-                    print(result)
+                    # Format symbol
+                    if not symbol.upper().endswith("USDT"):
+                        symbol = f"{symbol.upper()}USDT"
                     
-                elif command.lower().startswith('sentiment '):
-                    symbol = command.split(' ')[1].upper()
-                    result = self._get_sentiment(symbol)
-                    print(result)
+                    # Get historical data
+                    historical_data = self.get_historical_data(symbol, interval="1d", limit=100)
                     
-                elif command.lower().startswith('forecast '):
-                    symbol = command.split(' ')[1].upper()
-                    if not symbol.endswith('USDT'):
-                        symbol = f"{symbol}USDT"
-                    result = self._get_forecast(symbol)
-                    print(result)
-                    
-                elif command.lower().startswith('store '):
-                    parts = command.split(' ')
-                    if len(parts) < 2:
-                        print("Usage: store [file] [type]")
+                    if not historical_data:
+                        print(f"No historical data found for {symbol}")
                         continue
-                        
-                    file_path = parts[1]
-                    doc_type = parts[2] if len(parts) > 2 else None
+                    
+                    # Generate forecast
+                    forecast = self.processor.forecast_prices(
+                        symbol=symbol,
+                        historical_data=historical_data,
+                        days_ahead=self.config.get("forecast_days_ahead", 7),
+                        use_sentiment=True
+                    )
+                    
+                    print(json.dumps(forecast, indent=2))
+                
+                elif command.lower().startswith("onchain "):
+                    address = command.split(" ", 1)[1]
+                    result = self.analyze_onchain(address)
+                    print(json.dumps(result, indent=2))
+                
+                elif command.lower().startswith("search "):
+                    query = command.split(" ", 1)[1]
+                    results = self.search(query)
+                    
+                    if results:
+                        print(f"Found {len(results)} results:")
+                        for i, result in enumerate(results):
+                            print(f"\n[{i+1}] {result.get('title', 'Untitled')} ({result.get('type', 'unknown')})")
+                            if "content" in result:
+                                content = result["content"]
+                                if len(content) > 200:
+                                    content = content[:200] + "..."
+                                print(f"  {content}")
+                    else:
+                        print("No results found")
+                
+                elif command.lower().startswith("document "):
+                    file_path = command.split(" ", 1)[1]
                     
                     if not os.path.exists(file_path):
                         print(f"File not found: {file_path}")
                         continue
-                        
+                    
                     try:
-                        with open(file_path, 'r', encoding='utf-8') as f:
-                            text = f.read()
-                            
-                        success = self.store_document(text, os.path.basename(file_path), doc_type)
+                        with open(file_path, "r", encoding="utf-8") as f:
+                            content = f.read()
+                        
+                        success = self.store_document(
+                            content=content,
+                            filename=os.path.basename(file_path)
+                        )
+                        
                         if success:
                             print(f"Document stored successfully: {file_path}")
                         else:
                             print(f"Failed to store document: {file_path}")
+                            
                     except Exception as e:
-                        print(f"Error reading file: {e}")
-                    
+                        print(f"Error: {e}")
+                
+                elif command.lower() == "load-csv":
+                    print("Loading historical data from CSV files...")
+                    self.update_historical_data(force=False)
+                    print("CSV loading complete")
+                
                 else:
-                    # Assume it's a query
-                    result = self.process_user_query(command)
-                    print(result)
-                    
+                    print(f"Unknown command: {command}")
+                    print("Type 'help' for available commands")
+                
             except KeyboardInterrupt:
+                print("\nExiting...")
                 break
             except Exception as e:
                 print(f"Error: {e}")
-                
-        print("Exiting...")
-        # Close Weaviate client
-        if self.client:
-            self.client.close()
+        
+        # Clean up
+        self.storage.close()
 
 def main():
-    parser = argparse.ArgumentParser(description="Crypto Due Diligence Agentic RAG System")
-    parser.add_argument('--scrape', action='store_true', help='Scrape latest crypto news')
-    parser.add_argument('--sentiment', action='store_true', help='Analyze sentiment of scraped news')
-    parser.add_argument('--forecast', action='store_true', help='Update price forecasts')
-    parser.add_argument('--query', type=str, help='Process a user query')
-    parser.add_argument('--interactive', action='store_true', help='Run in interactive CLI mode')
+    """Main entry point"""
+    parser = argparse.ArgumentParser(description="Crypto Due Diligence System")
+    parser.add_argument("--config", type=str, default="config.json", help="Path to config file")
+    parser.add_argument("--setup", action="store_true", help="Set up schemas only")
+    parser.add_argument("--update-market", action="store_true", help="Update market data")
+    parser.add_argument("--update-news", action="store_true", help="Update news data")
+    parser.add_argument("--load-csv", action="store_true", help="Load historical data from CSV files")
+    parser.add_argument("--interactive", action="store_true", help="Run interactive CLI")
     
     args = parser.parse_args()
     
-    system = AgenticRagSystem()
-    system.initialize()
+    system = CryptoDueDiligenceSystem(config_path=args.config)
+    
+    # Initialize components
+    if not system.initialize():
+        logger.error("Failed to initialize system")
+        return 1
     
     try:
-        if args.scrape:
-            system.scrape_news()
-            
-        if args.sentiment:
-            system.analyze_sentiment()
-            
-        if args.forecast:
-            system.update_forecasts()
-            
-        if args.query:
-            result = system.process_user_query(args.query)
-            print(result)
-            
-        if args.interactive or not any([args.scrape, args.sentiment, args.forecast, args.query]):
+        if args.setup:
+            # Only set up schemas
+            logger.info("Setup complete")
+            return 0
+        
+        if args.update_market:
+            system.update_market_data(force=True)
+        
+        if args.update_news:
+            system.update_news(force=True)
+        
+        if args.load_csv:
+            system.update_historical_data(force=True)
+        
+        if args.interactive or not any([args.setup, args.update_market, args.update_news, args.load_csv]):
+            # Run interactive CLI
             system.run_cli()
-            
+        
+        return 0
+    
+    except Exception as e:
+        logger.error(f"Error: {e}")
+        return 1
     finally:
         # Clean up
-        if system.client:
-            system.client.close()
+        if system.storage:
+            system.storage.close()
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

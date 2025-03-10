@@ -210,7 +210,280 @@ def extract_keywords(text: str, max_keywords: int = 10) -> List[str]:
     # Sort by count and get top keywords
     keywords = sorted(word_counts.items(), key=lambda x: x[1], reverse=True)[:max_keywords]
     return [keyword for keyword, _ in keywords]
+def process_document(text, document_type=None):
+    """
+    Process a document to extract features and generate embedding.
+    
+    Args:
+        text (str): The document text
+        document_type (str, optional): Type of document
+        
+    Returns:
+        tuple: (embedding, features) where embedding is the document vector
+               and features is a dictionary of extracted features
+    """
+    # Generate embedding using all-MPNet
+    embedding = generate_mpnet_embedding(text)
+    
+    # Extract features based on document type
+    features = {
+        "word_count": len(text.split()),
+        "sentence_count": len([s for s in text.split('.') if s.strip()]),
+        "keywords": extract_keywords(text),
+        "risk_score": calculate_risk_score(text),
+        "entities": extract_entities(text)
+    }
+    
+    # Add document type specific features
+    if document_type == "whitepaper":
+        features.update({
+            "has_tokenomics": "tokenomics" in text.lower(),
+            "tech_score": calculate_tech_score(text),
+            "has_roadmap": "roadmap" in text.lower(),
+            "mentioned_blockchains": extract_blockchain_mentions(text)
+        })
+    
+    elif document_type == "audit_report":
+        features.update({
+            "vulnerability_score": calculate_vulnerability_score(text),
+            "critical_count": text.lower().count("critical vulnerability"),
+            "high_count": text.lower().count("high severity"),
+            "medium_count": text.lower().count("medium severity"),
+            "low_count": text.lower().count("low severity"),
+            "has_recommendations": "recommend" in text.lower()
+        })
+    
+    elif document_type == "regulatory_filing":
+        features.update({
+            "mentioned_regulatory_bodies": extract_regulatory_bodies(text),
+            "legal_score": calculate_legal_score(text),
+            "has_penalties": any(word in text.lower() for word in ["penalty", "penalties", "fine", "sanction"])
+        })
+    
+    elif document_type == "due_diligence_report":
+        features.update({
+            "assessment_score": calculate_assessment_score(text),
+            "has_risk_assessment": "risk assessment" in text.lower(),
+            "has_recommendations": "recommend" in text.lower()
+        })
+    
+    return embedding, features
 
+def extract_entities(text):
+    """
+    Extract named entities from text (simplified implementation).
+    
+    Args:
+        text (str): The text to extract entities from
+        
+    Returns:
+        dict: Dictionary of entity types and their values
+    """
+    # This is a placeholder implementation
+    # In a real application, use a proper NER model like spaCy
+    
+    entities = {
+        "ORG": [],
+        "PERSON": [],
+        "GPE": []  # Geo-Political Entities (locations)
+    }
+    
+    # Simple rule-based approach (not effective but serves as placeholder)
+    words = text.split()
+    for i, word in enumerate(words):
+        if word.startswith("Corp") or word.startswith("Inc") or word.startswith("LLC"):
+            if i > 0:
+                entities["ORG"].append(words[i-1] + " " + word)
+        
+        if word in ["Mr.", "Mrs.", "Ms.", "Dr."]:
+            if i < len(words) - 1:
+                entities["PERSON"].append(word + " " + words[i+1])
+    
+    # Remove duplicates
+    for entity_type in entities:
+        entities[entity_type] = list(set(entities[entity_type]))
+    
+    return entities
+
+def calculate_tech_score(text):
+    """
+    Calculate a technical depth score for a document (simplified implementation).
+    
+    Args:
+        text (str): The document text
+        
+    Returns:
+        float: Technical depth score (0-100)
+    """
+    # This is a placeholder implementation
+    # In a real application, use a more sophisticated approach
+    
+    text_lower = text.lower()
+    
+    tech_terms = [
+        "algorithm", "architecture", "blockchain", "consensus", "cryptography", 
+        "decentralized", "encryption", "hash", "implementation", "protocol", 
+        "scalability", "security", "smart contract", "token", "transaction"
+    ]
+    
+    # Count tech terms
+    tech_count = sum(text_lower.count(term) for term in tech_terms)
+    
+    # Normalize to 0-100 scale
+    max_expected = 50  # Arbitrary number for scaling
+    tech_score = min(100, (tech_count / max_expected) * 100)
+    
+    return tech_score
+
+def calculate_vulnerability_score(text):
+    """
+    Calculate a vulnerability mentions score (simplified implementation).
+    
+    Args:
+        text (str): The document text
+        
+    Returns:
+        float: Vulnerability score (0-100)
+    """
+    # This is a placeholder implementation
+    
+    text_lower = text.lower()
+    
+    vulnerability_terms = [
+        "vulnerability", "exploit", "bug", "defect", "flaw", "issue",
+        "critical", "high severity", "medium severity", "low severity",
+        "security risk", "attack vector"
+    ]
+    
+    # Count vulnerability terms
+    vuln_count = sum(text_lower.count(term) for term in vulnerability_terms)
+    
+    # Normalize to 0-100 scale
+    max_expected = 30  # Arbitrary number for scaling
+    vuln_score = min(100, (vuln_count / max_expected) * 100)
+    
+    return vuln_score
+
+def calculate_legal_score(text):
+    """
+    Calculate a legal terminology score (simplified implementation).
+    
+    Args:
+        text (str): The document text
+        
+    Returns:
+        float: Legal score (0-100)
+    """
+    # This is a placeholder implementation
+    
+    text_lower = text.lower()
+    
+    legal_terms = [
+        "pursuant", "hereby", "regulation", "compliance", "jurisdiction",
+        "statute", "provision", "aforementioned", "legal", "law",
+        "liability", "enforcement", "violation", "clause", "penalty"
+    ]
+    
+    # Count legal terms
+    legal_count = sum(text_lower.count(term) for term in legal_terms)
+    
+    # Normalize to 0-100 scale
+    max_expected = 40  # Arbitrary number for scaling
+    legal_score = min(100, (legal_count / max_expected) * 100)
+    
+    return legal_score
+
+def calculate_assessment_score(text):
+    """
+    Calculate an assessment terminology score (simplified implementation).
+    
+    Args:
+        text (str): The document text
+        
+    Returns:
+        float: Assessment score (0-100)
+    """
+    # This is a placeholder implementation
+    
+    text_lower = text.lower()
+    
+    assessment_terms = [
+        "assessment", "evaluation", "analysis", "review", "finding",
+        "recommendation", "conclusion", "scorecard", "rating", "grade",
+        "performance", "measure", "metric", "quality", "criteria"
+    ]
+    
+    # Count assessment terms
+    assessment_count = sum(text_lower.count(term) for term in assessment_terms)
+    
+    # Normalize to 0-100 scale
+    max_expected = 35  # Arbitrary number for scaling
+    assessment_score = min(100, (assessment_count / max_expected) * 100)
+    
+    return assessment_score
+
+def extract_blockchain_mentions(text):
+    """
+    Extract mentions of blockchain platforms (simplified implementation).
+    
+    Args:
+        text (str): The document text
+        
+    Returns:
+        list: List of mentioned blockchains
+    """
+    # This is a placeholder implementation
+    
+    text_lower = text.lower()
+    
+    blockchains = [
+        "bitcoin", "ethereum", "binance", "solana", "cardano",
+        "ripple", "polkadot", "avalanche", "cosmos", "polygon"
+    ]
+    
+    # Find mentioned blockchains
+    mentioned = [chain for chain in blockchains if chain in text_lower]
+    
+    return mentioned
+
+def extract_regulatory_bodies(text):
+    """
+    Extract mentions of regulatory bodies (simplified implementation).
+    
+    Args:
+        text (str): The document text
+        
+    Returns:
+        list: List of mentioned regulatory bodies
+    """
+    # This is a placeholder implementation
+    
+    text_lower = text.lower()
+    
+    bodies = [
+        "sec", "securities and exchange commission",
+        "finra", "financial industry regulatory authority",
+        "cftc", "commodity futures trading commission",
+        "fca", "financial conduct authority",
+        "mifid", "fsb", "financial stability board",
+        "fatf", "financial action task force"
+    ]
+    
+    # Find mentioned regulatory bodies
+    mentioned = []
+    for body in bodies:
+        if body in text_lower:
+            # Add the shorter version (like SEC instead of securities and exchange commission)
+            if body in ["sec", "finra", "cftc", "fca", "mifid", "fsb", "fatf"]:
+                mentioned.append(body.upper())
+            else:
+                # Find the acronym for longer names
+                words = body.split()
+                if len(words) > 1:
+                    acronym = "".join(word[0] for word in words if word not in ["and", "of"])
+                    mentioned.append(acronym.upper())
+    
+    return list(set(mentioned))  # Remove duplicates
 def calculate_risk_score(text: str) -> float:
     """
     Calculate a risk score for a document (simplified implementation).

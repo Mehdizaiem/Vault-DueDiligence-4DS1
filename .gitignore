@@ -63,4 +63,8 @@ Sample_Data/feature_extraction.py
 # Ignore all log files
 *.log
 
+*.pyc
+__pycache__/
+*.py[co]
+
 venv/

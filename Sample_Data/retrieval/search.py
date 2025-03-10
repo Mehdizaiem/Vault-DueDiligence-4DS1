@@ -9,8 +9,9 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..
 if project_root not in sys.path:
     sys.path.append(project_root)
 
-from Sample_Data.vector_store.embed import generate_embedding
+from Sample_Data.vector_store.embed import generate_mpnet_embedding as generate_embedding
 from Sample_Data.vector_store.weaviate_client import get_weaviate_client
+from weaviate.classes.query import MetadataQuery, HybridFusion, Filter
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -102,36 +103,40 @@ def _search_collection(client, collection_name, query_text, query_vector, top_k,
         # Get the collection
         collection = client.collections.get(collection_name)
         
-        # Try hybrid search (vector + BM25 text search) for better results
+        # Perform hybrid search with Weaviate v4.x syntax
         try:
-            from weaviate.classes.query import QueryNearTextArgument
-            
-            # Hybrid search (alpha=0.5 means 50% vector search, 50% BM25 text search)
+            # According to docs, we need to use a list of strings for return_metadata
+            # and potentially use MetadataQuery for advanced use cases
             response = collection.query.hybrid(
-                query=query_text,
-                vector=query_vector,
-                alpha=0.5,  # Balance between vector and keyword search
+                query=query_text,              # BM25 keyword component
+                vector=query_vector,           # Vector component
+                alpha=0.5,                     # Balance between vector (1.0) and BM25 (0.0)
                 limit=top_k,
-                return_metadata=["distance", "score"]
+                return_metadata=["distance", "score"]  # Use string list as documented
             )
             
             # Format the results
             results = []
             for obj in response.objects:
-                # Calculate hybrid score
-                vector_dist = obj.metadata.distance if obj.metadata and hasattr(obj.metadata, 'distance') else 1.0
-                bm25_score = obj.metadata.score if obj.metadata and hasattr(obj.metadata, 'score') else 0.0
+                # Get metadata values safely
+                if hasattr(obj, 'metadata') and obj.metadata is not None:
+                    vector_dist = getattr(obj.metadata, 'distance', None)
+                    if vector_dist is None:
+                        vector_dist = 1.0
+                        
+                    bm25_score = getattr(obj.metadata, 'score', None)
+                    if bm25_score is None:
+                        bm25_score = 0.0
+                else:
+                    vector_dist = 1.0
+                    bm25_score = 0.0
                 
-                # Convert distance to similarity (1 - distance)
                 similarity = 1.0 - vector_dist
                 
-                # Check if similarity is above threshold
                 if similarity >= similarity_threshold:
-                    # Get content and source from properties
                     content = obj.properties.get("content", "")
                     source = obj.properties.get("source", "Unknown")
                     
-                    # Add collection-specific formatting
                     if collection_name == "CryptoNewsSentiment":
                         title = obj.properties.get("title", "")
                         sentiment = obj.properties.get("sentiment_label", "NEUTRAL")
@@ -149,29 +154,34 @@ def _search_collection(client, collection_name, query_text, query_vector, top_k,
                         "source_type": source_type,
                         "distance": vector_dist,
                         "similarity": similarity,
-                        "relevance": (similarity + bm25_score) / 2,  # Combined relevance score
+                        "relevance": (similarity + bm25_score) / 2,
                         "sentiment": f"{sentiment} ({sentiment_score:.2f})" if sentiment and sentiment_score else None
                     })
             
-            # Sort by relevance score (descending)
             results.sort(key=lambda x: x["relevance"], reverse=True)
             return results
             
         except Exception as hybrid_error:
             logger.error(f"Hybrid search error: {hybrid_error}")
-            
             # Fall back to vector-only search
             logger.info("Falling back to vector-only search")
             response = collection.query.near_vector(
                 near_vector=query_vector,
                 limit=top_k,
-                return_metadata=["distance"]
+                return_metadata=["distance"]  # Use string list as documented
             )
             
             # Format the results
             results = []
             for obj in response.objects:
-                distance = obj.metadata.distance if obj.metadata else 0.9
+                # Get metadata values safely
+                if hasattr(obj, 'metadata') and obj.metadata is not None:
+                    distance = getattr(obj.metadata, 'distance', None)
+                    if distance is None:
+                        distance = 0.9
+                else:
+                    distance = 0.9
+                
                 similarity = 1.0 - distance
                 
                 if similarity >= similarity_threshold:
@@ -215,8 +225,6 @@ def _keyword_search(client, collection_name, keywords, top_k):
         collection = client.collections.get(collection_name)
         
         # Build property filter based on collection
-        from weaviate.classes.query import Filter
-        
         if collection_name == "CryptoDueDiligenceDocuments":
             # Search content field for documents
             query_filter = Filter.by_property("content").contains_any(keywords)
@@ -273,10 +281,40 @@ def _keyword_search(client, collection_name, keywords, top_k):
         logger.error(f"Keyword search failed for {collection_name}: {e}")
         return []
 
+# Advanced search example with MetadataQuery for explain_score
+def advanced_search_with_explain(client, query_text, top_k=3):
+    """Example of advanced search with explanation of scores"""
+    try:
+        collection = client.collections.get("CryptoDueDiligenceDocuments")
+        
+        # Use MetadataQuery with explain_score
+        response = collection.query.hybrid(
+            query=query_text,
+            alpha=0.5,
+            return_metadata=MetadataQuery(score=True, explain_score=True),  # Use MetadataQuery for advanced features
+            limit=top_k,
+        )
+        
+        results = []
+        for obj in response.objects:
+            result = {
+                "content": obj.properties.get("content", "")[:500] + "...",
+                "source": obj.properties.get("source", "Unknown"),
+                "score": getattr(obj.metadata, "score", None),
+                "explanation": getattr(obj.metadata, "explain_score", None)
+            }
+            results.append(result)
+            
+        return results
+        
+    except Exception as e:
+        logger.error(f"Advanced search error: {e}")
+        return []
+
 if __name__ == "__main__":
     client = get_weaviate_client()
     try:
-        query = "cryptocurrency market trends"
+        query = "cryptocurrency "
         results = search_documents(client, query)
         
         if results:

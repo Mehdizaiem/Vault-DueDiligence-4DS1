@@ -139,10 +139,14 @@ class CryptoDueDiligenceSystem:
             self.time_series_manager = TimeSeriesManager(storage_manager=self.storage)
             logger.info("Time series manager initialized")
             
-            # Initialize on-chain manager
-            #from Code.data_processing.onchain_manager import OnChainManager
-           #self.onchain_manager = OnChainManager(storage_manager=self.storage)
-           # logger.info("OnChain manager initialized")
+            # Initialize on-chain manager - UNCOMMENTED THIS SECTION
+            try:
+                from Code.data_processing.onchain_manager import OnChainManager
+                self.onchain_manager = OnChainManager(storage_manager=self.storage)
+                logger.info("OnChain manager initialized")
+            except ImportError as e:
+                logger.warning(f"OnChain manager could not be initialized: {e}")
+                self.onchain_manager = None
             
             # Set up schemas
             self.storage.setup_schemas()
@@ -316,7 +320,7 @@ class CryptoDueDiligenceSystem:
             logger.error(f"Error updating forecasts: {e}")
     
     def analyze_onchain(self, address: str, blockchain: str = "ethereum", 
-                       related_fund: Optional[str] = None) -> Dict:
+                        related_fund: Optional[str] = None) -> Dict:
         """
         Analyze on-chain data for a specific address.
         
@@ -331,6 +335,24 @@ class CryptoDueDiligenceSystem:
         logger.info(f"Analyzing on-chain data for {address} on {blockchain}")
         
         try:
+            # Check if onchain_manager is available
+            if self.onchain_manager is None:
+                # Try direct analysis as a fallback
+                try:
+                    from Sample_Data.onchain_analytics.analyzers.wallet_analyzer import WalletAnalyzer
+                    from Sample_Data.onchain_analytics.models.weaviate_storage import store_wallet_analysis
+                    
+                    analyzer = WalletAnalyzer()
+                    analysis = analyzer.analyze_ethereum_wallet(address)
+                    
+                    if "error" not in analysis and related_fund:
+                        store_wallet_analysis(analysis, related_fund)
+                    
+                    return analysis
+                except Exception as direct_error:
+                    logger.error(f"Error in direct wallet analysis: {direct_error}")
+                    return {"error": f"OnChain manager not available and direct analysis failed: {str(direct_error)}"}
+            
             # Use the onchain manager to analyze and store the data
             return self.onchain_manager.analyze_and_store(address, blockchain, related_fund)
                 

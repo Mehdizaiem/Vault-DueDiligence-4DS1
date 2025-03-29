@@ -64,3 +64,4 @@ Sample_Data/feature_extraction.py
 *.log
 
 venv/
+.qodo

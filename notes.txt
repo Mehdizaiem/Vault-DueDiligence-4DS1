@@ -1,7 +1,0 @@
-python -m Code.data_acquisition.blockchain_collectors.news_scraper
-
-python -m Code.data_processing.sentiment_analyzer
-
-python -m Code.data_processing.crypto_forecaster
-
-python agentic_rag.py --interactive

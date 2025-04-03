@@ -7,7 +7,7 @@ Run the report generator and explicitly call all needed methods.
 
 import os
 import sys
-from reportgenertor import ReportGenerator
+from test_reports.reportgenertor import ReportGenerator
 
 def main():
     print("Starting report generation process...")

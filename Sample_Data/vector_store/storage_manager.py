@@ -70,7 +70,7 @@ class StorageManager:
         except Exception as e:
             logger.error(f"Error setting up schemas: {e}")
             return False
-    
+        
     def store_due_diligence_document(self, document: Dict) -> bool:
         """
         Store a due diligence document in the CryptoDueDiligenceDocuments collection

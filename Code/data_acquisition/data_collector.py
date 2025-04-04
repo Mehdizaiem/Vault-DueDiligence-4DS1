@@ -283,8 +283,16 @@ class DataCollector:
         """
         logger.info(f"Fetching crypto news with limit {limit_per_source} per source")
         
-        # Import the news scraper
+        # Import the news scraper with proper path handling
         try:
+            import sys
+            import os
+            
+            # Ensure project root is in path
+            project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..'))
+            if project_root not in sys.path:
+                sys.path.insert(0, project_root)
+                
             from Code.data_acquisition.blockchain_collectors.news_scraper import CryptoNewsScraper
             scraper = CryptoNewsScraper()
             
@@ -300,8 +308,8 @@ class DataCollector:
                 logger.warning("No news articles found")
                 return []
                 
-        except ImportError:
-            logger.error("CryptoNewsScraper not found. Make sure news_scraper.py is available.")
+        except ImportError as e:
+            logger.error(f"CryptoNewsScraper not found. Make sure news_scraper.py is available. Error: {e}")
             return []
         except Exception as e:
             logger.error(f"Error fetching news: {str(e)}")

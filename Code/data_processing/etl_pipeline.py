@@ -11,9 +11,16 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Load environment variables
-dotenv_path = ".env.local" if os.path.exists(".env.local") else ".env"
-load_dotenv(dotenv_path=dotenv_path)
+# Get the absolute path to the project root directory
+project_root = os.path.abspath("C:/Users/asus/Documents/4DS1/Semester2/PIDS/VAULT_Project/Vault-DueDiligence-4DS1")
+dotenv_path = os.path.join(project_root, ".env.local")
+
+if os.path.exists(dotenv_path):
+    from dotenv import load_dotenv
+    load_dotenv(dotenv_path=str(dotenv_path))
+    logger.info(f"Loaded environment variables from {dotenv_path}")
+else:
+    logger.warning(f"Environment file not found at {dotenv_path}")
 
 class APICollector:
     """

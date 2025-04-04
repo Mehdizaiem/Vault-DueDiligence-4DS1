@@ -616,9 +616,7 @@ class RetrievalEngine:
             "polkadot": "DOTUSDT",
             "dogecoin": "DOGEUSDT",
             "avalanche": "AVAXUSDT",
-            "polygon": "MATICUSDT",
-            "tether": "USDTUSDT",
-            "usd coin": "USDCUSDT"
+            "polygon": "MATICUSDT"
         }
         
         # If no specific entities, try to use "bitcoin" as default for market questions
@@ -628,59 +626,67 @@ class RetrievalEngine:
         # Retrieve data for each entity
         for entity in entities:
             ticker = symbol_map.get(entity, f"{entity.upper()}USDT")
+            logger.info(f"Retrieving market data for {ticker}")
             
-            # Time interval based on analysis
-            interval = "1d"  # default
-            time_period = analysis.get("time_period", "unspecified")
-            
-            if time_period in ["today", "yesterday"]:
-                interval = "1h"
-            elif time_period in ["this_week", "last_week"]:
-                interval = "1d"
-            elif time_period in ["this_month", "last_month"]:
-                interval = "1d"
-            
-            # Limit based on time period
-            limit = 7  # default
-            
-            if time_period == "today":
-                limit = 24
-            elif time_period == "this_week":
-                limit = 7
-            elif time_period == "this_month":
-                limit = 30
-            elif time_period == "this_year":
-                limit = 365
-            
-            # Get market metrics
+            # Try direct method first
             try:
                 market_metrics = self.storage.retrieve_market_data(ticker, limit=3)
                 if market_metrics:
+                    logger.info(f"Found market data for {ticker}")
                     results["MarketMetrics"] = market_metrics
+                    continue
             except Exception as e:
                 logger.error(f"Error retrieving market metrics for {ticker}: {e}")
             
-            # Get time series data
+            # Fallback to direct query if needed
             try:
-                time_series = self.storage.retrieve_time_series(ticker, interval=interval, limit=limit)
-                if time_series:
-                    results["CryptoTimeSeries"] = time_series
+                from weaviate.classes.query import Filter, Sort
+                collection = self.storage.client.collections.get("MarketMetrics")
+                
+                # Try with direct filter
+                response = collection.query.fetch_objects(
+                    filters=Filter.by_property("symbol").equal(ticker),
+                    limit=3,
+                    sort=Sort.by_property("timestamp", ascending=False)
+                )
+                
+                if response.objects:
+                    metrics = [{"id": str(obj.uuid), **obj.properties} for obj in response.objects]
+                    logger.info(f"Found market data via direct query for {ticker}")
+                    results["MarketMetrics"] = metrics
+                    continue
                     
-                    # Calculate some basic statistical information
-                    if len(time_series) > 1:
-                        stats = self._calculate_price_statistics(time_series)
-                        results["PriceStatistics"] = [{"content": json.dumps(stats), "source": f"Price Statistics for {ticker}"}]
+                # Try with base symbol if full ticker fails
+                base_ticker = ticker.replace("USDT", "").replace("USD", "")
+                if len(base_ticker) >= 2:
+                    response = collection.query.fetch_objects(
+                        filters=Filter.by_property("symbol").contains_all([base_ticker]),
+                        limit=3,
+                        sort=Sort.by_property("timestamp", ascending=False)
+                    )
+                    
+                    if response.objects:
+                        metrics = [{"id": str(obj.uuid), **obj.properties} for obj in response.objects]
+                        logger.info(f"Found market data via partial match on {base_ticker}")
+                        results["MarketMetrics"] = metrics
+                        continue
             except Exception as e:
-                logger.error(f"Error retrieving time series for {ticker}: {e}")
-            
-            # Try to get data from due diligence system for more comprehensive data
+                logger.error(f"Error with direct query for market data: {e}")
+                    
+            # Fallback to due diligence system if needed
             try:
                 if self.due_diligence:
+                    logger.info(f"Trying due diligence system for market data on {entity}")
                     latest_data = self.due_diligence.get_market_data(entity)
                     if latest_data and "error" not in latest_data:
+                        logger.info(f"Found market data via due diligence system")
                         results["LatestMarketData"] = [latest_data]
             except Exception as e:
                 logger.error(f"Error getting market data from due diligence system: {e}")
+        
+        # If no results, log a clear message
+        if not results:
+            logger.warning(f"No market data found for any of the requested entities: {entities}")
         
         return results
     
@@ -1835,7 +1841,23 @@ class EnhancedCryptoQA:
             self.storage.close()
         if hasattr(self.due_diligence_system, 'storage') and self.due_diligence_system.storage:
             self.due_diligence_system.storage.close()
-
+def check_market_data_availability(client):
+    """Utility function to check what market data is available"""
+    try:
+        collection = client.collections.get("MarketMetrics")
+        # Get all objects without filtering
+        response = collection.query.fetch_objects(
+            limit=10
+        )
+        
+        print(f"Found {len(response.objects)} market data entries:")
+        for obj in response.objects:
+            print(f"Symbol: {obj.properties.get('symbol', 'Unknown')}, "
+                  f"Price: {obj.properties.get('price', 'Unknown')}, "
+                  f"Timestamp: {obj.properties.get('timestamp', 'Unknown')}")
+        
+    except Exception as e:
+        print(f"Error checking market data: {e}")
 # Example usage
 if __name__ == "__main__":
     import argparse

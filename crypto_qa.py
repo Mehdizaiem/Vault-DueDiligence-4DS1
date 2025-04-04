@@ -605,88 +605,143 @@ class RetrievalEngine:
         # Extract cryptocurrency entities
         entities = analysis.get("crypto_entities", [])
         
-        # Map common names to ticker symbols
+        # Map common names to ticker symbols (maintain multiple formats for flexibility)
         symbol_map = {
-            "bitcoin": "BTCUSDT", 
-            "ethereum": "ETHUSDT", 
-            "solana": "SOLUSDT",
-            "binance": "BNBUSDT",
-            "cardano": "ADAUSDT",
-            "ripple": "XRPUSDT",
-            "polkadot": "DOTUSDT",
-            "dogecoin": "DOGEUSDT",
-            "avalanche": "AVAXUSDT",
-            "polygon": "MATICUSDT"
+            "bitcoin": ["BTCUSDT", "BTC", "BTCUSD", "BTC-USD"],
+            "ethereum": ["ETHUSDT", "ETH", "ETHUSD", "ETH-USD"],
+            "solana": ["SOLUSDT", "SOL", "SOLUSD", "SOL-USD"],
+            "binance": ["BNBUSDT", "BNB", "BNBUSD", "BNB-USD"],
+            "cardano": ["ADAUSDT", "ADA", "ADAUSD", "ADA-USD"],
+            "ripple": ["XRPUSDT", "XRP", "XRPUSD", "XRP-USD"],
+            "polkadot": ["DOTUSDT", "DOT", "DOTUSD", "DOT-USD"],
+            "dogecoin": ["DOGEUSDT", "DOGE", "DOGEUSD", "DOGE-USD"],
+            "avalanche": ["AVAXUSDT", "AVAX", "AVAXUSD", "AVAX-USD"],
+            "polygon": ["MATICUSDT", "MATIC", "MATICUSD", "MATIC-USD"]
         }
         
         # If no specific entities, try to use "bitcoin" as default for market questions
-        if not entities and analysis["primary_category"] == "market_price":
+        if not entities and (analysis["primary_category"] == "market_price" or 
+                            "market_price" in analysis["secondary_categories"] or 
+                            analysis["intent"] == "price"):
             entities = ["bitcoin"]
+            logger.info("No specific entities found, defaulting to Bitcoin for market price query")
         
         # Retrieve data for each entity
         for entity in entities:
-            ticker = symbol_map.get(entity, f"{entity.upper()}USDT")
-            logger.info(f"Retrieving market data for {ticker}")
+            # Get possible ticker symbols for this entity
+            possible_tickers = symbol_map.get(entity, [f"{entity.upper()}USDT", entity.upper()])
+            logger.info(f"Trying to retrieve market data for {entity} (possible tickers: {possible_tickers})")
             
-            # Try direct method first
-            try:
-                market_metrics = self.storage.retrieve_market_data(ticker, limit=3)
-                if market_metrics:
-                    logger.info(f"Found market data for {ticker}")
-                    results["MarketMetrics"] = market_metrics
-                    continue
-            except Exception as e:
-                logger.error(f"Error retrieving market metrics for {ticker}: {e}")
-            
-            # Fallback to direct query if needed
-            try:
-                from weaviate.classes.query import Filter, Sort
-                collection = self.storage.client.collections.get("MarketMetrics")
-                
-                # Try with direct filter
-                response = collection.query.fetch_objects(
-                    filters=Filter.by_property("symbol").equal(ticker),
-                    limit=3,
-                    sort=Sort.by_property("timestamp", ascending=False)
-                )
-                
-                if response.objects:
-                    metrics = [{"id": str(obj.uuid), **obj.properties} for obj in response.objects]
-                    logger.info(f"Found market data via direct query for {ticker}")
-                    results["MarketMetrics"] = metrics
-                    continue
+            # Try each possible ticker format
+            market_data_found = False
+            for ticker in possible_tickers:
+                if market_data_found:
+                    break
                     
-                # Try with base symbol if full ticker fails
-                base_ticker = ticker.replace("USDT", "").replace("USD", "")
-                if len(base_ticker) >= 2:
+                logger.info(f"Attempting to retrieve market data for ticker: {ticker}")
+                
+                # Method 1: Try using storage manager's retrieve_market_data method
+                try:
+                    market_metrics = self.storage.retrieve_market_data(ticker, limit=1)
+                    if market_metrics and len(market_metrics) > 0:
+                        logger.info(f"Found market data for {ticker} using retrieve_market_data method")
+                        results["MarketMetrics"] = market_metrics
+                        market_data_found = True
+                        continue
+                except Exception as e:
+                    logger.warning(f"Error using retrieve_market_data for {ticker}: {e}")
+                
+                # Method 2: Direct access to MarketMetrics collection
+                try:
+                    from weaviate.classes.query import Filter, Sort
+                    
+                    # Make sure we have a client
+                    if not hasattr(self.storage, 'client') or self.storage.client is None:
+                        self.storage.connect()
+                    
+                    # Get the collection
+                    collection = self.storage.client.collections.get("MarketMetrics")
+                    
+                    # Try exact match first
                     response = collection.query.fetch_objects(
-                        filters=Filter.by_property("symbol").contains_all([base_ticker]),
-                        limit=3,
-                        sort=Sort.by_property("timestamp", ascending=False)
+                        filters=Filter.by_property("symbol").equal(ticker),
+                        limit=1,
+                        sort=Sort.by_property("timestamp", ascending=False)  # Get the most recent
                     )
                     
                     if response.objects:
                         metrics = [{"id": str(obj.uuid), **obj.properties} for obj in response.objects]
-                        logger.info(f"Found market data via partial match on {base_ticker}")
+                        logger.info(f"Found market data via exact match for {ticker}")
                         results["MarketMetrics"] = metrics
+                        market_data_found = True
                         continue
-            except Exception as e:
-                logger.error(f"Error with direct query for market data: {e}")
                     
-            # Fallback to due diligence system if needed
-            try:
-                if self.due_diligence:
+                    # Try contains search if exact match fails
+                    base_ticker = ticker.replace("USDT", "").replace("USD", "").replace("-", "")
+                    if len(base_ticker) >= 2:
+                        logger.info(f"Trying partial match with base ticker: {base_ticker}")
+                        response = collection.query.fetch_objects(
+                            filters=Filter.by_property("symbol").contains_all([base_ticker]),
+                            limit=1,
+                            sort=Sort.by_property("timestamp", ascending=False)
+                        )
+                        
+                        if response.objects:
+                            metrics = [{"id": str(obj.uuid), **obj.properties} for obj in response.objects]
+                            logger.info(f"Found market data via partial match for {base_ticker}")
+                            results["MarketMetrics"] = metrics
+                            market_data_found = True
+                            continue
+                except Exception as e:
+                    logger.warning(f"Error with direct collection query for {ticker}: {e}")
+                    import traceback
+                    logger.debug(traceback.format_exc())
+            
+            # Method 3: Try due diligence system as final fallback
+            if not market_data_found and self.due_diligence:
+                try:
                     logger.info(f"Trying due diligence system for market data on {entity}")
                     latest_data = self.due_diligence.get_market_data(entity)
                     if latest_data and "error" not in latest_data:
-                        logger.info(f"Found market data via due diligence system")
+                        logger.info(f"Found market data via due diligence system for {entity}")
                         results["LatestMarketData"] = [latest_data]
-            except Exception as e:
-                logger.error(f"Error getting market data from due diligence system: {e}")
+                        market_data_found = True
+                except Exception as e:
+                    logger.warning(f"Error getting market data from due diligence system: {e}")
+            
+            # Log if we couldn't find data for this entity
+            if not market_data_found:
+                logger.warning(f"Could not find any market data for {entity} after trying all methods")
         
-        # If no results, log a clear message
+        # If no results found for any entity, try a desperate measure - get any recent prices
         if not results:
-            logger.warning(f"No market data found for any of the requested entities: {entities}")
+            try:
+                logger.info("No entity-specific market data found, trying to get any recent price data")
+                
+                collection = self.storage.client.collections.get("MarketMetrics")
+                response = collection.query.fetch_objects(
+                    limit=5,
+                    sort=Sort.by_property("timestamp", ascending=False)
+                )
+                
+                if response.objects:
+                    # Look for Bitcoin in the results
+                    btc_metrics = None
+                    for obj in response.objects:
+                        if "BTC" in obj.properties.get("symbol", ""):
+                            btc_metrics = {"id": str(obj.uuid), **obj.properties}
+                            break
+                    
+                    if btc_metrics:
+                        logger.info("Found Bitcoin market data in recent prices")
+                        results["MarketMetrics"] = [btc_metrics]
+                    else:
+                        # Just take the first result if no Bitcoin
+                        logger.info("No Bitcoin data in recent prices, using most recent data available")
+                        metrics = [{"id": str(obj.uuid), **obj.properties} for obj in response.objects[:1]]
+                        results["MarketMetrics"] = metrics
+            except Exception as e:
+                logger.warning(f"Error retrieving any recent market data: {e}")
         
         return results
     

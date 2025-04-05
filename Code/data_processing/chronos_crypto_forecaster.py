@@ -71,17 +71,28 @@ class ChronosForecaster:
         
         Args:
             data (pd.DataFrame): DataFrame with price data
-            
+             
         Returns:
             torch.Tensor: Processed data ready for the model
         """
+        # Check if data is None or empty
+        if data is None or len(data) == 0:
+            raise ValueError("No market data provided")
+        
+        # Try multiple column names for price
+        price_columns = ['price', 'close', 'Price', 'Close']
+        price_col = None
+        
+        for col in price_columns:
+            if col in data.columns:
+                price_col = col
+                break
+        
+        if price_col is None:
+            raise ValueError(f"No price column found. Tried: {price_columns}")
+        
         # Extract price data
-        if 'price' in data.columns:
-            price_data = data['price'].values
-        elif 'close' in data.columns:
-            price_data = data['close'].values
-        else:
-            raise ValueError("No price or close column found in data")
+        price_data = data[price_col].values
         
         # Check for NaN values
         if np.isnan(price_data).any():
@@ -154,12 +165,18 @@ class ChronosForecaster:
             str: Path to saved plot or None
         """
         # Extract price data
-        if 'price' in data.columns:
-            price_series = data['price']
-        elif 'close' in data.columns:
-            price_series = data['close']
-        else:
-            raise ValueError("No price or close column found in data")
+        price_columns = ['price', 'close', 'Price', 'Close']
+        price_col = None
+        
+        for col in price_columns:
+            if col in data.columns:
+                price_col = col
+                break
+        
+        if price_col is None:
+            raise ValueError(f"No price column found. Tried: {price_columns}")
+        
+        price_series = data[price_col]
         
         # Extract forecast components
         dates = forecast_results['dates']
@@ -269,12 +286,18 @@ class ChronosForecaster:
             dict: Market insights
         """
         # Extract price data
-        if 'price' in data.columns:
-            price_series = data['price']
-        elif 'close' in data.columns:
-            price_series = data['close']
-        else:
-            raise ValueError("No price or close column found in data")
+        price_columns = ['price', 'close', 'Price', 'Close']
+        price_col = None
+        
+        for col in price_columns:
+            if col in data.columns:
+                price_col = col
+                break
+        
+        if price_col is None:
+            raise ValueError(f"No price column found. Tried: {price_columns}")
+        
+        price_series = data[price_col]
             
         # Get current price and calculate metrics
         current_price = price_series.iloc[-1]
@@ -361,77 +384,136 @@ class ChronosForecaster:
 
 def prepare_crypto_data(symbol, lookback_days=365):
     """
-    Download or load crypto price data for a given symbol
+    Fetch historical market data for a specific cryptocurrency symbol
     
     Args:
-        symbol (str): Crypto symbol (e.g., "BTC", "ETH")
-        lookback_days (int): Number of days of historical data
+        symbol (str): Crypto symbol (e.g., "BTCUSDT", "ETHUSDT")
+        lookback_days (int): Number of days of historical data to fetch
         
     Returns:
-        pd.DataFrame: Market data with datetime index
+        pd.DataFrame: Market data with timestamp index
     """
     try:
-        # Try to use yfinance to get data
-        import yfinance as yf
-        ticker = f"{symbol}-USD"
+        import os
+        import pandas as pd
+        import numpy as np
+        from datetime import datetime, timedelta
         
-        # Get historical data
-        end_date = datetime.now()
-        start_date = end_date - timedelta(days=lookback_days)
+        # Determine data directory
+        data_dir = os.path.join(os.getcwd(), 'data', 'time series cryptos')
         
-        df = yf.download(ticker, start=start_date, end=end_date)
+        # Find CSV files matching the symbol
+        csv_files = [f for f in os.listdir(data_dir) if f.lower().startswith(symbol.lower()) and f.endswith('.csv')]
         
-        if len(df) > 0:
-            # Rename columns to lower case
-            df.columns = [col.lower() for col in df.columns]
-            logger.info(f"Successfully downloaded {len(df)} days of data for {symbol}")
-            return df
+        if not csv_files:
+            logger.error(f"No CSV file found for symbol {symbol}")
+            return None
+        
+        # Use the first matching file
+        csv_path = os.path.join(data_dir, csv_files[0])
+        logger.info(f"Loading data from: {csv_path}")
+        
+        # Read the first row to inspect columns
+        sample_data = pd.read_csv(csv_path, nrows=1)
+        logger.info(f"CSV columns: {list(sample_data.columns)}")
+        
+        # Read CSV file with thousands separator specified
+        df = pd.read_csv(csv_path, thousands=',')
+        
+        # Log the data type of the 'Price' column to confirm
+        logger.info(f"Price column type after reading: {df['Price'].dtype}")
+        
+        # Check for date/timestamp column
+        date_column = None
+        date_candidates = ['Date', 'date', 'Timestamp', 'timestamp', 'Time', 'time']
+        for col in date_candidates:
+            if col in df.columns:
+                date_column = col
+                break
+        
+        if date_column:
+            df['timestamp'] = pd.to_datetime(df[date_column], errors='coerce')
+        else:
+            logger.warning("No date column found, creating synthetic timestamps")
+            df['timestamp'] = pd.date_range(end=datetime.now(), periods=len(df), freq='D')
+        
+        # Look for price column with more flexible matching
+        price_column = None
+        price_candidates = ['Close', 'close', 'Price', 'price', 'Last', 'last', 'Value', 'value']
+        
+        for col in price_candidates:
+            if col in df.columns:
+                price_column = col
+                logger.info(f"Found price column: {col}")
+                break
+        
+        # If no direct price column, try to identify it by looking for columns with numeric data
+        if price_column is None:
+            numeric_cols = df.select_dtypes(include=['number']).columns
+            logger.info(f"Numeric columns: {list(numeric_cols)}")
+            
+            # Exclude volume or other non-price columns
+            exclude_keywords = ['volume', 'vol', 'qty', 'quantity', 'market cap', 'marketcap', 'open', 'high', 'low']
+            potential_price_cols = [col for col in numeric_cols if not any(kw in col.lower() for kw in exclude_keywords)]
+            
+            if potential_price_cols:
+                # Use the first potential price column
+                price_column = potential_price_cols[0]
+                logger.info(f"Using {price_column} as price column")
+        
+        # If still no price column found, look for the column that might contain price data
+        if price_column is None:
+            # Try to identify a price column by looking for values typical of cryptocurrency prices
+            for col in df.select_dtypes(include=['number']).columns:
+                col_mean = df[col].mean()
+                # Crypto prices typically range from <$1 to tens of thousands
+                if 0.01 <= col_mean <= 100000:
+                    price_column = col
+                    logger.info(f"Guessing {price_column} as price column (mean value: {col_mean})")
+                    break
+        
+        # If we still don't have a price column, as a last resort, pick the first numeric column
+        if price_column is None and len(df.select_dtypes(include=['number']).columns) > 0:
+            price_column = df.select_dtypes(include=['number']).columns[0]
+            logger.warning(f"No ideal price column identified, using {price_column} as fallback")
+        
+        if price_column is None:
+            logger.error("No valid price column found in CSV")
+            return None
+        
+        # Create standardized 'price' column
+        df['price'] = df[price_column]
+        
+        # Set timestamp as index and sort
+        df.set_index('timestamp', inplace=True)
+        df.sort_index(inplace=True)
+        
+        # Handle duplicated indices
+        if df.index.duplicated().any():
+            logger.warning("Duplicate timestamps found, keeping last occurrence")
+            df = df[~df.index.duplicated(keep='last')]
+        
+        # Limit to lookback days
+        if len(df) > lookback_days:
+            df = df.tail(lookback_days)
+        
+        # Add symbol column if not present
+        if 'symbol' not in df.columns:
+            df['symbol'] = symbol
+        
+        # Log loaded data details
+        logger.info(f"Loaded {len(df)} data points for {symbol}")
+        logger.info(f"DataFrame columns: {list(df.columns)}")
+        logger.info(f"Data range: {df.index.min()} to {df.index.max()}")
+        logger.info(f"Price range: {df['price'].min()} to {df['price'].max()}")
+        
+        return df
+    
     except Exception as e:
-        logger.warning(f"Error downloading data with yfinance: {e}")
-    
-    # If yfinance fails, try to use a sample dataset or ask user to provide data
-    logger.warning(f"Cannot download {symbol} data. Using synthetic data for demonstration.")
-    
-    # Generate synthetic data that resembles crypto prices
-    dates = pd.date_range(end=datetime.now(), periods=lookback_days)
-    
-    # Start with a reasonable price for the chosen crypto
-    if symbol.upper() == "BTC":
-        base_price = 50000
-    elif symbol.upper() == "ETH":
-        base_price = 3000
-    else:
-        base_price = 100
-    
-    # Generate a random walk with drift and volatility that resembles crypto
-    np.random.seed(42)  # For reproducibility
-    returns = np.random.normal(0.0005, 0.02, lookback_days)  # Daily returns with positive drift
-    
-    # Add some volatility clusters to simulate crypto behavior
-    volatility_factor = np.ones(lookback_days)
-    for i in range(3):  # Create 3 volatility clusters
-        cluster_start = np.random.randint(0, lookback_days - 30)
-        cluster_length = np.random.randint(10, 30)
-        volatility_factor[cluster_start:cluster_start+cluster_length] = np.random.uniform(1.5, 3.0)
-    
-    returns = returns * volatility_factor
-    
-    # Convert returns to prices
-    prices = base_price * np.cumprod(1 + returns)
-    
-    # Create synthetic OHLC data
-    synthetic_data = {
-        'open': prices * np.random.uniform(0.98, 1.02, lookback_days),
-        'high': prices * np.random.uniform(1.01, 1.05, lookback_days),
-        'low': prices * np.random.uniform(0.95, 0.99, lookback_days),
-        'close': prices,
-        'volume': np.random.lognormal(15, 1, lookback_days)  # Log-normal distribution for volume
-    }
-    
-    df = pd.DataFrame(synthetic_data, index=dates)
-    logger.info(f"Created synthetic data with {len(df)} days for {symbol}")
-    
-    return df
+        logger.error(f"Error in prepare_crypto_data: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
+        return None
 
 def main():
     parser = argparse.ArgumentParser(description="Cryptocurrency forecasting with Amazon Chronos")
@@ -449,52 +531,64 @@ def main():
     
     args = parser.parse_args()
     
-    # Load cryptocurrency data
-    data = prepare_crypto_data(args.symbol, args.lookback)
+    try:
+        # Load cryptocurrency data
+        data = prepare_crypto_data(args.symbol, args.lookback)
+        
+        # Validate loaded data
+        if data is None or len(data) == 0:
+            logger.error(f"Failed to load data for {args.symbol}")
+            return 1
+        
+        # Initialize forecaster
+        forecaster = ChronosForecaster(
+            model_name=args.model,
+            use_gpu=args.gpu
+        )
+        
+        # Generate forecast
+        forecast_results = forecaster.forecast(
+            data,
+            prediction_length=args.days_ahead,
+            num_samples=100,
+            quantile_levels=[0.1, 0.5, 0.9]
+        )
+        
+        # Plot forecast
+        plot_path = forecaster.plot_forecast(
+            data,
+            forecast_results,
+            args.symbol,
+            output_path=args.output
+        )
+        
+        # Generate insights
+        insights = forecaster.generate_market_insights(
+            data,
+            forecast_results,
+            args.symbol
+        )
+        
+        # Print insights
+        print("\n--------- CHRONOS FORECAST INSIGHTS ---------")
+        print(f"Symbol: {args.symbol}")
+        print(f"Current Price: ${insights['current_price']:.2f}")
+        print(f"Forecast (in {args.days_ahead} days): ${insights['final_forecast']:.2f} ({insights['change_pct']:+.2f}%)")
+        print(f"Trend: {insights['trend'].upper()}")
+        print(f"Probability of price increase: {insights['probability_increase']:.1f}%")
+        print(f"Average forecast uncertainty: ±{insights['average_uncertainty']:.1f}%")
+        print("\nInsight:")
+        print(insights['insight'])
+        print("\nForecast plot saved to:", plot_path)
+        print("----------------------------------------------")
+        
+        return 0
     
-    # Initialize forecaster
-    forecaster = ChronosForecaster(
-        model_name=args.model,
-        use_gpu=args.gpu
-    )
-    
-    # Generate forecast
-    forecast_results = forecaster.forecast(
-        data,
-        prediction_length=args.days_ahead,
-        num_samples=100,
-        quantile_levels=[0.1, 0.5, 0.9]
-    )
-    
-    # Plot forecast
-    plot_path = forecaster.plot_forecast(
-        data,
-        forecast_results,
-        args.symbol,
-        output_path=args.output
-    )
-    
-    # Generate insights
-    insights = forecaster.generate_market_insights(
-        data,
-        forecast_results,
-        args.symbol
-    )
-    
-    # Print insights
-    print("\n--------- CHRONOS FORECAST INSIGHTS ---------")
-    print(f"Symbol: {args.symbol}")
-    print(f"Current Price: ${insights['current_price']:.2f}")
-    print(f"Forecast (in {args.days_ahead} days): ${insights['final_forecast']:.2f} ({insights['change_pct']:+.2f}%)")
-    print(f"Trend: {insights['trend'].upper()}")
-    print(f"Probability of price increase: {insights['probability_increase']:.1f}%")
-    print(f"Average forecast uncertainty: ±{insights['average_uncertainty']:.1f}%")
-    print("\nInsight:")
-    print(insights['insight'])
-    print("\nForecast plot saved to:", plot_path)
-    print("----------------------------------------------")
-    
-    return 0
+    except Exception as e:
+        logger.error(f"Error in main forecasting process: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
+        return 1
 
 if __name__ == "__main__":
-    main()
+    exit(main())

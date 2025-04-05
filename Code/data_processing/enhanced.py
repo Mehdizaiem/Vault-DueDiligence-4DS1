@@ -211,11 +211,11 @@ class EnhancedChronos:
         df = self.integration.get_historical_data(symbol)
         
         # If API source is enabled and we don't have data, try external API
-        if not df and self.data_sources["api"]:
+        if (df is None or df.empty) and self.data_sources["api"]:
             df = self._fetch_external_price_data(symbol, days)
         
         # If still no data, create synthetic data for testing
-        if not df:
+        if df is None or df.empty:
             logger.warning(f"No historical data found for {symbol}, creating synthetic data")
             df = self._create_synthetic_data(symbol, days)
         

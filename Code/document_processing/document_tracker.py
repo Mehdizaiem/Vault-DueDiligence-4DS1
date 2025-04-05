@@ -52,6 +52,9 @@ class DocumentTracker:
             bool: Success status
         """
         try:
+            # Create directory if it doesn't exist
+            os.makedirs(os.path.dirname(os.path.abspath(self.tracker_file)), exist_ok=True)
+            
             with open(self.tracker_file, 'w') as f:
                 json.dump(self.document_records, f, indent=2)
             return True
@@ -81,6 +84,19 @@ class DocumentTracker:
         except Exception as e:
             logger.error(f"Error computing hash for {file_path}: {e}")
             return None
+    
+    def _get_current_timestamp(self) -> str:
+        """Get current timestamp in ISO format"""
+        return datetime.now().isoformat()
+    
+    def compute_content_hash(self, content):
+        """Compute hash of content which may be string or bytes"""
+        sha256_hash = hashlib.sha256()
+        if isinstance(content, str):
+            sha256_hash.update(content.encode('utf-8'))
+        else:
+            sha256_hash.update(content)  # Assume bytes
+        return sha256_hash.hexdigest()
     
     def check_document_changes(self, data_dir: Path) -> Tuple[List[Path], List[Path], List[Path]]:
         """
@@ -142,6 +158,30 @@ class DocumentTracker:
         
         return new_files, modified_files, unchanged_files
     
+    def check_document_content_changed(self, content: str, identifier: str) -> bool:
+        """
+        Check if document content has changed since last processing.
+        
+        Args:
+            content (str): Document content
+            identifier (str): Unique identifier for this document
+            
+        Returns:
+            bool: True if content has changed or is new, False if unchanged
+        """
+        # Compute hash of content
+        content_hash = self.compute_content_hash(content)
+        
+        # Check if we have processed this document before
+        if identifier in self.document_records:
+            record = self.document_records[identifier]
+            # Check if hash matches (unchanged)
+            if record["hash"] == content_hash:
+                return False
+        
+        # Document is new or has changed
+        return True
+    
     def update_document_record(self, file_path: Path, processed_success: bool = True) -> None:
         """
         Update the tracking record for a processed document.
@@ -166,7 +206,7 @@ class DocumentTracker:
                     "filename": file_path.name,
                     "mtime": file_mtime,
                     "hash": file_hash,
-                    "last_processed": datetime.now().isoformat(),
+                    "last_processed": self._get_current_timestamp(),
                     "processed_success": processed_success
                 }
                 
@@ -175,6 +215,35 @@ class DocumentTracker:
                 
         except Exception as e:
             logger.error(f"Error updating document record for {file_path}: {e}")
+    
+    def update_content_record(self, content: str, identifier: str, filename: str, processed_success: bool = True) -> None:
+        """
+        Update the tracking record for a processed content string.
+        
+        Args:
+            content (str): Document content
+            identifier (str): Unique identifier for this document
+            filename (str): Original filename
+            processed_success (bool): Whether processing was successful
+        """
+        try:
+            # Compute content hash
+            content_hash = self.compute_content_hash(content)
+            
+            # Update record
+            self.document_records[identifier] = {
+                "filename": filename,
+                "mtime": datetime.now().timestamp(),
+                "hash": content_hash,
+                "last_processed": self._get_current_timestamp(),
+                "processed_success": processed_success
+            }
+            
+            # Save tracker after each update
+            self._save_tracker()
+                
+        except Exception as e:
+            logger.error(f"Error updating content record for {filename}: {e}")
     
     def clean_deleted_records(self, data_dir: Path) -> int:
         """
@@ -192,8 +261,13 @@ class DocumentTracker:
             for doc_file in data_dir.glob(f"*{ext}"):
                 current_files.add(str(doc_file))
         
-        # Find deleted files
-        deleted_records = set(self.document_records.keys()) - current_files
+        # Find deleted files (only considering file paths, not content identifiers)
+        deleted_records = set()
+        for key in self.document_records.keys():
+            # Only consider keys that look like file paths
+            if os.path.sep in key and not key.startswith("content_"):
+                if key not in current_files:
+                    deleted_records.add(key)
         
         # Remove deleted records
         for file_path in deleted_records:

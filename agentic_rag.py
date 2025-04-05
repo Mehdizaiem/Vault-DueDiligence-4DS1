@@ -357,12 +357,12 @@ class CryptoDueDiligenceSystem:
             return {"error": str(e)}
     
     def store_document(self, content: str, filename: str, document_type: Optional[str] = None,
-                     title: Optional[str] = None, metadata: Optional[Dict] = None):
+                    title: Optional[str] = None, metadata: Optional[Dict] = None):
         """
         Store a document in the CryptoDueDiligenceDocuments collection.
         
         Args:
-            content (str): Document content
+            content (str): Document content or file path
             filename (str): Source filename
             document_type (str, optional): Document type
             title (str, optional): Document title
@@ -374,6 +374,27 @@ class CryptoDueDiligenceSystem:
         logger.info(f"Storing document: {filename}")
         
         try:
+            # For PDF and other binary files, we should read the file directly
+            # instead of trying to process content as a string
+            if os.path.exists(content) and filename.lower().endswith(('.pdf', '.docx', '.txt')):
+                # Content is actually a file path, read the file based on type
+                if filename.lower().endswith('.pdf'):
+                    from Code.document_processing.process_documents import read_pdf
+                    text = read_pdf(content)
+                elif filename.lower().endswith('.docx'):
+                    from Code.document_processing.process_documents import read_docx
+                    text = read_docx(content)
+                elif filename.lower().endswith('.txt'):
+                    from Code.document_processing.process_documents import read_text_file
+                    text = read_text_file(content)
+                    
+                if text is None:
+                    logger.error(f"Could not extract text from {filename}")
+                    return False
+                    
+                # Use the extracted text instead of the original content
+                content = text
+            
             # Determine document type if not provided
             if not document_type:
                 document_type = self._infer_document_type(filename)
@@ -381,6 +402,21 @@ class CryptoDueDiligenceSystem:
             # Use filename as title if not provided
             if not title:
                 title = os.path.splitext(os.path.basename(filename))[0]
+            
+            # Import the process_document_with_tracking function
+            from Code.document_processing.integration import process_document_with_tracking
+            
+            # Process the document with change tracking
+            result = process_document_with_tracking(
+                content=content, 
+                filename=filename, 
+                document_type=document_type
+            )
+            
+            # If result is None, it means no processing was needed (document unchanged)
+            if result is None:
+                logger.info(f"Document {filename} unchanged, using existing data")
+                return True
             
             # Extract features from document
             features = self.processor.extract_features_from_document({
@@ -414,6 +450,10 @@ class CryptoDueDiligenceSystem:
             else:
                 logger.error(f"Failed to store document {filename}")
                 return False
+                
+        except Exception as e:
+            logger.error(f"Error storing document: {e}")
+            return False
                 
         except Exception as e:
             logger.error(f"Error storing document: {e}")

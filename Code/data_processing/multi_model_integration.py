@@ -15,13 +15,13 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..
 if project_root not in sys.path:
     sys.path.append(project_root)
 
-# Import TimeSeriesManager and ChronosForecaster
+# Import TimeSeriesManager and MultiModelForecaster
 from Code.data_processing.time_series_manager import TimeSeriesManager
-from Code.data_processing.chronos_forecaster import ChronosForecaster
+from Code.data_processing.multi_model_forecasting import MultiModelForecaster
 
-class ChronosIntegration:
+class MultiModelIntegration:
     """
-    Integration layer between TimeSeriesManager and ChronosForecaster
+    Integration layer between TimeSeriesManager and MultiModelForecaster
     that enables advanced forecasting capabilities while maintaining
     compatibility with existing systems in the agentic RAG pipeline.
     
@@ -46,10 +46,10 @@ class ChronosIntegration:
         # Initialize TimeSeriesManager for data access
         self.time_series_manager = TimeSeriesManager(storage_manager=storage_manager)
         
-        # Initialize ChronosForecaster with improved model paths
-        forecast_model_dir = os.path.join(project_root, "models", "chronos")
+        # Initialize MultiModelForecaster with improved model paths
+        forecast_model_dir = os.path.join(project_root, "models", "multi_model")
         os.makedirs(forecast_model_dir, exist_ok=True)
-        self.forecaster = ChronosForecaster(model_dir=forecast_model_dir)
+        self.forecaster = MultiModelForecaster(model_dir=forecast_model_dir)
         
         # Track available symbols
         self.available_symbols = set()
@@ -1080,14 +1080,14 @@ class ChronosIntegration:
 # Example usage
 if __name__ == "__main__":
     # Example standalone usage
-    chronos = ChronosIntegration()
-    available_symbols = chronos.list_available_symbols()
+    multi_model_integration = MultiModelIntegration()
+    available_symbols = multi_model_integration.list_available_symbols()
     print(f"Available symbols: {available_symbols}")
     
     if available_symbols:
         # Try forecasting for the first available symbol
         symbol = available_symbols[0]
-        forecast = chronos.forecast_price(symbol)
+        forecast = multi_model_integration.forecast_price(symbol)
         print(f"Forecast for {symbol}: {forecast}")
     
-    chronos.close()
+    multi_model_integration.close()

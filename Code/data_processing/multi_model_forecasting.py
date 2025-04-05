@@ -43,7 +43,7 @@ except ImportError:
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-class ChronosForecaster:
+class MultiModelForecaster:
     """
     Advanced time series forecasting for cryptocurrency data using multiple models
     with confidence intervals, anomaly detection, sentiment integration, and
@@ -61,9 +61,9 @@ class ChronosForecaster:
     - Multi-horizon forecasting
     """
     
-    def __init__(self, model_dir="models/chronos"):
+    def __init__(self, model_dir="models/multi_model"):
         """
-        Initialize the ChronosForecaster.
+        Initialize the MultiModelForecaster.
         
         Args:
             model_dir: Directory for storing trained models
@@ -96,7 +96,7 @@ class ChronosForecaster:
             except Exception as e:
                 logger.warning(f"Error configuring GPU: {e}")
         
-        logger.info(f"ChronosForecaster initialized with model_dir: {model_dir}")
+        logger.info(f"MultiModelForecaster initialized with model_dir: {model_dir}")
         logger.info(f"Available models: {', '.join(self.available_models)}")
         logger.info(f"SARIMAX available: {STATSMODELS_AVAILABLE}")
         logger.info(f"Prophet available: {PROPHET_AVAILABLE}")
@@ -3346,9 +3346,9 @@ class ChronosForecaster:
 # Example usage when imported as a library
 if __name__ == "__main__":
     # Example standalone usage
-    forecaster = ChronosForecaster()
+    forecaster = MultiModelForecaster()
     
-    print("\nChronosForecaster - Next-Gen Crypto Forecasting")
+    print("\nMultiModelForecaster - Next-Gen Crypto Forecasting")
     print("===============================================")
     print(f"Available models: {', '.join(forecaster.available_models)}")
     print(f"Deep learning available: {forecaster.dl_available}")

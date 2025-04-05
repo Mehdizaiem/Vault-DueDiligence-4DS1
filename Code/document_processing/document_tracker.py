@@ -1,0 +1,206 @@
+import os
+import json
+import hashlib
+import logging
+from pathlib import Path
+from datetime import datetime
+from typing import Dict, List, Set, Tuple, Optional
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
+class DocumentTracker:
+    """
+    Tracks document processing status to avoid reprocessing unchanged documents.
+    
+    This class maintains a record of processed documents with their file paths, 
+    modification timestamps, and content hashes to determine if reprocessing is needed.
+    """
+    
+    def __init__(self, tracker_file: str = "processed_documents.json"):
+        """
+        Initialize the document tracker.
+        
+        Args:
+            tracker_file (str): Path to the JSON file that stores document tracking info
+        """
+        self.tracker_file = tracker_file
+        self.document_records = self._load_tracker()
+        
+    def _load_tracker(self) -> Dict[str, Dict]:
+        """
+        Load document tracking data from file.
+        
+        Returns:
+            Dict[str, Dict]: Dictionary mapping file paths to document metadata
+        """
+        if os.path.exists(self.tracker_file):
+            try:
+                with open(self.tracker_file, 'r') as f:
+                    return json.load(f)
+            except Exception as e:
+                logger.error(f"Error loading document tracker: {e}")
+                return {}
+        return {}
+    
+    def _save_tracker(self) -> bool:
+        """
+        Save document tracking data to file.
+        
+        Returns:
+            bool: Success status
+        """
+        try:
+            with open(self.tracker_file, 'w') as f:
+                json.dump(self.document_records, f, indent=2)
+            return True
+        except Exception as e:
+            logger.error(f"Error saving document tracker: {e}")
+            return False
+    
+    def _compute_file_hash(self, file_path: str) -> Optional[str]:
+        """
+        Compute SHA-256 hash of file contents.
+        
+        Args:
+            file_path (str): Path to the file
+            
+        Returns:
+            Optional[str]: Hex digest of file hash, or None if error
+        """
+        try:
+            sha256_hash = hashlib.sha256()
+            
+            with open(file_path, "rb") as f:
+                # Read and update hash in chunks for memory efficiency
+                for byte_block in iter(lambda: f.read(4096), b""):
+                    sha256_hash.update(byte_block)
+                    
+            return sha256_hash.hexdigest()
+        except Exception as e:
+            logger.error(f"Error computing hash for {file_path}: {e}")
+            return None
+    
+    def check_document_changes(self, data_dir: Path) -> Tuple[List[Path], List[Path], List[Path]]:
+        """
+        Check for new, modified, and unchanged documents.
+        
+        Args:
+            data_dir (Path): Directory containing documents
+            
+        Returns:
+            Tuple[List[Path], List[Path], List[Path]]: Lists of new, modified, and unchanged document paths
+        """
+        # Find all document files
+        doc_files = []
+        for ext in [".txt", ".docx", ".pdf"]:
+            doc_files.extend(list(data_dir.glob(f"*{ext}")))
+        
+        # Convert paths to strings for dictionary keys
+        current_files = {str(doc_file): doc_file for doc_file in doc_files}
+        
+        # Track new, modified, and unchanged files
+        new_files = []
+        modified_files = []
+        unchanged_files = []
+        
+        # Check each current file against our records
+        for file_path_str, file_path in current_files.items():
+            # Get file stats
+            file_stats = os.stat(file_path)
+            file_mtime = file_stats.st_mtime
+            
+            if file_path_str not in self.document_records:
+                # New file
+                new_files.append(file_path)
+            else:
+                # Existing file - check if modified
+                record = self.document_records[file_path_str]
+                
+                # First check modification time for efficiency
+                if file_mtime > record["mtime"]:
+                    # Modification time changed, verify with hash
+                    current_hash = self._compute_file_hash(file_path_str)
+                    
+                    if current_hash != record["hash"]:
+                        # Content actually changed
+                        modified_files.append(file_path)
+                    else:
+                        # Only metadata changed, content is the same
+                        unchanged_files.append(file_path)
+                else:
+                    # No change in modification time
+                    unchanged_files.append(file_path)
+        
+        # Identify deleted files (in records but not in current files)
+        deleted_files = set(self.document_records.keys()) - set(current_files.keys())
+        
+        # Log summary
+        logger.info(f"Document check: {len(new_files)} new, {len(modified_files)} modified, "
+                   f"{len(unchanged_files)} unchanged, {len(deleted_files)} deleted")
+        
+        return new_files, modified_files, unchanged_files
+    
+    def update_document_record(self, file_path: Path, processed_success: bool = True) -> None:
+        """
+        Update the tracking record for a processed document.
+        
+        Args:
+            file_path (Path): Path to the document
+            processed_success (bool): Whether processing was successful
+        """
+        file_path_str = str(file_path)
+        
+        try:
+            # Get file stats
+            file_stats = os.stat(file_path)
+            file_mtime = file_stats.st_mtime
+            
+            # Compute file hash
+            file_hash = self._compute_file_hash(file_path_str)
+            
+            if file_hash:
+                # Update record
+                self.document_records[file_path_str] = {
+                    "filename": file_path.name,
+                    "mtime": file_mtime,
+                    "hash": file_hash,
+                    "last_processed": datetime.now().isoformat(),
+                    "processed_success": processed_success
+                }
+                
+                # Save tracker after each update
+                self._save_tracker()
+                
+        except Exception as e:
+            logger.error(f"Error updating document record for {file_path}: {e}")
+    
+    def clean_deleted_records(self, data_dir: Path) -> int:
+        """
+        Remove records for documents that no longer exist.
+        
+        Args:
+            data_dir (Path): Directory containing documents
+            
+        Returns:
+            int: Number of records cleaned
+        """
+        # Get current files
+        current_files = set()
+        for ext in [".txt", ".docx", ".pdf"]:
+            for doc_file in data_dir.glob(f"*{ext}"):
+                current_files.add(str(doc_file))
+        
+        # Find deleted files
+        deleted_records = set(self.document_records.keys()) - current_files
+        
+        # Remove deleted records
+        for file_path in deleted_records:
+            del self.document_records[file_path]
+        
+        # Save changes
+        if deleted_records:
+            self._save_tracker()
+        
+        return len(deleted_records)

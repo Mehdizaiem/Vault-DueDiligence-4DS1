@@ -6,6 +6,27 @@ import os
 import sys
 import json
 from typing import Dict, List, Optional, Union
+from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
+
+tokenizer = AutoTokenizer.from_pretrained("cardiffnlp/twitter-roberta-base-sentiment")
+model = AutoModelForSequenceClassification.from_pretrained("cardiffnlp/twitter-roberta-base-sentiment")
+sentiment_pipeline = pipeline("sentiment-analysis", model=model, tokenizer=tokenizer)
+
+
+
+def extract_aspect(text: str) -> str:
+    """Simple rule-based aspect extraction"""
+    text = text.lower()
+    if any(word in text for word in ["sec", "regulation", "lawsuit", "ban", "legal", "policy"]):
+        return "regulation"
+    elif any(word in text for word in ["bitcoin", "ethereum", "solana", "altcoin", "crypto"]):
+        return "cryptocurrency"
+    elif any(word in text for word in ["bullish", "market", "sell-off", "bearish", "rally", "price"]):
+        return "market"
+    elif any(word in text for word in ["blockchain", "technology", "smart contract", "nft", "web3"]):
+        return "technology"
+    else:
+        return "general"
 
 # Configure paths
 current_path = os.path.dirname(os.path.abspath(__file__))
@@ -22,7 +43,8 @@ from Sample_Data.vector_store.market_sentiment_schema import create_sentiment_sc
 
 # Use TextBlob for sentiment analysis (faster and more reliable)
 from textblob import TextBlob
-logger.info("Using TextBlob for sentiment analysis")
+logger.info("Using FinBERT for sentiment analysis")
+
 
 class CryptoSentimentAnalyzer:
     """Analyzes sentiment of crypto news articles using TextBlob"""
@@ -33,39 +55,28 @@ class CryptoSentimentAnalyzer:
         self.use_transformers = False
         
     def analyze_text(self, text: str) -> Dict[str, Union[str, float]]:
-        """
-        Analyze sentiment of a single text using TextBlob.
-        
-        Args:
-            text (str): Text to analyze
-            
-        Returns:
-            dict: Sentiment analysis result with label and score
-        """
         if not text or len(text.strip()) == 0:
             return {"label": "NEUTRAL", "score": 0.5}
-            
+        
         try:
-            # Use TextBlob for sentiment
-            blob = TextBlob(text)
-            polarity = blob.sentiment.polarity
-            
-            # TextBlob polarity is between -1 and 1, convert to 0-1
-            score = (polarity + 1) / 2
-            
-            # Determine label
-            if score > 0.6:
-                label = "POSITIVE"
-            elif score < 0.4:
-                label = "NEGATIVE"
+            result = sentiment_pipeline(text[:512])[0]
+            label = result["label"].upper()
+            score = result["score"]
+
+            # Scale to 0-1
+            if "POS" in label:
+                scaled = 0.6 + 0.4 * score
+            elif "NEG" in label:
+                scaled = 0.4 - 0.4 * score
             else:
-                label = "NEUTRAL"
-                
-            return {"label": label, "score": score}
-                
+                scaled = 0.5
+
+            return {"label": label, "score": round(scaled, 3)}
+        
         except Exception as e:
-            logger.error(f"Error analyzing text: {e}")
+            logger.error(f"Sentiment analysis error: {e}")
             return {"label": "NEUTRAL", "score": 0.5}
+
     
     def analyze_dataframe(self, df: pd.DataFrame, content_column: str = "content") -> pd.DataFrame:
         """
@@ -88,12 +99,16 @@ class CryptoSentimentAnalyzer:
             # Format date to RFC3339
             current_time = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
             
+            aspect = extract_aspect(text)
+
             results.append({
                 **row.to_dict(),
                 "sentiment_label": sentiment["label"],
                 "sentiment_score": sentiment["score"],
+                "aspect": aspect,
                 "analyzed_at": current_time
             })
+
             
             if (idx + 1) % 10 == 0:
                 logger.info(f"Processed {idx + 1} articles")
@@ -276,6 +291,44 @@ class CryptoSentimentAnalyzer:
         except Exception as e:
             logger.error(f"Error in sentiment analysis run: {e}")
             return pd.DataFrame()
+    def aggregate_weighted_sentiment(self, df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Aggregate weighted sentiment by date and aspect.
+        """
+        if "sentiment_score" not in df or "aspect" not in df or "date" not in df:
+            logger.warning("Missing columns for sentiment aggregation.")
+            return pd.DataFrame()
+        
+        df["date"] = pd.to_datetime(df["date"]).dt.date
+        df["weight"] = df["content"].str.len().fillna(100)  # fallback weight
+        
+        grouped = df.groupby(["date", "aspect"]).apply(
+            lambda x: np.average(x["sentiment_score"], weights=x["weight"])
+        ).reset_index(name="adjusted_score")
+        
+        return grouped
+def plot_sentiment_trends(sentiment_df: pd.DataFrame):
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+
+    if sentiment_df.empty or "date" not in sentiment_df or "aspect" not in sentiment_df:
+        logger.warning("Invalid sentiment DataFrame for plotting")
+        return
+    
+    sentiment_df["date"] = pd.to_datetime(sentiment_df["date"])
+    df_grouped = sentiment_df.groupby(["date", "aspect"])["sentiment_score"].mean().reset_index()
+    df_pivot = df_grouped.pivot(index="date", columns="aspect", values="sentiment_score").fillna(0)
+    df_pivot_rolled = df_pivot.rolling(window=7, min_periods=1).mean()
+    
+    plt.figure(figsize=(12, 6))
+    sns.lineplot(data=df_pivot_rolled)
+    plt.title("📈 7-Day Rolling Sentiment by Aspect")
+    plt.xlabel("Date")
+    plt.ylabel("Sentiment Score")
+    plt.grid(True)
+    plt.tight_layout()
+    plt.legend(title="Aspect")
+    plt.show()
 
 # Example usage
 if __name__ == "__main__":

@@ -4,6 +4,8 @@ from datetime import datetime, timedelta
 import logging
 import joblib
 import os
+import seaborn as sns  # Add this if not already imported
+
 import sys
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.preprocessing import StandardScaler
@@ -121,7 +123,8 @@ class CryptoForecaster:
             df = pd.DataFrame(data)
             
             # Convert timestamp to datetime
-            df["timestamp"] = pd.to_datetime(df["timestamp"])
+            df["timestamp"] = pd.to_datetime(df["timestamp"], utc=True, errors="coerce")
+
             
             # Sort by timestamp
             df = df.sort_values("timestamp")
@@ -139,76 +142,93 @@ class CryptoForecaster:
             client.close()
     
     def _fetch_sentiment_data(self, symbol, days=30):
-        """Fetch sentiment data related to the crypto symbol with proper error handling"""
+        """Fetch sentiment data related to the crypto symbol with proper error handling and aspect tagging"""
         client = get_weaviate_client()
-        
+
+        def _classify_aspect(text: str) -> str:
+            text = text.lower()
+            if any(keyword in text for keyword in ["sec", "regulat", "ban", "legal", "lawsuit", "compliance"]):
+                return "regulation"
+            elif any(keyword in text for keyword in ["upgrade", "scaling", "blockchain", "layer 2", "merge", "fork"]):
+                return "technology"
+            elif any(keyword in text for keyword in ["adoption", "investment", "etf", "bull", "market", "rally", "crash"]):
+                return "market"
+            return "general"
+
+        def _adjust_score(row):
+            score = row.get("sentiment_score", 0.5)
+            title = str(row.get("title", "")).lower()
+            if "bullish" in title:
+                score += 0.1
+            elif "bearish" in title:
+                score -= 0.1
+            return max(0, min(score, 1))  # Clamp between 0 and 1
+
         try:
             # Check if collection exists
             try:
-                # Query CryptoNewsSentiment collection
                 collection = client.collections.get("CryptoNewsSentiment")
             except Exception as e:
-                # Collection doesn't exist, return None
                 logger.warning(f"CryptoNewsSentiment collection doesn't exist: {e}")
                 return None
-            
-            # Calculate date range
+
+            # Date range
             end_date = datetime.now()
             start_date = end_date - timedelta(days=days)
-            
-            # Build query - use text search rather than vector search
+
             try:
                 from weaviate.classes.query import Filter
-                
-                # Create proper keyword search instead of vector search
-                # Strip USDT from symbol name for better matching
+
                 symbol_clean = symbol.replace("USDT", "").lower()
-                
-                # Try with content filter
+
+                # Search by content first
                 response = collection.query.fetch_objects(
                     filters=Filter.by_property("content").contains_any([symbol_clean]),
-                    return_properties=["source", "title", "sentiment_label", 
-                                      "sentiment_score", "date", "analyzed_at"],
+                    return_properties=["source", "title", "sentiment_label",
+                                    "sentiment_score", "date", "analyzed_at"],
                     limit=100
                 )
-                
+
                 if not response.objects:
-                    # Try with title filter as fallback
+                    # Fallback to title search
                     response = collection.query.fetch_objects(
                         filters=Filter.by_property("title").contains_any([symbol_clean]),
-                        return_properties=["source", "title", "sentiment_label", 
-                                          "sentiment_score", "date", "analyzed_at"],
+                        return_properties=["source", "title", "sentiment_label",
+                                        "sentiment_score", "date", "analyzed_at"],
                         limit=100
                     )
             except Exception as e:
                 logger.error(f"Error fetching sentiment data: {e}")
                 return None
-            
+
             if not response.objects:
                 logger.warning(f"No sentiment data found for {symbol}")
                 return None
-                
+
             # Convert to DataFrame
-            data = []
-            for obj in response.objects:
-                data.append(obj.properties)
-                
+            data = [obj.properties for obj in response.objects]
             df = pd.DataFrame(data)
-            
-            # Convert date to datetime
-            df["date"] = pd.to_datetime(df["date"])
-            
-            # Sort by date
+
+            # Convert date
+            df["date"] = pd.to_datetime(df["date"], utc=True, errors="coerce")
+
+            # Sort
             df = df.sort_values("date")
-            
+
+            # 🔥 New Enhancements: Aspect classification + adjusted score
+            df["aspect"] = df["title"].apply(_classify_aspect)
+            df["adjusted_score"] = df.apply(_adjust_score, axis=1)
+
             logger.info(f"Fetched {len(df)} sentiment data points for {symbol}")
             return df
-            
+
         except Exception as e:
             logger.error(f"Error fetching sentiment data: {e}")
             return None
+
         finally:
             client.close()
+
     
     def _prepare_features(self, market_df, sentiment_df):
         """Prepare features by combining market and sentiment data with improved handling"""
@@ -669,23 +689,55 @@ class CryptoForecaster:
         plt.close()
         
         logger.info(f"Prediction plot saved to {plot_path}")
+    def analyze_sentiment_trends(self, sentiment_df):
+        if sentiment_df is None or sentiment_df.empty:
+            logger.warning("No sentiment data to visualize.")
+            return
 
-# Example usage
+        sentiment_df["date"] = pd.to_datetime(sentiment_df["date"])
+        df_grouped = sentiment_df.groupby(["date", "aspect"]).agg({
+            "adjusted_score": "mean"
+        }).reset_index()
+
+        df_pivot = df_grouped.pivot(index="date", columns="aspect", values="adjusted_score")
+        df_pivot_rolled = df_pivot.rolling(window=7, min_periods=1).mean()
+
+        plt.figure(figsize=(12, 6))
+        sns.lineplot(data=df_pivot_rolled)
+        plt.title("📈 7-Day Rolling Sentiment Trends by Aspect")
+        plt.xlabel("Date")
+        plt.ylabel("Adjusted Sentiment Score")
+        plt.grid(True)
+        plt.legend(title="Aspect")
+        plt.tight_layout()
+        plt.show()
+
 if __name__ == "__main__":
     forecaster = CryptoForecaster()
-    
-    # Train model for Bitcoin
+
+    # Choose your symbol (example: Bitcoin)
     symbol = "BTCUSDT"
+
+    # Train model
     forecaster.train(symbol)
-    
-    # Make predictions
+
+    # Make price predictions
     predictions = forecaster.predict(symbol, days_ahead=7)
-    
+
     if predictions is not None:
-        # Plot predictions
+        # Plot price predictions
         forecaster.plot_predictions(symbol, predictions)
-        
-        # Print forecast
+
+        # Print forecast results
         print(f"\n{symbol} Price Forecast:")
         for _, row in predictions.iterrows():
-            print(f"Date: {row['date'].strftime('%Y-%m-%d')}, Price: ${row['predicted_price']:.2f}, Change: {row['change_pct']:.2f}%")
+            print(f"Date: {row['date'].strftime('%Y-%m-%d')}, "
+                  f"Price: ${row['predicted_price']:.2f}, "
+                  f"Change: {row['change_pct']:.2f}%")
+
+    # Optional: Analyze sentiment trends
+    sentiment_df = forecaster._fetch_sentiment_data(symbol, days=30)
+    if sentiment_df is not None and "aspect" in sentiment_df.columns and "adjusted_score" in sentiment_df.columns:
+        forecaster.analyze_sentiment_trends(sentiment_df)
+    else:
+        print("❌ No sentiment aspect data available for visualization.")

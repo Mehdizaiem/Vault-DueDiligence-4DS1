@@ -92,7 +92,9 @@ class TimeSeriesManager:
                         df[col] = 0
             
             # Ensure timestamp is datetime
-            df['timestamp'] = pd.to_datetime(df['timestamp'])
+            df['timestamp'] = pd.to_datetime(df['timestamp'], utc=True)
+            df['timestamp'] = df['timestamp'].dt.strftime('%Y-%m-%dT%H:%M:%SZ')
+
             
             # Sort by timestamp
             df = df.sort_values('timestamp')
@@ -331,11 +333,18 @@ class TimeSeriesManager:
                 return True
             
             # Load data from CSV using the normalized symbol
-            data = self.csv_loader.load_historical_data(csv_symbol)
+            logger.info(f"Loaded {len(data)} data points from CSV for {csv_symbol}")
+
             
+            # Load data from CSV using the normalized symbol
+            data = self.csv_loader.load_historical_data(csv_symbol)
+
             if not data:
                 logger.warning(f"No data found for {csv_symbol}")
                 return False
+
+            logger.info(f"Loaded {len(data)} data points from CSV for {csv_symbol}")
+
             
             # Ensure all data points have the correct symbol format (with USDT)
             for point in data:
@@ -375,10 +384,13 @@ if __name__ == "__main__":
     
     try:
         # Either process all symbols
-        results = manager.load_and_store_all()
+        results = manager.load_and_store_all(force=True)
+
         print(f"Processed {results['success_count']} symbols successfully")
         print(f"Total data points stored: {results['total_data_points']}")
-        
+        print("Skipped:", manager.get_processed_symbols())
+        print(f"Skipped symbols: {results['skipped_count']}")
+
         # Or process a specific symbol
         # success = manager.load_and_store_symbol("BTCUSD")
         # print(f"Successfully processed BTCUSD: {success}")

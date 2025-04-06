@@ -43,10 +43,10 @@ def get_document_tracker(tracker_file=None):
     if doc_tracker is None:
         # Set default tracker file location if not specified
         if tracker_file is None:
-            script_dir = os.path.dirname(os.path.abspath(__file__))
-            output_dir = os.path.join(script_dir, "output")
-            os.makedirs(output_dir, exist_ok=True)
-            tracker_file = os.path.join(output_dir, "processed_documents.json")
+            tracker_file = os.path.abspath(os.path.join(project_root, "Code", "document_processing", "output", "processed_documents.json"))
+        
+        # Make sure the directory exists
+        os.makedirs(os.path.dirname(tracker_file), exist_ok=True)
         
         doc_tracker = DocumentTracker(tracker_file=tracker_file)
         logger.info(f"Document tracker initialized with file: {os.path.abspath(tracker_file)}")
@@ -67,36 +67,69 @@ def process_document_with_tracking(content: Union[str, bytes], filename: str, do
     processor = get_document_processor()
     tracker = get_document_tracker()
     
-    # Create a temporary file path object for the tracker
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    output_dir = os.path.join(script_dir, "output")
-    os.makedirs(output_dir, exist_ok=True)
+    # Determine if content is a file path
+    is_file_path = isinstance(content, str) and os.path.exists(content)
     
-    # Create a unique key for this content
-    content_key = f"content_{filename}_{hash(str(filename))}"
+    # Create identifier based on whether it's a file
+    if is_file_path:
+        # Use absolute path as identifier when content is a file path
+        identifier = os.path.abspath(content)
+        
+        # Use the same file hash calculation method as the standalone script
+        content_hash = tracker._compute_file_hash(identifier)
+        
+        # If we need to process, we'll need the actual content
+        file_content = None
+    else:
+        # For non-file content, create a more consistent identifier
+        # Instead of using hash(str(filename)) which can change between runs
+        # Use a more stable hash based on the filename itself
+        identifier = os.path.abspath(os.path.join(project_root, "Sample_Data", "raw_documents", filename))
+        
+        # Check if the file actually exists at this path - if so, use that path instead
+        if os.path.exists(identifier):
+            # This is actually a file in our raw_documents directory
+            content_hash = tracker._compute_file_hash(identifier)
+            file_content = content
+        else:
+            # This is truly content-only data, calculate hash based on content type
+            if isinstance(content, bytes):
+                content_hash = hashlib.sha256(content).hexdigest()
+            else:
+                content_hash = hashlib.sha256(content.encode('utf-8')).hexdigest()
+            file_content = content
     
     try:
-        # Skip the file writing step entirely - compute hash directly
-        if isinstance(content, bytes):
-            # For binary content
-            content_hash = hashlib.sha256(content).hexdigest()
-        else:
-            # For text content
-            content_hash = hashlib.sha256(content.encode('utf-8')).hexdigest()
-        
         # Check if we've processed this content before
-        if content_key in tracker.document_records:
-            record = tracker.document_records[content_key]
+        if identifier in tracker.document_records:
+            record = tracker.document_records[identifier]
             if record["hash"] == content_hash and record["processed_success"]:
                 logger.info(f"Document '{filename}' hasn't changed, skipping processing")
                 return None  # No processing needed
         
-        # Process the document
+        # For file paths, we need to read the content before processing
+        if is_file_path:
+            # Read the file based on type
+            if filename.lower().endswith('.pdf'):
+                from Code.document_processing.process_documents import read_pdf
+                file_content = read_pdf(content)
+            elif filename.lower().endswith('.docx'):
+                from Code.document_processing.process_documents import read_docx
+                file_content = read_docx(content)
+            elif filename.lower().endswith('.txt'):
+                from Code.document_processing.process_documents import read_text_file
+                file_content = read_text_file(content)
+                
+            if file_content is None:
+                logger.error(f"Could not extract text from {filename}")
+                return None
+        
+        # Process the document with the text content
         logger.info(f"Processing document: {filename}")
-        result = processor.process_document(text=content, filename=filename, document_type=document_type)
+        result = processor.process_document(text=file_content, filename=filename, document_type=document_type)
         
         # Update tracker directly without writing to a file
-        tracker.document_records[content_key] = {
+        tracker.document_records[identifier] = {
             "filename": filename,
             "mtime": datetime.now().timestamp(),
             "hash": content_hash,

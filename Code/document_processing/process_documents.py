@@ -4,6 +4,7 @@ import docx
 import pypdf
 import sys
 import os
+import json
 import argparse
 from datetime import datetime
 
@@ -79,20 +80,22 @@ def main():
     storage_manager = StorageManager()
     storage_manager.setup_schemas()
     
-    # Get script directory and set up output directory
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    output_dir = os.path.join(script_dir, "output")
-    os.makedirs(output_dir, exist_ok=True)
-    
-    # Set tracker file location
+    # Set tracker file location using absolute path
     if args.tracker_file:
-        tracker_file = args.tracker_file
+        tracker_file = os.path.abspath(args.tracker_file)
     else:
-        tracker_file = os.path.join(output_dir, "processed_documents.json")
+        tracker_file = os.path.abspath(os.path.join(project_root, "Code", "document_processing", "output", "processed_documents.json"))
     
-    # Initialize document tracker with output directory path
+    # Define output_dir for the entity relationships export
+    output_dir = os.path.dirname(tracker_file)
+    
+    # Make sure output directory exists
+    os.makedirs(os.path.dirname(tracker_file), exist_ok=True)
+    
+    # Initialize document tracker with absolute path
     tracker = DocumentTracker(tracker_file=tracker_file)
-    logger.info(f"Document tracker file location: {os.path.abspath(tracker.tracker_file)}")
+    logger.info(f"Document tracker file location: {tracker.tracker_file}")
+    logger.info(f"Tracker file exists before processing: {os.path.exists(tracker.tracker_file)}")
     
     # Directory containing documents
     if args.data_dir:
@@ -128,10 +131,12 @@ def main():
     # Process documents that need processing
     processed_count = 0
     error_count = 0
+    total_docs = len(files_to_process)
+    remaining_docs = total_docs
     
-    for doc_file in files_to_process:
+    for i, doc_file in enumerate(files_to_process):
         try:
-            logger.info(f"Processing {doc_file.name}...")
+            logger.info(f"Processing {doc_file.name}... ({i+1}/{total_docs})")
             
             # Read document content based on file type
             text = None
@@ -146,6 +151,8 @@ def main():
                 logger.warning(f"⚠️ Could not extract text from {doc_file.name}")
                 tracker.update_document_record(doc_file, processed_success=False)
                 error_count += 1
+                remaining_docs -= 1
+                logger.info(f"Remaining documents to process: {remaining_docs}")
                 continue
                 
             # Process document
@@ -163,10 +170,15 @@ def main():
                 tracker.update_document_record(doc_file, processed_success=False)
                 error_count += 1
                 
+            remaining_docs -= 1
+            logger.info(f"Remaining documents to process: {remaining_docs}")
+                
         except Exception as e:
             logger.error(f"❌ Error processing {doc_file.name}: {e}")
             tracker.update_document_record(doc_file, processed_success=False)
             error_count += 1
+            remaining_docs -= 1
+            logger.info(f"Remaining documents to process: {remaining_docs}")
     
     # Clean up deleted file records
     deleted_count = tracker.clean_deleted_records(data_dir)
@@ -176,6 +188,17 @@ def main():
     # Export entity graph
     output_file = os.path.join(output_dir, "entity_relationships.gexf")
     processor.export_graph(output_file)
+    
+    
+    # Verify tracker file was created/updated
+    logger.info(f"Tracker file exists after processing: {os.path.exists(tracker.tracker_file)}")
+    if os.path.exists(tracker.tracker_file):
+        try:
+            with open(tracker.tracker_file, 'r') as f:
+                tracker_data = json.load(f)
+                logger.info(f"Number of tracked documents after processing: {len(tracker_data)}")
+        except Exception as e:
+            logger.error(f"Error reading tracker file after processing: {e}")
     
     # Log summary
     logger.info("Processing complete:")

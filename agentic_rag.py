@@ -392,8 +392,13 @@ class CryptoDueDiligenceSystem:
                     logger.error(f"Could not extract text from {filename}")
                     return False
                     
-                # Use the extracted text instead of the original content
-                content = text
+                # Use the file path directly to maintain consistency with process_documents.py
+                file_path = content
+                actual_content = text
+            else:
+                # For content string, use a consistent approach
+                file_path = content if os.path.exists(content) else None
+                actual_content = content
             
             # Determine document type if not provided
             if not document_type:
@@ -407,8 +412,9 @@ class CryptoDueDiligenceSystem:
             from Code.document_processing.integration import process_document_with_tracking
             
             # Process the document with change tracking
+            # Pass the file path if available, otherwise the content
             result = process_document_with_tracking(
-                content=content, 
+                content=file_path if file_path else actual_content, 
                 filename=filename, 
                 document_type=document_type
             )
@@ -420,13 +426,13 @@ class CryptoDueDiligenceSystem:
             
             # Extract features from document
             features = self.processor.extract_features_from_document({
-                "content": content,
+                "content": actual_content,
                 "document_type": document_type
             })
             
             # Prepare document with features
             document = {
-                "content": content,
+                "content": actual_content,
                 "source": filename,
                 "document_type": document_type,
                 "title": title,
@@ -450,10 +456,6 @@ class CryptoDueDiligenceSystem:
             else:
                 logger.error(f"Failed to store document {filename}")
                 return False
-                
-        except Exception as e:
-            logger.error(f"Error storing document: {e}")
-            return False
                 
         except Exception as e:
             logger.error(f"Error storing document: {e}")
@@ -774,11 +776,9 @@ class CryptoDueDiligenceSystem:
                         continue
                     
                     try:
-                        with open(file_path, "r", encoding="utf-8") as f:
-                            content = f.read()
-                        
+                        # Pass the file path directly to store_document instead of reading it
                         success = self.store_document(
-                            content=content,
+                            content=file_path,  # Pass the file path as content
                             filename=os.path.basename(file_path)
                         )
                         

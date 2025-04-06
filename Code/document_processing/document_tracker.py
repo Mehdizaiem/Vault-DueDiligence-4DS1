@@ -53,11 +53,27 @@ class DocumentTracker:
         """
         try:
             # Create directory if it doesn't exist
-            os.makedirs(os.path.dirname(os.path.abspath(self.tracker_file)), exist_ok=True)
+            directory = os.path.dirname(os.path.abspath(self.tracker_file))
+            os.makedirs(directory, exist_ok=True)
             
-            with open(self.tracker_file, 'w') as f:
+            # Save with temporary file approach to avoid corruption
+            temp_file = f"{self.tracker_file}.tmp"
+            with open(temp_file, 'w') as f:
                 json.dump(self.document_records, f, indent=2)
-            return True
+            
+            # Replace the original file with the temp file
+            if os.path.exists(temp_file):
+                if os.path.exists(self.tracker_file):
+                    os.remove(self.tracker_file)
+                os.rename(temp_file, self.tracker_file)
+                
+            # Verify file was saved
+            if os.path.exists(self.tracker_file):
+                logger.info(f"Successfully saved tracking data to {self.tracker_file}")
+                return True
+            else:
+                logger.error(f"Failed to save tracking data: file not found after save")
+                return False
         except Exception as e:
             logger.error(f"Error saving document tracker: {e}")
             return False
@@ -170,7 +186,12 @@ class DocumentTracker:
             bool: True if content has changed or is new, False if unchanged
         """
         # Compute hash of content
-        content_hash = self.compute_content_hash(content)
+        if os.path.exists(content):
+            # If content is a file path, use file hash
+            content_hash = self._compute_file_hash(content)
+        else:
+            # For content string, use content hash
+            content_hash = self.compute_content_hash(content)
         
         # Check if we have processed this document before
         if identifier in self.document_records:
@@ -190,7 +211,7 @@ class DocumentTracker:
             file_path (Path): Path to the document
             processed_success (bool): Whether processing was successful
         """
-        file_path_str = str(file_path)
+        file_path_str = os.path.abspath(str(file_path))
         
         try:
             # Get file stats
@@ -244,6 +265,26 @@ class DocumentTracker:
                 
         except Exception as e:
             logger.error(f"Error updating content record for {filename}: {e}")
+
+    def normalize_path(self, path: str) -> str:
+        """
+        Normalize file paths to ensure consistent tracking across systems.
+        
+        Args:
+            path (str): File path
+            
+        Returns:
+            str: Normalized path
+        """
+        try:
+            # Convert to absolute path and normalize
+            abs_path = os.path.abspath(path)
+            # Ensure consistent path separators
+            normalized = os.path.normpath(abs_path)
+            return normalized
+        except Exception as e:
+            logger.error(f"Error normalizing path {path}: {e}")
+            return path
     
     def clean_deleted_records(self, data_dir: Path) -> int:
         """

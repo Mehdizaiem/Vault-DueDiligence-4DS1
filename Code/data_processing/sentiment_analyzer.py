@@ -13,9 +13,6 @@ from datetime import datetime
 with open("sentence_level_sentiment.log", "a", encoding="utf-8") as log_file:
     log_file.write(f"\n===== Sentiment run at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} =====\n")
 
-tokenizer = AutoTokenizer.from_pretrained("cardiffnlp/twitter-roberta-base-sentiment")
-model = AutoModelForSequenceClassification.from_pretrained("cardiffnlp/twitter-roberta-base-sentiment")
-sentiment_pipeline = pipeline("sentiment-analysis", model=model, tokenizer=tokenizer)
 
 
 
@@ -417,17 +414,16 @@ def plot_sentiment_trends(sentiment_df: pd.DataFrame):
     plt.legend(title="Aspect")
     plt.show()
 
-# Example usage
 if __name__ == "__main__":
     analyzer = CryptoSentimentAnalyzer()
-    
-    # Try to find the default news CSV
+
     default_file = os.path.join(project_root, "Sample_Data", "data_ingestion", "processed", "crypto_news.csv")
-    
+
     if os.path.exists(default_file):
         results = analyzer.run(input_file=default_file)
         if not results.empty:
             print(f"Sentiment distribution: {results['sentiment_label'].value_counts()}")
     else:
         print(f"Default news file not found: {default_file}")
+
         print("Run the news_scraper.py script first to generate news data.")

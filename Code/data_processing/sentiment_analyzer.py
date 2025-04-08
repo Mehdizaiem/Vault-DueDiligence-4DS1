@@ -7,6 +7,11 @@ import sys
 import json
 from typing import Dict, List, Optional, Union
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
+from datetime import datetime
+
+# Add this once at the beginning of analyze_text()
+with open("sentence_level_sentiment.log", "a", encoding="utf-8") as log_file:
+    log_file.write(f"\n===== Sentiment run at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} =====\n")
 
 tokenizer = AutoTokenizer.from_pretrained("cardiffnlp/twitter-roberta-base-sentiment")
 model = AutoModelForSequenceClassification.from_pretrained("cardiffnlp/twitter-roberta-base-sentiment")
@@ -50,32 +55,103 @@ class CryptoSentimentAnalyzer:
     """Analyzes sentiment of crypto news articles using TextBlob"""
     
     def __init__(self):
-        """Initialize with TextBlob for sentiment analysis"""
-        logger.info("Initializing sentiment analyzer with TextBlob")
-        self.use_transformers = False
-        
-    def analyze_text(self, text: str) -> Dict[str, Union[str, float]]:
+        logger.info("Initializing FinBERT for sentiment analysis")
+        model_name = "yiyanghkust/finbert-tone"
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+        self.model = AutoModelForSequenceClassification.from_pretrained(model_name)
+        self.pipeline = pipeline("sentiment-analysis", model=self.model, tokenizer=self.tokenizer)
+
+    def analyze_text(self, text: str) -> Dict[str, Union[str, float, str, List[str]]]:
+        """
+        Analyze sentiment using FinBERT and return explanation with multiple top sentences.
+        """
+        # Log once per sentiment run
+        log_path = "sentence_level_sentiment.log"
+        with open(log_path, "a", encoding="utf-8") as log_file:
+            log_file.write(f"\n===== Sentiment run at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} =====\n")
+
         if not text or len(text.strip()) == 0:
-            return {"label": "NEUTRAL", "score": 0.5}
-        
+            return {"label": "NEUTRAL", "score": 0.5, "explanation": "", "top_sentences": []}
+
+
+        import nltk
         try:
-            result = sentiment_pipeline(text[:512])[0]
-            label = result["label"].upper()
-            score = result["score"]
+            nltk.data.find('tokenizers/punkt')
+        except LookupError:
+            nltk.download('punkt')
 
-            # Scale to 0-1
-            if "POS" in label:
-                scaled = 0.6 + 0.4 * score
-            elif "NEG" in label:
-                scaled = 0.4 - 0.4 * score
+        try:
+            sentences = text.replace("?", ".").replace("!", ".").split(".")
+            sentences = [s.strip() for s in sentences if len(s.strip()) > 5]
+
+            best_score = 0
+            best_sentence = ""
+            best_label = "NEUTRAL"
+            top_sentences = []
+
+            sentence_log = []
+            for sentence in sentences:
+                if len(sentence.strip()) < 5:
+                    continue
+
+                results = self.pipeline(sentence[:512])
+                if not results:
+                    continue
+
+                result = results[0]
+                label = result["label"].upper()
+                score = result["score"]
+                    # Log to file
+                with open("sentence_level_sentiment.log", "a", encoding="utf-8") as log_file:
+                    log_file.write(f"[{label}] ({round(score, 3)}) → {sentence.strip()}\n")
+
+
+                # 🔥 Now it's safe to log
+                sentence_log.append({
+                    "text": sentence,
+                    "label": label,
+                    "score": round(score, 3)
+                })
+
+                print(f"[{label}] ({round(score, 3)}) → {sentence}")
+                top_sentences = sorted(sentence_log, key=lambda x: x["score"], reverse=True)[:3]
+
+
+
+                # Decide best explanation
+                if label == "POSITIVE" and score > best_score and best_label != "NEGATIVE":
+                    best_score = score
+                    best_sentence = sentence
+                    best_label = "POSITIVE"
+                elif label == "NEGATIVE" and score > best_score:
+                    best_score = score
+                    best_sentence = sentence
+                    best_label = "NEGATIVE"
+                elif label == "NEUTRAL" and best_label not in ["POSITIVE", "NEGATIVE"]:
+                    best_score = score
+                    best_sentence = sentence
+                    best_label = "NEUTRAL"
+            # Fixed scoring logic
+            if best_label == "POSITIVE":
+                scaled = round(0.6 + 0.4 * best_score, 3)  # Ranges from 0.6 to 1.0
+            elif best_label == "NEGATIVE":
+                scaled = round(0.4 * (1 - best_score), 3)  # Ranges from 0.0 to 0.4
             else:
-                scaled = 0.5
+                scaled = 0.5  # Neutral stays at 0.5
 
-            return {"label": label, "score": round(scaled, 3)}
-        
+            return {
+                    "label": best_label,
+                    "score": round(scaled, 3),
+                    "explanation": best_sentence,
+                    "top_sentences": top_sentences
+                }
+
+
         except Exception as e:
-            logger.error(f"Sentiment analysis error: {e}")
-            return {"label": "NEUTRAL", "score": 0.5}
+            logger.error(f"FinBERT explainability error: {e}")
+            return {"label": "NEUTRAL", "score": 0.5, "explanation": "", "top_sentences": []}
+
+
 
     
     def analyze_dataframe(self, df: pd.DataFrame, content_column: str = "content") -> pd.DataFrame:
@@ -95,6 +171,9 @@ class CryptoSentimentAnalyzer:
         for idx, row in df.iterrows():
             text = row[content_column]
             sentiment = self.analyze_text(text)
+            if sentiment is None or not isinstance(sentiment, dict):
+                sentiment = {"label": "NEUTRAL", "score": 0.5, "explanation": ""}
+
             
             # Format date to RFC3339
             current_time = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -102,12 +181,19 @@ class CryptoSentimentAnalyzer:
             aspect = extract_aspect(text)
 
             results.append({
-                **row.to_dict(),
-                "sentiment_label": sentiment["label"],
-                "sentiment_score": sentiment["score"],
-                "aspect": aspect,
-                "analyzed_at": current_time
-            })
+            **row.to_dict(),
+            "sentiment_label": sentiment["label"],
+            "sentiment_score": sentiment["score"],
+            "aspect": extract_aspect(text),
+            "explanation": sentiment.get("explanation", ""),
+            "top_sentences": json.dumps(sentiment.get("top_sentences", [])),  # Store list as string
+            "analyzed_at": current_time
+        })
+
+            print(f"[{sentiment['label']}] → {sentiment.get('explanation', '')}")
+
+        
+        
 
             
             if (idx + 1) % 10 == 0:
@@ -291,6 +377,7 @@ class CryptoSentimentAnalyzer:
         except Exception as e:
             logger.error(f"Error in sentiment analysis run: {e}")
             return pd.DataFrame()
+        
     def aggregate_weighted_sentiment(self, df: pd.DataFrame) -> pd.DataFrame:
         """
         Aggregate weighted sentiment by date and aspect.

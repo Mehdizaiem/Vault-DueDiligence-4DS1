@@ -6,6 +6,7 @@ from weaviate.classes.config import DataType, Configure
 from datetime import datetime, timedelta
 import random
 
+
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -449,9 +450,12 @@ def setup_all_schemas(client):
         logger.error(f"Error setting up schemas: {e}")
         return False
 
-# Example usage
 if __name__ == "__main__":
-    from vector_store.weaviate_client import get_weaviate_client
+    # 🔧 Add the root of your project to the Python path
+    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+    sys.path.append(project_root)
+
+    from Sample_Data.vector_store.weaviate_client import get_weaviate_client
     
     client = get_weaviate_client()
     try:

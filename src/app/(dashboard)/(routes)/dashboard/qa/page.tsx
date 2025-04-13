@@ -1,16 +1,27 @@
 "use client";
 
 import { useState, useRef, useEffect } from 'react';
-import { MessageSquare, Send, Loader2, HelpCircle, CheckCircle, Clock } from 'lucide-react';
+import { MessageSquare, Send, Loader2, HelpCircle, CheckCircle, Clock, ThumbsUp, ThumbsDown, Trash2 } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import { askQuestion } from '@/services/qa-service';
-import { Message } from '@/types/qa';
+import { Message, Conversation } from '@/types/qa';
 import ReactMarkdown from 'react-markdown';
+
+// Define an interface for feedback
+interface Feedback {
+  messageId: string;
+  rating: 'positive' | 'negative';
+  comment?: string;
+}
 
 export default function QAPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [feedback, setFeedback] = useState<Record<string, Feedback>>({});
+  const [conversationId, setConversationId] = useState<string>('');
+  const [savedConversations, setSavedConversations] = useState<Record<string, Conversation>>({});
+  const [showConversations, setShowConversations] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Sample questions to help users get started
@@ -23,11 +34,96 @@ export default function QAPage() {
   ];
 
   useEffect(() => {
-    // Scroll to bottom when messages change
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    // Initialize conversation ID if it doesn't exist
+    if (!conversationId) {
+      setConversationId(uuidv4());
     }
-  }, [messages]);
+    
+    // Load saved conversations from local storage
+    const loadSavedConversations = () => {
+      try {
+        const saved = localStorage.getItem('qa_conversations');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          setSavedConversations(parsed);
+        }
+      } catch (error) {
+        console.error('Error loading conversations from localStorage:', error);
+      }
+    };
+    
+    // Load conversation history if we have a conversation ID
+    const loadConversation = () => {
+      try {
+        const currentConversation = localStorage.getItem(`qa_conversation_${conversationId}`);
+        if (currentConversation && messages.length === 0) {
+          const parsed = JSON.parse(currentConversation);
+          setMessages(parsed.messages.map((msg: Message) => ({
+            ...msg,
+            createdAt: new Date(msg.createdAt as unknown as string)
+          })));
+          
+          // Load feedback
+          const savedFeedback = localStorage.getItem(`qa_feedback_${conversationId}`);
+          if (savedFeedback) {
+            setFeedback(JSON.parse(savedFeedback));
+          }
+        }
+      } catch (error) {
+        console.error('Error loading conversation from localStorage:', error);
+      }
+    };
+    
+    loadSavedConversations();
+    loadConversation();
+  }, [conversationId, messages.length]);
+  
+  useEffect(() => {
+    // Scroll to bottom when messages change only if we're close to the bottom already
+    // or if it's a new message
+    if (messagesEndRef.current) {
+      const container = messagesEndRef.current.parentElement?.parentElement;
+      if (container) {
+        const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100;
+        const isNewMessage = messages.length > 0 && messages[messages.length - 1].createdAt.getTime() > Date.now() - 1000;
+        
+        if (isNearBottom || isNewMessage) {
+          messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+    }
+    
+    // Save conversation to local storage when messages change
+    if (messages.length > 0 && conversationId) {
+      try {
+        // Save current conversation
+        const conversation: Conversation = {
+          messages: messages
+        };
+        
+        localStorage.setItem(`qa_conversation_${conversationId}`, JSON.stringify(conversation));
+        
+        // Update the saved conversations list
+        const updatedConversations = {
+          ...savedConversations,
+          [conversationId]: {
+            messages: messages.slice(0, 1), // Just store the first message as preview
+            lastUpdated: new Date().toISOString()
+          }
+        };
+        
+        localStorage.setItem('qa_conversations', JSON.stringify(updatedConversations));
+        setSavedConversations(updatedConversations);
+        
+        // Save feedback
+        if (Object.keys(feedback).length > 0) {
+          localStorage.setItem(`qa_feedback_${conversationId}`, JSON.stringify(feedback));
+        }
+      } catch (error) {
+        console.error('Error saving to localStorage:', error);
+      }
+    }
+  }, [messages, conversationId, feedback, savedConversations]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,6 +169,73 @@ export default function QAPage() {
 
   const handleSampleQuestionClick = (question: string) => {
     setInputValue(question);
+  };
+  
+  const handleFeedback = (messageId: string, rating: 'positive' | 'negative') => {
+    setFeedback(prev => ({
+      ...prev,
+      [messageId]: {
+        messageId,
+        rating,
+        comment: ''
+      }
+    }));
+  };
+  
+  const startNewConversation = () => {
+    const newId = uuidv4();
+    setConversationId(newId);
+    setMessages([]);
+    setFeedback({});
+  };
+  
+  const loadConversation = (id: string) => {
+    try {
+      const savedConversation = localStorage.getItem(`qa_conversation_${id}`);
+      if (savedConversation) {
+        const parsed = JSON.parse(savedConversation);
+        setMessages(parsed.messages.map((msg: Message) => ({
+          ...msg,
+          createdAt: new Date(msg.createdAt as unknown as string)
+        })));
+        
+        // Load feedback
+        const savedFeedback = localStorage.getItem(`qa_feedback_${id}`);
+        if (savedFeedback) {
+          setFeedback(JSON.parse(savedFeedback));
+        } else {
+          setFeedback({});
+        }
+        
+        setConversationId(id);
+        setShowConversations(false);
+      }
+    } catch (error) {
+      console.error('Error loading conversation:', error);
+    }
+  };
+  
+  const deleteConversation = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      // Remove from localStorage
+      localStorage.removeItem(`qa_conversation_${id}`);
+      localStorage.removeItem(`qa_feedback_${id}`);
+      
+      // Update savedConversations state
+      const updatedConversations = { ...savedConversations };
+      delete updatedConversations[id];
+      
+      localStorage.setItem('qa_conversations', JSON.stringify(updatedConversations));
+      setSavedConversations(updatedConversations);
+      
+      // If we're deleting the current conversation, start a new one
+      if (id === conversationId) {
+        startNewConversation();
+      }
+    } catch (error) {
+      console.error('Error deleting conversation:', error);
+    }
   };
 
   // Function to format the message content with Markdown
@@ -147,7 +310,7 @@ export default function QAPage() {
 
   return (
     <div className="flex-1 p-8 pt-6 h-[calc(100vh-64px)] flex flex-col">
-      <div className="space-y-4 mb-6">
+      <div className="space-y-4 mb-4">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-3xl font-bold tracking-tight">Q&A System</h2>
@@ -156,12 +319,71 @@ export default function QAPage() {
             </p>
           </div>
           <div className="flex space-x-2">
+            <button 
+              onClick={() => setShowConversations(prev => !prev)}
+              className="bg-white hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg border shadow-sm flex items-center space-x-2 text-sm transition-colors"
+            >
+              <MessageSquare size={16} />
+              <span>History</span>
+            </button>
+            <button 
+              onClick={startNewConversation}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-sm flex items-center space-x-2 text-sm transition-colors"
+            >
+              <MessageSquare size={16} />
+              <span>New Chat</span>
+            </button>
             <button className="bg-white hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg border shadow-sm flex items-center space-x-2 text-sm transition-colors">
               <HelpCircle size={16} />
               <span>Help</span>
             </button>
           </div>
         </div>
+        
+        {/* Conversation History Dropdown */}
+        {showConversations && (
+          <div className="absolute right-8 mt-2 z-10 bg-white rounded-xl shadow-lg border p-4 w-80">
+            <div className="flex justify-between items-center mb-3">
+              <h3 className="font-medium text-gray-700">Conversation History</h3>
+              <button 
+                onClick={() => setShowConversations(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                &times;
+              </button>
+            </div>
+            {Object.keys(savedConversations).length > 0 ? (
+              <div className="space-y-2 max-h-80 overflow-y-auto">
+                {Object.entries(savedConversations).map(([id, conversation]) => (
+                  <div 
+                    key={id}
+                    onClick={() => loadConversation(id)}
+                    className={`p-3 rounded-lg cursor-pointer flex justify-between items-start hover:bg-gray-50 ${
+                      id === conversationId ? 'bg-blue-50 border border-blue-200' : 'border'
+                    }`}
+                  >
+                    <div className="truncate flex-1">
+                      <p className="font-medium text-sm truncate">
+                        {conversation.messages[0]?.content.substring(0, 40)}...
+                      </p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {typeof conversation.lastUpdated === 'string' ? new Date(conversation.lastUpdated).toLocaleString() : 'Unknown date'}
+                      </p>
+                    </div>
+                    <button
+                      onClick={(e) => deleteConversation(id, e)}
+                      className="text-gray-400 hover:text-red-500 ml-2"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-500 text-sm text-center py-4">No saved conversations</p>
+            )}
+          </div>
+        )}
       </div>
 
       {messages.length === 0 ? (
@@ -193,7 +415,7 @@ export default function QAPage() {
           </div>
         </div>
       ) : (
-        <div className="flex-1 overflow-auto pb-24 mb-4 rounded-xl border bg-gray-50">
+        <div className="flex-1 overflow-y-auto pb-24 mb-4 rounded-xl border bg-gray-50" style={{ maxHeight: 'calc(100vh - 230px)' }}>
           <div className="p-4">
             {messages.map((message) => (
               <div
@@ -241,6 +463,37 @@ export default function QAPage() {
                     ) : (
                       <div>
                         {formatMessage(message.content)}
+                        
+                        {/* Feedback mechanism */}
+                        <div className="mt-4 pt-3 border-t border-gray-200 flex items-center justify-between">
+                          <div className="text-sm text-gray-500">
+                            Was this answer helpful?
+                          </div>
+                          <div className="flex space-x-2">
+                            <button 
+                              onClick={() => handleFeedback(message.id, 'positive')}
+                              className={`p-1.5 rounded-full ${
+                                feedback[message.id]?.rating === 'positive' 
+                                  ? 'bg-green-100 text-green-600' 
+                                  : 'text-gray-400 hover:text-green-600 hover:bg-green-50'
+                              }`}
+                              aria-label="Thumbs up"
+                            >
+                              <ThumbsUp size={16} />
+                            </button>
+                            <button
+                              onClick={() => handleFeedback(message.id, 'negative')}
+                              className={`p-1.5 rounded-full ${
+                                feedback[message.id]?.rating === 'negative' 
+                                  ? 'bg-red-100 text-red-600' 
+                                  : 'text-gray-400 hover:text-red-600 hover:bg-red-50'
+                              }`}
+                              aria-label="Thumbs down"
+                            >
+                              <ThumbsDown size={16} />
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     )}
                   </div>

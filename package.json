@@ -17,12 +17,15 @@
     "lucide-react": "^0.474.0",
     "next": "13.5.8",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "react-markdown": "^10.1.0",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@types/node": "16.18.11",
     "@types/react": "18.0.26",
     "@types/react-dom": "18.0.10",
+    "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "5.62.0",
     "@typescript-eslint/parser": "5.62.0",
     "autoprefixer": "^10.4.17",

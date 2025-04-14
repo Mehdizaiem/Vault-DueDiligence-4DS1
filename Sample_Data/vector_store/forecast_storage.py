@@ -403,7 +403,7 @@ def run_and_store_chronos_forecast(symbol: str, days_ahead: int = 14,
     """
     try:
         # Import the ChronosForecaster class
-        from Code.data_processing.chronos_crypto_forecaster import ChronosForecaster, prepare_crypto_data
+        from models.chronos.chronos_crypto_forecaster import ChronosForecaster, prepare_crypto_data
         
         # Load cryptocurrency data
         data = prepare_crypto_data(symbol)

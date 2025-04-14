@@ -8,6 +8,7 @@ import sys
 import logging
 from datetime import datetime, timedelta
 from typing import Dict, List, Any, Optional
+import base64
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -134,11 +135,16 @@ def create_forecast_schema(client):
                         "description": "Text description of forecast insights"
                     },
                     
-                    # Additional metadata
+                    # Image storage
                     {
                         "name": "plot_path",
                         "data_type": DataType.TEXT,
                         "description": "Path to the forecast plot image"
+                    },
+                    {
+                        "name": "plot_image",
+                        "data_type": DataType.BLOB,
+                        "description": "Base64 encoded forecast plot image"
                     }
                 ]
             )
@@ -191,18 +197,27 @@ def store_chronos_forecast(forecast_results: Dict, market_insights: Dict,
             low_idx = 0  # Lowest quantile
             high_idx = len(quantile_levels) - 1  # Highest quantile
             
-            # Extract forecast values arrays
-            forecast_values = quantiles[:, median_idx].tolist()
-            lower_bounds = quantiles[:, low_idx].tolist()
-            upper_bounds = quantiles[:, high_idx].tolist()
+            # Extract forecast values arrays and convert to Python native types
+            forecast_values = [float(x) for x in quantiles[:, median_idx].tolist()]
+            lower_bounds = [float(x) for x in quantiles[:, low_idx].tolist()]
+            upper_bounds = [float(x) for x in quantiles[:, high_idx].tolist()]
         else:
             # Fallback to mean if quantiles not available
             mean = forecast_results.get('mean', [None])[0]
-            forecast_values = mean.tolist() if mean is not None else []
+            forecast_values = [float(x) for x in mean.tolist()] if mean is not None else []
             lower_bounds = []
             upper_bounds = []
         
-        # Create properties dictionary
+        # Read and encode the plot image if path is provided
+        plot_image = None
+        if plot_path and os.path.exists(plot_path):
+            try:
+                with open(plot_path, 'rb') as f:
+                    plot_image = base64.b64encode(f.read()).decode('utf-8')
+            except Exception as e:
+                logger.error(f"Error reading plot image: {e}")
+        
+        # Create properties dictionary with native Python types
         properties = {
             "symbol": symbol,
             "forecast_timestamp": datetime.now().isoformat(),
@@ -211,7 +226,7 @@ def store_chronos_forecast(forecast_results: Dict, market_insights: Dict,
             "days_ahead": days_ahead,
             
             # Current market state
-            "current_price": market_insights.get('current_price', 0.0),
+            "current_price": float(market_insights.get('current_price', 0.0)),
             
             # Forecast data
             "forecast_dates": forecast_dates,
@@ -220,17 +235,19 @@ def store_chronos_forecast(forecast_results: Dict, market_insights: Dict,
             "upper_bounds": upper_bounds,
             
             # Forecast statistics
-            "final_forecast": market_insights.get('final_forecast', 0.0),
-            "change_pct": market_insights.get('change_pct', 0.0),
+            "final_forecast": float(market_insights.get('final_forecast', 0.0)),
+            "change_pct": float(market_insights.get('change_pct', 0.0)),
             "trend": market_insights.get('trend', "unknown"),
-            "probability_increase": market_insights.get('probability_increase', 0.0),
-            "average_uncertainty": market_insights.get('average_uncertainty', 0.0),
+            "probability_increase": float(market_insights.get('probability_increase', 0.0)),
+            "average_uncertainty": float(market_insights.get('average_uncertainty', 0.0)),
             "insight": market_insights.get('insight', ""),
         }
         
-        # Add plot path if provided
+        # Add plot path and image if available
         if plot_path:
             properties["plot_path"] = plot_path
+        if plot_image:
+            properties["plot_image"] = plot_image
         
         # Store in Weaviate
         collection.data.insert(properties=properties)

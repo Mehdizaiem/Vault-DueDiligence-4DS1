@@ -234,7 +234,8 @@ def load_csv_data(file_path, lookback_days=365):
         
         # Create a standardized 'price' column
         if price_col != 'price':
-            df['price'] = df[price_col]
+            # Convert price column to numeric, handling comma-separated numbers
+            df['price'] = pd.to_numeric(df[price_col].astype(str).str.replace(',', ''), errors='coerce')
         
         # Extract base and quote currency from filename
         base_currency = "Unknown"
@@ -668,6 +669,27 @@ def run_demo(args):
     print(insights['insight'])
     print("===================================\n")
     
+    # Store forecast if requested
+    if args.store:
+        try:
+            from Sample_Data.vector_store.forecast_storage import store_chronos_forecast
+            storage_success = store_chronos_forecast(
+                forecast_results=forecast_results,
+                market_insights=insights,
+                symbol=args.symbol,
+                model_name=args.model,
+                days_ahead=args.days_ahead,
+                plot_path=plot_path
+            )
+            if storage_success:
+                print("Successfully stored forecast in vector store")
+            else:
+                print("Failed to store forecast in vector store")
+        except Exception as e:
+            logger.error(f"Error storing forecast: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
+    
     return 0
 
 def main():
@@ -692,6 +714,9 @@ def main():
                       ],
                       help="Chronos model to use")
     parser.add_argument("--samples", type=int, default=100, help="Number of samples for uncertainty quantification")
+    
+    # Storage option
+    parser.add_argument("--store", action="store_true", help="Store forecast in vector store")
     
     args = parser.parse_args()
     

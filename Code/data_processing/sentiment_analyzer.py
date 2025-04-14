@@ -49,27 +49,30 @@ logger.info("Using FinBERT for sentiment analysis")
 
 
 class CryptoSentimentAnalyzer:
-    """Analyzes sentiment of crypto news articles using TextBlob"""
-    
+    """Analyzes sentiment of crypto news articles using FinBERT"""
+
     def __init__(self):
         logger.info("Initializing FinBERT for sentiment analysis")
-        model_name = "yiyanghkust/finbert-tone"
-        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
-        self.model = AutoModelForSequenceClassification.from_pretrained(model_name)
+        model_path = os.path.join(project_root, "models", "finbert-tone")  # Path to the downloaded model
+
+        # Ensure the model path is treated as a local directory
+        if not os.path.exists(model_path):
+            raise FileNotFoundError(f"Model directory not found: {model_path}")
+
+        self.tokenizer = AutoTokenizer.from_pretrained(model_path)
+        self.model = AutoModelForSequenceClassification.from_pretrained(model_path)
         self.pipeline = pipeline("sentiment-analysis", model=self.model, tokenizer=self.tokenizer)
 
     def analyze_text(self, text: str) -> Dict[str, Union[str, float, str, List[str]]]:
         """
         Analyze sentiment using FinBERT and return explanation with multiple top sentences.
         """
-        # Log once per sentiment run
         log_path = "sentence_level_sentiment.log"
         with open(log_path, "a", encoding="utf-8") as log_file:
             log_file.write(f"\n===== Sentiment run at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} =====\n")
 
         if not text or len(text.strip()) == 0:
             return {"label": "NEUTRAL", "score": 0.5, "explanation": "", "top_sentences": []}
-
 
         import nltk
         try:
@@ -78,19 +81,16 @@ class CryptoSentimentAnalyzer:
             nltk.download('punkt')
 
         try:
+            # Split text into sentences
             sentences = text.replace("?", ".").replace("!", ".").split(".")
             sentences = [s.strip() for s in sentences if len(s.strip()) > 5]
 
-            best_score = 0
-            best_sentence = ""
-            best_label = "NEUTRAL"
-            top_sentences = []
-
             sentence_log = []
-            for sentence in sentences:
-                if len(sentence.strip()) < 5:
-                    continue
+            best_sentence = ""
+            best_score = 0
+            best_label = "NEUTRAL"
 
+            for sentence in sentences:
                 results = self.pipeline(sentence[:512])
                 if not results:
                     continue
@@ -98,55 +98,52 @@ class CryptoSentimentAnalyzer:
                 result = results[0]
                 label = result["label"].upper()
                 score = result["score"]
-                    # Log to file
-                with open("sentence_level_sentiment.log", "a", encoding="utf-8") as log_file:
-                    log_file.write(f"[{label}] ({round(score, 3)}) → {sentence.strip()}\n")
 
+                # Log each result
+                with open(log_path, "a", encoding="utf-8") as log_file:
+                    log_file.write(f"[{label}] ({round(score, 3)}) → {sentence}\n")
 
-                # 🔥 Now it's safe to log
                 sentence_log.append({
                     "text": sentence,
                     "label": label,
                     "score": round(score, 3)
                 })
 
-                print(f"[{label}] ({round(score, 3)}) → {sentence}")
-                top_sentences = sorted(sentence_log, key=lambda x: x["score"], reverse=True)[:3]
-
-
-
-                # Decide best explanation
-                if label == "POSITIVE" and score > best_score and best_label != "NEGATIVE":
-                    best_score = score
-                    best_sentence = sentence
+                # Prioritize highest scoring label
+                if label == "POSITIVE" and (label != best_label or score > best_score):
                     best_label = "POSITIVE"
-                elif label == "NEGATIVE" and score > best_score:
                     best_score = score
                     best_sentence = sentence
+                elif label == "NEGATIVE" and (best_label != "POSITIVE" and score > best_score):
                     best_label = "NEGATIVE"
-                elif label == "NEUTRAL" and best_label not in ["POSITIVE", "NEGATIVE"]:
                     best_score = score
                     best_sentence = sentence
-                    best_label = "NEUTRAL"
-            # Fixed scoring logic
+                elif label == "NEUTRAL" and best_label == "NEUTRAL" and score > best_score:
+                    best_score = score
+                    best_sentence = sentence
+
+            # Get top 3 by confidence
+            top_sentences = sorted(sentence_log, key=lambda x: x["score"], reverse=True)[:3]
+
+            # 🌟 Fixed scoring logic
             if best_label == "POSITIVE":
-                scaled = round(0.6 + 0.4 * best_score, 3)  # Ranges from 0.6 to 1.0
+                scaled = round(0.6 + 0.4 * best_score, 3)   # 0.6–1.0
             elif best_label == "NEGATIVE":
-                scaled = round(0.4 * (1 - best_score), 3)  # Ranges from 0.0 to 0.4
+                scaled = round(0.0 + 0.4 * best_score, 3)   # 0.0–0.4
             else:
-                scaled = 0.5  # Neutral stays at 0.5
+                scaled = 0.5                                # Neutral stays constant
 
             return {
-                    "label": best_label,
-                    "score": round(scaled, 3),
-                    "explanation": best_sentence,
-                    "top_sentences": top_sentences
-                }
-
+                "label": best_label,
+                "score": scaled,
+                "explanation": best_sentence,
+                "top_sentences": top_sentences
+            }
 
         except Exception as e:
             logger.error(f"FinBERT explainability error: {e}")
             return {"label": "NEUTRAL", "score": 0.5, "explanation": "", "top_sentences": []}
+
 
 
 
@@ -415,6 +412,9 @@ def plot_sentiment_trends(sentiment_df: pd.DataFrame):
     plt.show()
 
 if __name__ == "__main__":
+    from multiprocessing import freeze_support
+    freeze_support()  # Required on Windows to avoid spawn issues
+
     analyzer = CryptoSentimentAnalyzer()
 
     default_file = os.path.join(project_root, "Sample_Data", "data_ingestion", "processed", "crypto_news.csv")
@@ -425,5 +425,4 @@ if __name__ == "__main__":
             print(f"Sentiment distribution: {results['sentiment_label'].value_counts()}")
     else:
         print(f"Default news file not found: {default_file}")
-
         print("Run the news_scraper.py script first to generate news data.")

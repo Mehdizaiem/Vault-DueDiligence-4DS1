@@ -31,7 +31,7 @@ sys.path.append(project_root)
 # Try to import the forecasters
 try:
     from Code.data_processing.multi_model_forecasting import MultiModelForecaster
-    from Code.data_processing.crypto_forecaster import CryptoForecaster
+    from models.RandomForest.crypto_forecaster import CryptoForecaster
     logger.info("Successfully imported forecasters")
 except ImportError as e:
     logger.error(f"Error importing forecasters: {e}")

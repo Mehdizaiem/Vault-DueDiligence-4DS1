@@ -357,12 +357,12 @@ class CryptoDueDiligenceSystem:
             return {"error": str(e)}
     
     def store_document(self, content: str, filename: str, document_type: Optional[str] = None,
-                     title: Optional[str] = None, metadata: Optional[Dict] = None):
+                    title: Optional[str] = None, metadata: Optional[Dict] = None):
         """
         Store a document in the CryptoDueDiligenceDocuments collection.
         
         Args:
-            content (str): Document content
+            content (str): Document content or file path
             filename (str): Source filename
             document_type (str, optional): Document type
             title (str, optional): Document title
@@ -374,6 +374,32 @@ class CryptoDueDiligenceSystem:
         logger.info(f"Storing document: {filename}")
         
         try:
+            # For PDF and other binary files, we should read the file directly
+            # instead of trying to process content as a string
+            if os.path.exists(content) and filename.lower().endswith(('.pdf', '.docx', '.txt')):
+                # Content is actually a file path, read the file based on type
+                if filename.lower().endswith('.pdf'):
+                    from Code.document_processing.process_documents import read_pdf
+                    text = read_pdf(content)
+                elif filename.lower().endswith('.docx'):
+                    from Code.document_processing.process_documents import read_docx
+                    text = read_docx(content)
+                elif filename.lower().endswith('.txt'):
+                    from Code.document_processing.process_documents import read_text_file
+                    text = read_text_file(content)
+                    
+                if text is None:
+                    logger.error(f"Could not extract text from {filename}")
+                    return False
+                    
+                # Use the file path directly to maintain consistency with process_documents.py
+                file_path = content
+                actual_content = text
+            else:
+                # For content string, use a consistent approach
+                file_path = content if os.path.exists(content) else None
+                actual_content = content
+            
             # Determine document type if not provided
             if not document_type:
                 document_type = self._infer_document_type(filename)
@@ -382,15 +408,31 @@ class CryptoDueDiligenceSystem:
             if not title:
                 title = os.path.splitext(os.path.basename(filename))[0]
             
+            # Import the process_document_with_tracking function
+            from Code.document_processing.integration import process_document_with_tracking
+            
+            # Process the document with change tracking
+            # Pass the file path if available, otherwise the content
+            result = process_document_with_tracking(
+                content=file_path if file_path else actual_content, 
+                filename=filename, 
+                document_type=document_type
+            )
+            
+            # If result is None, it means no processing was needed (document unchanged)
+            if result is None:
+                logger.info(f"Document {filename} unchanged, using existing data")
+                return True
+            
             # Extract features from document
             features = self.processor.extract_features_from_document({
-                "content": content,
+                "content": actual_content,
                 "document_type": document_type
             })
             
             # Prepare document with features
             document = {
-                "content": content,
+                "content": actual_content,
                 "source": filename,
                 "document_type": document_type,
                 "title": title,
@@ -734,11 +776,9 @@ class CryptoDueDiligenceSystem:
                         continue
                     
                     try:
-                        with open(file_path, "r", encoding="utf-8") as f:
-                            content = f.read()
-                        
+                        # Pass the file path directly to store_document instead of reading it
                         success = self.store_document(
-                            content=content,
+                            content=file_path,  # Pass the file path as content
                             filename=os.path.basename(file_path)
                         )
                         

@@ -442,6 +442,12 @@ class DocumentProcessor:
             "locations": [],
             "cryptocurrencies": [],
             "blockchain_terms": [],
+            "defi_protocols": [],
+            "token_standards": [],
+            "nft_terms": [],
+            "stablecoins": [],
+            "scaling_solutions": [],
+            "financial_instruments": [],
             "crypto_addresses": [],
             "dates": [],
             "monetary_values": []

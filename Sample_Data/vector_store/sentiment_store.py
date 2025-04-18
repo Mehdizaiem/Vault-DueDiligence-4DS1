@@ -1,51 +1,50 @@
-import pandas as pd
-import numpy as np
+# === sentiment_store.py FIXED & FINAL ===
+import os
+import sys
 import logging
-import os
-import sys
-import json
-from typing import Dict, List, Optional, Union, Any
+import pandas as pd
 from datetime import datetime, timedelta
+from typing import Optional, Dict, Any
+import json
+from multiprocessing import freeze_support
 
-from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
-from textblob import TextBlob
-
-import os
-import sys
-
-# Dynamically set root
+# Path Setup
 current_path = os.path.dirname(os.path.abspath(__file__))
-project_root = os.path.abspath(os.path.join(current_path, '..', '..'))
-if project_root not in sys.path:
-    sys.path.insert(0, project_root)
-from Code.data_processing.sentiment_analyzer import CryptoSentimentAnalyzer
+project_root = os.path.abspath(os.path.join(current_path, "..", ".."))
+sys.path.insert(0, project_root)
 
-
-# --- Logging config ---
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+# Logging
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
-logger.info("Using FinBERT for sentiment analysis")
 
-# Initialize the analyzer
+# Imports
+from Code.data_processing.sentiment_analyzer import CryptoSentimentAnalyzer
+from Sample_Data.vector_store.weaviate_client import get_weaviate_client
+from weaviate.classes.query import Filter
+from weaviate.exceptions import WeaviateBaseError
+
 analyzer = CryptoSentimentAnalyzer()
 
-
 def store_sentiment_data(df: pd.DataFrame) -> bool:
-    """Analyze and store sentiment data in Weaviate."""
     try:
         analyzed_df = analyzer.analyze_dataframe(df)
-        success = analyzer.store_in_weaviate(analyzed_df)
-        return success
+
+        # Normalize scores for better distribution
+        scores = analyzed_df['sentiment_score'].values
+        if len(scores) > 0:
+            min_score = scores.min()
+            max_score = scores.max()
+            if max_score > min_score:
+                normalized = (scores - min_score) / (max_score - min_score)
+                analyzed_df['sentiment_score'] = normalized.round(3)
+                logger.info("✅ Sentiment scores normalized before storage")
+
+        return analyzer.store_in_weaviate(analyzed_df)
     except Exception as e:
         logger.error(f"Failed to analyze/store sentiment data: {e}")
         return False
 
 def get_sentiment_stats(symbol: Optional[str] = None, days: int = 7) -> Dict[str, Any]:
-    """Return sentiment stats for the last `days` for the given `symbol`."""
-    from Sample_Data.vector_store.weaviate_client import get_weaviate_client
-    from weaviate.classes.query import Filter
-    from weaviate.exceptions import WeaviateBaseError
-
     client = get_weaviate_client()
     try:
         collection = client.collections.get("CryptoNewsSentiment")
@@ -78,26 +77,28 @@ def get_sentiment_stats(symbol: Optional[str] = None, days: int = 7) -> Dict[str
 
         for obj in result.objects:
             label = obj.properties.get("sentiment_label", "NEUTRAL").upper()
-            score = obj.properties.get("sentiment_score", 0.5)
+            raw_score = obj.properties.get("sentiment_score", 0.5)
 
-            # Clamp scores to valid range [0.0, 1.0]
-            score = max(0.0, min(1.0, score))
+            # Apply dynamic sentiment scaling
+            if label == "POSITIVE":
+                score = 0.7 + 0.3 * raw_score
+            elif label == "NEGATIVE":
+                score = 0.3 * raw_score
+            else:
+                score = 0.5  # Keep neutral scores fixed
 
-            # Count by label
-            if label not in sentiment_distribution:
-                label = "NEUTRAL"  # fallback
-            sentiment_distribution[label] += 1
-
+            sentiment_distribution[label if label in sentiment_distribution else "NEUTRAL"] += 1
             scores.append(score)
 
-
         avg = sum(scores) / len(scores) if scores else 0.5
+
         return {
             "total_articles": len(scores),
             "sentiment_distribution": sentiment_distribution,
             "avg_sentiment": round(avg, 3),
             "timeframe": f"Last {days} days"
         }
+
     except Exception as e:
         logger.error(f"Error fetching sentiment stats: {e}")
         return {
@@ -110,7 +111,6 @@ def get_sentiment_stats(symbol: Optional[str] = None, days: int = 7) -> Dict[str
         client.close()
 
 def cleanup_sentiment_data() -> bool:
-    from Sample_Data.vector_store.weaviate_client import get_weaviate_client
     client = get_weaviate_client()
     try:
         client.collections.delete("CryptoNewsSentiment")
@@ -121,36 +121,56 @@ def cleanup_sentiment_data() -> bool:
         return False
     finally:
         client.close()
-# Path setup before import
-current_path = os.path.dirname(os.path.abspath(__file__))
-project_root = os.path.abspath(os.path.join(current_path, '..', '..'))
-sys.path.insert(0, project_root)
 
-from Code.data_processing.sentiment_analyzer import CryptoSentimentAnalyzer
+def fix_and_reload_data() -> bool:
+    logger.info("Fixing and reloading data...")
+    from pathlib import Path
+    file_path = Path(project_root) / "Sample_Data" / "data_ingestion" / "processed" / "crypto_news.csv"
+    if not file_path.exists():
+        logger.error(f"Missing input CSV: {file_path}")
+        return False
+    df = pd.read_csv(file_path)
+    return store_sentiment_data(df)
 
-
-def main():
-    analyzer = CryptoSentimentAnalyzer()
-    stats = get_sentiment_stats()
-    print("📊 Sentiment Stats:")
-    print(f"Total Articles: {stats['total_articles']}")
-    print(f"Avg Sentiment: {stats['avg_sentiment']:.2f}")
-    print("Distribution:")
-    for k, v in stats["sentiment_distribution"].items():
-        print(f"  {k}: {v}")
 if __name__ == "__main__":
-    from multiprocessing import freeze_support
-    freeze_support()  # Required on Windows to avoid spawn issues
-
-    analyzer = CryptoSentimentAnalyzer()
-
+    freeze_support()
     default_file = os.path.join(project_root, "Sample_Data", "data_ingestion", "processed", "crypto_news.csv")
+
+    print(f"📁 Looking for: {default_file}")
+
+    if len(sys.argv) > 1 and sys.argv[1] == "--fix":
+        logger.info("Running in fix mode - will reload all data with corrected date formats")
+        if fix_and_reload_data():
+            logger.info("✅ Successfully fixed and reloaded data")
+        else:
+            logger.error("❌ Failed to fix data")
+        sys.exit(0)
 
     if os.path.exists(default_file):
         results = analyzer.run(input_file=default_file)
         if not results.empty:
-            print(f"Sentiment distribution: {results['sentiment_label'].value_counts()}")
+            print(f"\n📊 Sentiment distribution: \n{results['sentiment_label'].value_counts()}")
+            print("\n🧠 Judgment Sentences (Clean View):")
+            for idx, row in results.iterrows():
+                print(f"\n{idx+1}. 📰 Title: {row.get('title', '')[:100]}...")
+                print(f"   🔍 Aspect: {row.get('aspect', 'N/A')}")
+                print(f"   📊 Sentiment: {row['sentiment_label']} (score={row['sentiment_score']:.2f})")
+                print(f"   💬 Explanation: {row['explanation']}")
+                try:
+                    top_sentences = json.loads(row["top_sentences"])
+                    if isinstance(top_sentences, list):
+                        for s_idx, s in enumerate(top_sentences, start=1):
+                            if s['text'] != row['explanation']:
+                                scaled = (
+                                    0.6 + 0.4 * s['score'] if s['label'] == 'POSITIVE' else
+                                    0.4 * s['score'] if s['label'] == 'NEGATIVE' else
+                                    0.5
+                                )
+                                print(f"     {s_idx}. [{s['label']}] (confidence={s['score']:.2f}, scaled={scaled:.2f}): {s['text'][:120]}...")
+                except Exception as e:
+                    print("     ⚠️ Error loading top sentences.")
+        else:
+            print("❌ Analysis returned no results.")
     else:
-        print(f"Default news file not found: {default_file}")
-        print("Run the news_scraper.py script first to generate news data.")
-
+        print(f"❌ Default news file not found: {default_file}")
+        print("⚠️ Run the news_scraper.py script first to generate news data.")

@@ -2,12 +2,19 @@ python-binance==1.0.19
 pycoingecko==3.1.0
 requests==2.31.0
 pandas==2.2.3
-numpy==1.24.0
+numpy>=1.26.0
 sqlalchemy==2.0.0
 python-dotenv==1.0.0
 psycopg2-binary==2.9.9
 cryptocompare==0.7.5
 
-
-pip install pandas numpy matplotlib scikit-learn requests python-dotenv joblib beautifulsoup4 weaviate-client textblob spacy newspaper3k langchain langchain-openai
-python -m spacy download en_core_web_smcd .
+matplotlib
+scikit-learn
+joblib
+beautifulsoup4
+weaviate-client
+textblob
+spacy
+newspaper3k
+langchain
+langchain-openai

@@ -70,7 +70,7 @@ class StorageManager:
         except Exception as e:
             logger.error(f"Error setting up schemas: {e}")
             return False
-    
+        
     def store_due_diligence_document(self, document: Dict) -> bool:
         """
         Store a due diligence document in the CryptoDueDiligenceDocuments collection
@@ -442,7 +442,7 @@ class StorageManager:
     
     def retrieve_market_data(self, symbol: str, limit: int = 10) -> List[Dict]:
         """
-        Retrieve market data for a specific symbol
+        Retrieve market data for a specific symbol with corrected sort parameter.
         
         Args:
             symbol (str): Cryptocurrency symbol
@@ -460,11 +460,12 @@ class StorageManager:
             collection = self.client.collections.get("MarketMetrics")
             
             # Build filter
-            from weaviate.classes.query import Filter
+            from weaviate.classes.query import Filter, Sort
             response = collection.query.fetch_objects(
                 filters=Filter.by_property("symbol").equal(symbol),
                 limit=limit,
-                sort=[{"path": ["timestamp"], "order": "desc"}]
+                # Fix: Use Sort object instead of list
+                sort=Sort.by_property("timestamp", ascending=False)
             )
             
             # Format results

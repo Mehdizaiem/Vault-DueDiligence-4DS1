@@ -62,6 +62,8 @@ Sample_Data/feature_extraction.py
 
 # Ignore all log files
 *.log
+risk_visualizations/
 
 venv/
 .qodo
+Code/document_processing/output/processed_documents.json

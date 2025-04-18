@@ -1,0 +1,814 @@
+{
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\2021-05-19 Internal Crypto Funds Management Agreement.docx": {
+    "filename": "2021-05-19 Internal Crypto Funds Management Agreement.docx",
+    "mtime": 1741568011.4316292,
+    "hash": "c153a63a879bd930a49287188d905f08d54fffce99fa5636a7e54116f4c137c9",
+    "last_processed": "2025-04-17T13:29:46.889981",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\2022-05-17 FAST Token Addendum.docx": {
+    "filename": "2022-05-17 FAST Token Addendum.docx",
+    "mtime": 1741568011.4326262,
+    "hash": "16d6c5e0ba4fab1560fdb22eda2ccdf7903b17421598a8f7a15bc44b43a96331",
+    "last_processed": "2025-04-17T13:29:47.630020",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\2022-05-17 Web3 Insider Trading Policy.docx": {
+    "filename": "2022-05-17 Web3 Insider Trading Policy.docx",
+    "mtime": 1741568011.4336298,
+    "hash": "e09e2fe3ad545b87c16346b7053c49038a0adc867914ceefdb0fce5d41ced0d6",
+    "last_processed": "2025-04-17T13:29:48.520242",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\SAFT Template by Legal Nodes (2).docx": {
+    "filename": "SAFT Template by Legal Nodes (2).docx",
+    "mtime": 1741568011.8316286,
+    "hash": "6dc7537af9e6117edd217ed244afbc6c4d8c0cb699be896dd1124e1e0ffd3ccb",
+    "last_processed": "2025-04-17T13:29:52.201660",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\small-firm-aml-template.docx": {
+    "filename": "small-firm-aml-template.docx",
+    "mtime": 1741568070.8852954,
+    "hash": "a468f34d4fb195e54bc3d609f91074041016e9c93054c70506edc4dd213a951b",
+    "last_processed": "2025-04-17T13:30:06.809639",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\Token Sale Agreement Template by Legal Nodes.docx": {
+    "filename": "Token Sale Agreement Template by Legal Nodes.docx",
+    "mtime": 1741568011.8556268,
+    "hash": "bd6b4614d4908893659bdeec53057f36b648c468aafb27bd3c2bce3b95abbaf0",
+    "last_processed": "2025-04-17T13:30:09.299936",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\Token Side Letter Template by Legal Nodes.docx": {
+    "filename": "Token Side Letter Template by Legal Nodes.docx",
+    "mtime": 1741568011.8596282,
+    "hash": "ed095c2d16ebbf4e1cd8d8d1a7291676b94002dd0f23880ab5c801dfcafd9226",
+    "last_processed": "2025-04-17T13:30:09.909813",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\User Agreement.docx": {
+    "filename": "User Agreement.docx",
+    "mtime": 1744890455.8983757,
+    "hash": "1561f558fff72d0d89bed19078122c3a4eebddbc87ac5627f0f9020e4a77f48d",
+    "last_processed": "2025-04-17T13:30:12.238421",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\010111128143.pdf": {
+    "filename": "010111128143.pdf",
+    "mtime": 1741213088.0,
+    "hash": "9d67a3f6ccf160a5f7540bc8360bedc41baeef072d69d44301ab09eb024bd0fb",
+    "last_processed": "2025-04-17T13:30:20.737702",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\108364 PLE_Digital Assets_Deck 290724.pdf": {
+    "filename": "108364 PLE_Digital Assets_Deck 290724.pdf",
+    "mtime": 1741568011.421628,
+    "hash": "6a852e0d72d070b8b7736c29462f7f79b242e8ebd89118cadd18b95258bd102c",
+    "last_processed": "2025-04-17T13:30:22.500424",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\1110830.1.0 Introduction to Digital Assets for Institutional Investors_FINAL_0.pdf": {
+    "filename": "1110830.1.0 Introduction to Digital Assets for Institutional Investors_FINAL_0.pdf",
+    "mtime": 1741568011.430625,
+    "hash": "77f691bc9c09216fb69a6323ca5ac5c7e296253f9dcce61ed395827d8f5081cb",
+    "last_processed": "2025-04-17T13:30:27.688595",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\18-10291.pdf": {
+    "filename": "18-10291.pdf",
+    "mtime": 1741212956.0,
+    "hash": "2781c1c5f89a44a33527ba5a72fc72c6d15f1657c7ee24f5213f9757eedb9f3a",
+    "last_processed": "2025-04-17T13:30:29.577469",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\20-30251.pdf": {
+    "filename": "20-30251.pdf",
+    "mtime": 1741213038.0,
+    "hash": "12539ec37269afc37a298b04ba08a42b0a175d0283cd1b8168e5d2c0342ff6a6",
+    "last_processed": "2025-04-17T13:30:36.187317",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\2023-0754-bwd - final report.pdf": {
+    "filename": "2023-0754-bwd - final report.pdf",
+    "mtime": 1741212963.0,
+    "hash": "c4da685e0e345d0ef644ae11bb8f697cff7dd2530d0c73cfbdc2726a0ab83b7c",
+    "last_processed": "2025-04-17T13:30:39.557297",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\2023_IC3CryptocurrencyReport.pdf": {
+    "filename": "2023_IC3CryptocurrencyReport.pdf",
+    "mtime": 1741568011.4386287,
+    "hash": "122094529db08781fc7d9bbe1093ddfd463bda48b767e4d9bc0fd038112fd1d1",
+    "last_processed": "2025-04-17T13:30:45.137656",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\20240522-SOANA.pdf": {
+    "filename": "20240522-SOANA.pdf",
+    "mtime": 1741568011.4676282,
+    "hash": "5786799e2b404f6fcdc5537fe7507050a96e967dbf9e6333c1a7102e3061b96c",
+    "last_processed": "2025-04-17T13:32:04.532917",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\21-15604.pdf": {
+    "filename": "21-15604.pdf",
+    "mtime": 1741213159.0,
+    "hash": "db97acaf66b767a2fce5043630e65d23ac517f264f3e493c04bfb4d2f2a6d8ae",
+    "last_processed": "2025-04-17T13:32:22.574540",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\23-cr-57_indictment.pdf": {
+    "filename": "23-cr-57_indictment.pdf",
+    "mtime": 1741568011.4696276,
+    "hash": "e7e4fddbc05aa0337a4663ec312286c8c068627396176db49c95cd94576e6847",
+    "last_processed": "2025-04-17T13:32:25.021861",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\2406.18503.pdf": {
+    "filename": "2406.18503.pdf",
+    "mtime": 1741568011.4806273,
+    "hash": "88c7af4845a55cf855d39296f2abd9b07b54c5457aca5631ebc803bc119277a7",
+    "last_processed": "2025-04-17T13:32:29.285697",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\241107_MiCA Whitepaper Template_v1.0 final.pdf": {
+    "filename": "241107_MiCA Whitepaper Template_v1.0 final.pdf",
+    "mtime": 1741568070.6623588,
+    "hash": "d672f6793b75f876541e95f8ea55a7f204dcab04f0111c0b8361c12dfa481a6d",
+    "last_processed": "2025-04-17T13:32:42.555292",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\33-11215.pdf": {
+    "filename": "33-11215.pdf",
+    "mtime": 1741211189.0,
+    "hash": "be92020651ef30c3bc5f4ea1476e40b6dcdbfeae04ae15d7f28a3422df9a94a4",
+    "last_processed": "2025-04-17T13:32:45.673031",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\34-81207.pdf": {
+    "filename": "34-81207.pdf",
+    "mtime": 1741568070.6643543,
+    "hash": "6c9ae041b9b9603da01d0aa4d912586c8d85b9fe1932c57f988d8bd0f9da3bc7",
+    "last_processed": "2025-04-17T13:32:53.972415",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\agreement.pdf": {
+    "filename": "agreement.pdf",
+    "mtime": 1741568012.0126297,
+    "hash": "63a587feebef5214ab0257dc66df2f102a5ac8802ed06e2fdfdb97d0f916f84c",
+    "last_processed": "2025-04-17T13:32:58.432347",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\amfi - ltr. decision re exceptions  (final).pdf": {
+    "filename": "amfi - ltr. decision re exceptions  (final).pdf",
+    "mtime": 1741212773.0,
+    "hash": "08cfe609febb784365560b50947764538af9a172668828b9394d07573c12e3fb",
+    "last_processed": "2025-04-17T13:33:00.260935",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\BedrettinGurcan.pdf": {
+    "filename": "BedrettinGurcan.pdf",
+    "mtime": 1741568011.5026267,
+    "hash": "a802ba1eea4830e97c87e3e95410d42eaa581dabe9d08a1f706454995c546721",
+    "last_processed": "2025-04-17T13:33:20.731815",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\bitcoin-com-legal-user-agreement.pdf": {
+    "filename": "bitcoin-com-legal-user-agreement.pdf",
+    "mtime": 1741568070.8149755,
+    "hash": "c287ce34c7f8272a48a722936a98bae662696f2b734cb7a05319a52ff122aadf",
+    "last_processed": "2025-04-17T13:33:23.501050",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\caia-org-blog-2021-12-12-operational-due-diligence-crypto-assets.pdf": {
+    "filename": "caia-org-blog-2021-12-12-operational-due-diligence-crypto-assets.pdf",
+    "mtime": 1741568070.8206015,
+    "hash": "570a54232ab2de6fa6912a53cd5daf7634f35e8d0e2e168ab899455a8d248c47",
+    "last_processed": "2025-04-17T13:33:28.191231",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\cellar-f69f89bb-fe54-11ea-b44f-01aa75ed71a1.0001.02-DOC_1.pdf": {
+    "filename": "cellar-f69f89bb-fe54-11ea-b44f-01aa75ed71a1.0001.02-DOC_1.pdf",
+    "mtime": 1741568012.0526283,
+    "hash": "06c7cff1b7b848c128cff420b8a630aa3ed037adfdde53982ec21e166a9758e7",
+    "last_processed": "2025-04-17T13:34:08.447001",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\cellar-f69f89bb-fe54-11ea-b44f-01aa75ed71a1.0001.02-DOC_2.pdf": {
+    "filename": "cellar-f69f89bb-fe54-11ea-b44f-01aa75ed71a1.0001.02-DOC_2.pdf",
+    "mtime": 1741568012.060627,
+    "hash": "5c94feb3963ea537c22bb07dbabbd6fd88b158b5320e68a0c45206a0a1f3940d",
+    "last_processed": "2025-04-17T13:34:13.039855",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\civil memorandum opinion n24c-02-292 kmm.pdf": {
+    "filename": "civil memorandum opinion n24c-02-292 kmm.pdf",
+    "mtime": 1741213077.0,
+    "hash": "7f85bf88e7820cc0927b89ece9b7019e2a878262012c2c82a77fefffba7ee99a",
+    "last_processed": "2025-04-17T13:34:22.481714",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\coinbase legal-user_agreement-united_states.pdf": {
+    "filename": "coinbase legal-user_agreement-united_states.pdf",
+    "mtime": 1741568070.8246,
+    "hash": "277e99eb5021972ce24a0a0f977c94e9ba762edee3d328db8566cdcc39488369",
+    "last_processed": "2025-04-17T13:34:55.114878",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\coinbase_inc_v._sec.pdf": {
+    "filename": "coinbase_inc_v._sec.pdf",
+    "mtime": 1741213181.0,
+    "hash": "c1d273b259a7c13241ad34e000923d5752f7b5658ffbb59b94e3e4257c32d4f2",
+    "last_processed": "2025-04-17T13:35:14.140475",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\comp-pr2024-105.pdf": {
+    "filename": "comp-pr2024-105.pdf",
+    "mtime": 1741210942.0,
+    "hash": "2aad1e679d0c7b0bc965d638035e5f85c0f69556cd924c9c1ce50e5df6a3abc2",
+    "last_processed": "2025-04-17T13:35:17.326445",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\comp-pr2024-107.pdf": {
+    "filename": "comp-pr2024-107.pdf",
+    "mtime": 1741210958.0,
+    "hash": "6b04d51cca6aae3b43df22f3153477039ee5143c63f936a7358b9422f755f94f",
+    "last_processed": "2025-04-17T13:36:03.337754",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\comp-pr2024-166-cls.pdf": {
+    "filename": "comp-pr2024-166-cls.pdf",
+    "mtime": 1741208017.0,
+    "hash": "97e96aee270bd2578f48d2ba840c221929dadc088053f2b8f1467aade473aa86",
+    "last_processed": "2025-04-17T13:36:37.518468",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\comp-pr2024-166-gotbit.pdf": {
+    "filename": "comp-pr2024-166-gotbit.pdf",
+    "mtime": 1741208052.0,
+    "hash": "14645472e6cf2c20a7075dfd80eb99f18a4977bace8db3b150ecd03066fa1c24",
+    "last_processed": "2025-04-17T13:37:29.480231",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\comp-pr2024-166-pham.pdf": {
+    "filename": "comp-pr2024-166-pham.pdf",
+    "mtime": 1741208107.0,
+    "hash": "dd4ac27bbbf63d081861542725623761125cb59162d94b08ecde6d303f8c1c7b",
+    "last_processed": "2025-04-17T13:37:40.394192",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\comp-pr2024-166-saitama.pdf": {
+    "filename": "comp-pr2024-166-saitama.pdf",
+    "mtime": 1741208091.0,
+    "hash": "20ee5a06c96d0bddb1e5f31cc321df83eb318ecb6963e0bd68b17738e4806350",
+    "last_processed": "2025-04-17T13:37:51.452128",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\comp-pr2024-166-zm-quant.pdf": {
+    "filename": "comp-pr2024-166-zm-quant.pdf",
+    "mtime": 1741210899.0,
+    "hash": "f9bcc606332f57ea698d489ba755e4cb2c64083b67dcc4197da1dbb944f6663f",
+    "last_processed": "2025-04-17T13:38:43.561271",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\comp-pr2024-168.pdf": {
+    "filename": "comp-pr2024-168.pdf",
+    "mtime": 1741207702.0,
+    "hash": "a2209d27c21b0f9e997bf5e40a696a0deca72396ac9b6c3f138a5cf36f462d71",
+    "last_processed": "2025-04-17T13:38:59.189075",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\comp-pr2024-35.pdf": {
+    "filename": "comp-pr2024-35.pdf",
+    "mtime": 1741211165.0,
+    "hash": "5450d563bb66ad5bb5abf0fece3787dd93e2f82996aa673aae5f2ebd0f11b19c",
+    "last_processed": "2025-04-17T13:39:43.229051",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\comp-pr2024-95.pdf": {
+    "filename": "comp-pr2024-95.pdf",
+    "mtime": 1741210993.0,
+    "hash": "66cae18332a08ed097e374d255fb25f029a8eb195197646d9c0975a73623a2f9",
+    "last_processed": "2025-04-17T13:39:59.200181",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\comp25983.pdf": {
+    "filename": "comp25983.pdf",
+    "mtime": 1741211088.0,
+    "hash": "a9678c451a86d652e49d3e9bcc59c501082568f22afe35409721b6d9f4e51fce",
+    "last_processed": "2025-04-17T13:40:03.197270",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\comp26039.pdf": {
+    "filename": "comp26039.pdf",
+    "mtime": 1741211067.0,
+    "hash": "eac7deeaba4cacb8b4eac47992f4506fa043fbdf6aae0de5cee962000e0288dd",
+    "last_processed": "2025-04-17T13:40:22.817307",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\Compliance considerations for the crypto industry.pdf": {
+    "filename": "Compliance considerations for the crypto industry.pdf",
+    "mtime": 1741568070.6783612,
+    "hash": "eeba0622a8445efa12217e8caaf08c9789a4cbecf9cd859330500283a81f0a13",
+    "last_processed": "2025-04-17T13:40:25.828517",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\CONSIL-ST_13198_2022_INIT-EN-TXT.pdf": {
+    "filename": "CONSIL-ST_13198_2022_INIT-EN-TXT.pdf",
+    "mtime": 1741568011.5256267,
+    "hash": "f139e8c2b76e8fe4998befca2815c7a72f8fb79ce6ab08165332267ded4ca8f2",
+    "last_processed": "2025-04-17T13:41:22.706863",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\contracts-justia-com-companies-athena-bitcoin-global-14652-contract-220918-_utm_.pdf": {
+    "filename": "contracts-justia-com-companies-athena-bitcoin-global-14652-contract-220918-_utm_.pdf",
+    "mtime": 1741568070.8276055,
+    "hash": "88d470da6f7497f95c7b5ce0d8ac77b5aa6870d65041e6ddcf0907359b18a805",
+    "last_processed": "2025-04-17T13:41:28.003746",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\contracts-justia-com-companies-athena-bitcoin-global.pdf": {
+    "filename": "contracts-justia-com-companies-athena-bitcoin-global.pdf",
+    "mtime": 1741568070.8296013,
+    "hash": "dc7e6701821c1a466daddc548c6752db8be3fa9f9b4093cbbdaec8ee9caeeed1",
+    "last_processed": "2025-04-17T13:41:33.233638",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\contracts-justia-com-companies-bitcoin-commodity-trust.pdf": {
+    "filename": "contracts-justia-com-companies-bitcoin-commodity-trust.pdf",
+    "mtime": 1741568070.833602,
+    "hash": "3111ca6f6b07720fe2e1c5393437f1a04d08dcb1143b13fc6902232f0b167871",
+    "last_processed": "2025-04-17T13:41:50.003068",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\cravath-bringing-blockchain-due-diligence-into-focus-102024_vb-002.pdf": {
+    "filename": "cravath-bringing-blockchain-due-diligence-into-focus-102024_vb-002.pdf",
+    "mtime": 1741568012.0966277,
+    "hash": "620af1ea03b8fe3a10ed175f45609a63837795da6503ee94c28dc1ec3f831c6d",
+    "last_processed": "2025-04-17T13:41:53.662877",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\crypto-futures-services-terms-of-use.pdf": {
+    "filename": "crypto-futures-services-terms-of-use.pdf",
+    "mtime": 1741568070.8346078,
+    "hash": "927b11078ae84dd85834be3855997bce319d903826115fb40551f46efda4148f",
+    "last_processed": "2025-04-17T13:42:03.912380",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\Cryptoasset Reporting Framework, Common.pdf": {
+    "filename": "Cryptoasset Reporting Framework, Common.pdf",
+    "mtime": 1741568070.7648234,
+    "hash": "2985fd3ec784fa366deda28a77e060cf16f6b6e1db921479eb2a9a9805aa2145",
+    "last_processed": "2025-04-17T13:42:16.708325",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\Cryptocurrencies_legal_regulation.pdf": {
+    "filename": "Cryptocurrencies_legal_regulation.pdf",
+    "mtime": 1741568011.6556292,
+    "hash": "f41c1f894d1a8cb8c6a2de34ba6a67cd455690aed0cd24721e90ae9614fb5972",
+    "last_processed": "2025-04-17T13:42:26.198370",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\Cryptocurrency-Payments.pdf": {
+    "filename": "Cryptocurrency-Payments.pdf",
+    "mtime": 1741568011.718632,
+    "hash": "0d6664705aa01ede08f2574b17a2cb97e97b8fbd0c31313477c18ecf4b5551e0",
+    "last_processed": "2025-04-17T13:42:29.348527",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\d693146dex99g2.pdf": {
+    "filename": "d693146dex99g2.pdf",
+    "mtime": 1741568012.104632,
+    "hash": "5c59aa3b5363ad859aea5e2c2b62552689a1ec69c79c0f06af12b7b984012e57",
+    "last_processed": "2025-04-17T13:42:35.089806",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\DASCPWhitePaper.pdf": {
+    "filename": "DASCPWhitePaper.pdf",
+    "mtime": 1741568011.7346356,
+    "hash": "8d93288b5afc3324be74f58fb804abea7905198c9e381ed5fd5eaae436425131",
+    "last_processed": "2025-04-17T13:42:47.169798",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\Digital_Assets_Legal_Regulation_and_Estimation_of_.pdf": {
+    "filename": "Digital_Assets_Legal_Regulation_and_Estimation_of_.pdf",
+    "mtime": 1741568011.7436275,
+    "hash": "0e475366f48e50be2ffa33e0b19649cce05e9ae27dc698bd681cb1ba6a40a493",
+    "last_processed": "2025-04-17T13:42:58.627102",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\enfemersonpiresorder020425.pdf": {
+    "filename": "enfemersonpiresorder020425.pdf",
+    "mtime": 1741211772.0,
+    "hash": "aab81085d35a8ecd02a89eb6c0321dcf3e593142bd1659be64f7537c97c54264",
+    "last_processed": "2025-04-17T13:43:02.584008",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\ey-token-due-diligence-a-structured-approach-to-evaluate-digital-asset-risk (1).pdf": {
+    "filename": "ey-token-due-diligence-a-structured-approach-to-evaluate-digital-asset-risk (1).pdf",
+    "mtime": 1741568012.1276271,
+    "hash": "8890edb5f4769bc61f88f45ee2087962a7259a23cc1ca4c659841c9c52d70d76",
+    "last_processed": "2025-04-17T13:43:10.266809",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\ey-token-due-diligence-a-structured-approach-to-evaluate-digital-asset-risk.pdf": {
+    "filename": "ey-token-due-diligence-a-structured-approach-to-evaluate-digital-asset-risk.pdf",
+    "mtime": 1741568012.1466331,
+    "hash": "8890edb5f4769bc61f88f45ee2087962a7259a23cc1ca4c659841c9c52d70d76",
+    "last_processed": "2025-04-17T13:43:17.776941",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\f8k060319ex10-2_phunwareinc.pdf": {
+    "filename": "f8k060319ex10-2_phunwareinc.pdf",
+    "mtime": 1741568012.147629,
+    "hash": "abb68de147a61ef52342e4192d97752254ec5fa3c493f1a43ea5b71203303fbb",
+    "last_processed": "2025-04-17T13:43:20.691806",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\FATF-AR-2023-2024.pdf.coredownload.pdf": {
+    "filename": "FATF-AR-2023-2024.pdf.coredownload.pdf",
+    "mtime": 1741045286.0,
+    "hash": "cb59a43446467cb1ace858a5b31129a292a8bf30aaa67c975ee9bffdd51f65a2",
+    "last_processed": "2025-04-17T13:43:33.300705",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\FATF-Booklet_VA.pdf": {
+    "filename": "FATF-Booklet_VA.pdf",
+    "mtime": 1741568011.760631,
+    "hash": "856083a4bb5d5afe69ee601a26a6b560ebf84f2551e068b621abade30b07742d",
+    "last_processed": "2025-04-17T13:43:39.669170",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\FinCEN_Alert_Pig_Butchering_FINAL_508c.pdf": {
+    "filename": "FinCEN_Alert_Pig_Butchering_FINAL_508c.pdf",
+    "mtime": 1741568070.7685525,
+    "hash": "14e83be91bac0bf13fbd59413910b10ecbc42c2a210d0a2915561ccd2cf4252c",
+    "last_processed": "2025-04-17T13:43:43.088999",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\Form of Investment Management Agreement.pdf": {
+    "filename": "Form of Investment Management Agreement.pdf",
+    "mtime": 1741607975.174299,
+    "hash": "d5cf3d8e24fdc5392801fca4de6e80f2b00a8a8052ef07d4464c8d43be8b5159",
+    "last_processed": "2025-04-17T13:43:47.286164",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\frank_ahlgren_iii_and_the_copernican_llc_v._frank_ahlgren_jr._and_elise_1.pdf": {
+    "filename": "frank_ahlgren_iii_and_the_copernican_llc_v._frank_ahlgren_jr._and_elise_1.pdf",
+    "mtime": 1741213115.0,
+    "hash": "84628a6ee9d12fcbed4f60f57457cad2f96eef11ec142d65f4e6a5a70d30d01f",
+    "last_processed": "2025-04-17T13:44:00.235092",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\FTI+Technology+-+Decentralized+Due+Diligence.pdf": {
+    "filename": "FTI+Technology+-+Decentralized+Due+Diligence.pdf",
+    "mtime": 1741568011.7806273,
+    "hash": "05529f438fb9532933e30a3e3c23726f37ce7d25377a8dc36fc08a08f86c473c",
+    "last_processed": "2025-04-17T13:44:02.264942",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\Gelato_Terms_of_Service.pdf": {
+    "filename": "Gelato_Terms_of_Service.pdf",
+    "mtime": 1741568070.7707067,
+    "hash": "f3d022f6b6c92d9e94420c1b6f7fc02a75fd286ca0a1db02aec0facaf4e70b50",
+    "last_processed": "2025-04-17T13:44:05.873010",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\guide-to-regulation-on-cryptocurrency-and-digital-token.pdf": {
+    "filename": "guide-to-regulation-on-cryptocurrency-and-digital-token.pdf",
+    "mtime": 1741568012.1776385,
+    "hash": "074d88936a02759ed71d544136a15eb779dfae356e13eae81927b425200e64a9",
+    "last_processed": "2025-04-17T13:44:13.693108",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\guide-to-the-vetting-of-digital-asset-and-digital-asset-exchanges.pdf": {
+    "filename": "guide-to-the-vetting-of-digital-asset-and-digital-asset-exchanges.pdf",
+    "mtime": 1741568012.183628,
+    "hash": "cd655de49b839a42b5cc9a7d2c74dedc1ab47cc25140c5312f0c3df6f2a5c414",
+    "last_processed": "2025-04-17T13:44:17.144698",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\hull_v._poulos.pdf": {
+    "filename": "hull_v._poulos.pdf",
+    "mtime": 1741212805.0,
+    "hash": "a1f954a3af5f26b7f942538f878c6489993408e3c92b32a73c478f01d9ba564d",
+    "last_processed": "2025-04-17T13:44:19.364694",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\ia-6670.pdf": {
+    "filename": "ia-6670.pdf",
+    "mtime": 1741210921.0,
+    "hash": "a3f35622f22a06b8f4bf78cc7360ccb24c0afd4df69d7c13d0e6263ab69e4222",
+    "last_processed": "2025-04-17T13:44:22.136786",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\ILPA-DDQ-2.0.pdf": {
+    "filename": "ILPA-DDQ-2.0.pdf",
+    "mtime": 1741568070.7770145,
+    "hash": "0a883010fd5ea3dfe545d3ed6b5976648d777af69e14632360084d847c3ebad0",
+    "last_processed": "2025-04-17T13:44:42.099468",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\in_re_envy_blockchain_inc._nv_landco_1_llc_and_stephen_decani_v._the.pdf": {
+    "filename": "in_re_envy_blockchain_inc._nv_landco_1_llc_and_stephen_decani_v._the.pdf",
+    "mtime": 1741212759.0,
+    "hash": "886efbf0b5d254d0364311c2406733c95af331ea2700445d447b88f7253f701d",
+    "last_processed": "2025-04-17T13:44:44.407509",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\in_re_envy_blockchain_inc._nv_landco_1_llc_and_stephen_decani_v._the_1.pdf": {
+    "filename": "in_re_envy_blockchain_inc._nv_landco_1_llc_and_stephen_decani_v._the_1.pdf",
+    "mtime": 1741212652.0,
+    "hash": "06cdfb179d9884af117a261a4b7446255cbe48c07a23324f2fd3535265bd8147",
+    "last_processed": "2025-04-17T13:44:44.623333",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\IOSCOPD747.pdf": {
+    "filename": "IOSCOPD747.pdf",
+    "mtime": 1741568070.7824688,
+    "hash": "661d47d0a68fe91168e52e24cbc8d5ea71313d3cfdf3bf27a1059c400ec1170c",
+    "last_processed": "2025-04-17T13:44:59.794295",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\lentz combined v1.final.pdf": {
+    "filename": "lentz combined v1.final.pdf",
+    "mtime": 1741213139.0,
+    "hash": "de7bca74f40c6409c451bb753930e2c1160d523f3dd40060ab2c99497b9161f9",
+    "last_processed": "2025-04-17T13:45:16.343320",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\LinVCintheRiseofCryptoEco.pdf": {
+    "filename": "LinVCintheRiseofCryptoEco.pdf",
+    "mtime": 1741568011.8196275,
+    "hash": "58f2e2a43f4679487c5e4bd5a86140f085bf708c270996a6d04f93541ad408b4",
+    "last_processed": "2025-04-17T13:45:31.559508",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\mpdf.pdf": {
+    "filename": "mpdf.pdf",
+    "mtime": 1741568012.1876285,
+    "hash": "20faf4078e04b17a2ff2bd58c775a168838043af891d9ce72b6cf463a90fd845",
+    "last_processed": "2025-04-17T13:45:38.240314",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\Operational-Due-Diligence-on-Digital-Assets.pdf": {
+    "filename": "Operational-Due-Diligence-on-Digital-Assets.pdf",
+    "mtime": 1741568011.8266292,
+    "hash": "55096f5ed13bbc51043be6d6324bdf1193d7e8061569e65cc11227bfcd2c0c5a",
+    "last_processed": "2025-04-17T13:45:41.821600",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\Opinion_2023-1849.pdf": {
+    "filename": "Opinion_2023-1849.pdf",
+    "mtime": 1741212199.0,
+    "hash": "de325b7544f8f3de68aac9383e7dd1bde56d4d4bca3d554c81ac244bf6062451",
+    "last_processed": "2025-04-17T13:45:42.170351",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\publication_0027426_ja_001.pdf": {
+    "filename": "publication_0027426_ja_001.pdf",
+    "mtime": 1741568070.8386025,
+    "hash": "635c2d63a354a1dd5f37b6d73612338683940d016ed421b4565e4ab519b24a1e",
+    "last_processed": "2025-04-17T13:45:48.123715",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\pwc-global-crypto-regulation-report-2023.pdf": {
+    "filename": "pwc-global-crypto-regulation-report-2023.pdf",
+    "mtime": 1741568070.8742971,
+    "hash": "5e662b959f289fe4380b074c6ce4950e4eb65ec9f4e4e73422d2350c2dd55974",
+    "last_processed": "2025-04-17T13:46:07.944554",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\Regulatory-Notice-25-03.pdf": {
+    "filename": "Regulatory-Notice-25-03.pdf",
+    "mtime": 1741211263.0,
+    "hash": "db7d22fc4aae0373c9599fd395a5c1e7a86ffb455c240e199ded7e2d0f268577",
+    "last_processed": "2025-04-17T13:46:08.900502",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\service-ll-llglrd-2018298387-2018298387.pdf": {
+    "filename": "service-ll-llglrd-2018298387-2018298387.pdf",
+    "mtime": 1741568070.884297,
+    "hash": "7436072dcc22ba950353498a832a06c3078f2e68578b7147ee7d5e72bea2a48e",
+    "last_processed": "2025-04-17T13:46:38.622014",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\show_public_doc.pdf": {
+    "filename": "show_public_doc.pdf",
+    "mtime": 1741212971.0,
+    "hash": "4830fbb9c3f245d8bf075a801df5905b7f5fb1cccbcc4d715aba6fe4b3d925a3",
+    "last_processed": "2025-04-17T13:46:41.278274",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\shs_holdings_llc_v._todd_glenn_rowan_and_linda_ann_butcher..pdf": {
+    "filename": "shs_holdings_llc_v._todd_glenn_rowan_and_linda_ann_butcher..pdf",
+    "mtime": 1741212248.0,
+    "hash": "af3fc61ea0656140adacaeeac395901f750ec2587e13c877177bf32ba508be69",
+    "last_processed": "2025-04-17T13:46:42.816948",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\SSRN-id4594467.pdf": {
+    "filename": "SSRN-id4594467.pdf",
+    "mtime": 1741568011.8446267,
+    "hash": "b93230ead62d4d3c852440693ae6be2c8eb62576190cb812112eda3c6781ee1d",
+    "last_processed": "2025-04-17T13:46:59.131272",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\survey on central bank digital currencies and crypto.pdf": {
+    "filename": "survey on central bank digital currencies and crypto.pdf",
+    "mtime": 1741568070.8902955,
+    "hash": "cbf48180209875bd1caa180163f12114abbd95cf5c5600df4681bccec2a957d1",
+    "last_processed": "2025-04-17T13:47:12.908056",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\terry_lankford_employee_carol_lankford_widow.pdf": {
+    "filename": "terry_lankford_employee_carol_lankford_widow.pdf",
+    "mtime": 1741212892.0,
+    "hash": "7ce145740107d7fa8adb2ec6ab2237b6266b7e36921029e472d357442615c0b7",
+    "last_processed": "2025-04-17T13:47:18.352108",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\The Doge of Wall Street_ Analysis and Detection of Pump and Dump Cryptocurrency Manipulations.pdf": {
+    "filename": "The Doge of Wall Street_ Analysis and Detection of Pump and Dump Cryptocurrency Manipulations.pdf",
+    "mtime": 1741568011.853629,
+    "hash": "958499212222c50acd4d95267d2c1d0a60f7359ddf5aadceb92d29dcdbb492a7",
+    "last_processed": "2025-04-17T13:47:34.364351",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\u.s._v._sharifullah_complaint.pdf": {
+    "filename": "u.s._v._sharifullah_complaint.pdf",
+    "mtime": 1741212072.0,
+    "hash": "974d4db0ff66959ef6d10549574168a1898c8b4012107ac18b35c3ed2cad8d5a",
+    "last_processed": "2025-04-17T13:47:34.734730",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\united_states_v._pullara.pdf": {
+    "filename": "united_states_v._pullara.pdf",
+    "mtime": 1741212166.0,
+    "hash": "c4a299b6b8d6790a3586eb6d66be54ae028222fd946a01f964b4132f169bb441",
+    "last_processed": "2025-04-17T13:47:35.861075",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\united_states_v._richard_gratkowski.pdf": {
+    "filename": "united_states_v._richard_gratkowski.pdf",
+    "mtime": 1741212943.0,
+    "hash": "57f22dd9db99ea2d87d1dad0d7e6b50a79c55647fbaf573980066a3af764be4a",
+    "last_processed": "2025-04-17T13:47:37.873837",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\Updated-Guidance-VA-VASP.pdf.coredownload.inline.pdf": {
+    "filename": "Updated-Guidance-VA-VASP.pdf.coredownload.inline.pdf",
+    "mtime": 1741568011.891628,
+    "hash": "85240528438654b9adb9d0272675afdd3d4b16962ba0298a7569a4097197371c",
+    "last_processed": "2025-04-17T13:48:10.032858",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\us-crypto-regulatory-whitepaper.pdf": {
+    "filename": "us-crypto-regulatory-whitepaper.pdf",
+    "mtime": 1741568012.3456287,
+    "hash": "f4b0d833656a129d29e2129a75acb21186490c675046e89262c4dcca9c2227c4",
+    "last_processed": "2025-04-17T13:48:13.246004",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\usa_v._capuci_jr.pdf": {
+    "filename": "usa_v._capuci_jr.pdf",
+    "mtime": 1741568012.3556278,
+    "hash": "d825679f473db99ca761ed820d2d416e605394a28ee6b795f4d85a271b0caf72",
+    "last_processed": "2025-04-17T13:48:18.446706",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\usa_v._crater.pdf": {
+    "filename": "usa_v._crater.pdf",
+    "mtime": 1741568012.3676305,
+    "hash": "529db48f7d7a943a28465162197e25aa8f5fcb90a73513e68d485f40f4b146cc",
+    "last_processed": "2025-04-17T13:48:20.105011",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\usa_v._demarr.pdf": {
+    "filename": "usa_v._demarr.pdf",
+    "mtime": 1741568012.3846283,
+    "hash": "4c64857c869572ccd4ec137ddfcecd23c088f0b2a6c84cd2dbae2a87e14457a5",
+    "last_processed": "2025-04-17T13:48:21.808908",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\usa_v._kumbhani.pdf": {
+    "filename": "usa_v._kumbhani.pdf",
+    "mtime": 1741568012.3906288,
+    "hash": "34497b7bbc99bb3084dd1254b2e205ab455f8bd07c9a515539ae89bea4ffa6e8",
+    "last_processed": "2025-04-17T13:48:27.430296",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\usa_v._pires_et_al.pdf": {
+    "filename": "usa_v._pires_et_al.pdf",
+    "mtime": 1741568012.4006336,
+    "hash": "877d24a0b605563af0dfc97e7ac8d61d338ed985eabd6972bfd62f67ed9bd692",
+    "last_processed": "2025-04-17T13:48:33.429500",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\usa_v._saffron.pdf": {
+    "filename": "usa_v._saffron.pdf",
+    "mtime": 1741568012.402627,
+    "hash": "751a4dd949a749e8577a440caad5ae12ab7b84312e85e8cd5caf982a9d4d9521",
+    "last_processed": "2025-04-17T13:48:38.222349",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\usa_v._stollery.pdf": {
+    "filename": "usa_v._stollery.pdf",
+    "mtime": 1741568012.4056287,
+    "hash": "4f973cac88b81465d4ce24e5362a08b8c9a50c9f8516433c6c4f97c095ef0d9f",
+    "last_processed": "2025-04-17T13:48:40.666727",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\usa_v._tuan.pdf": {
+    "filename": "usa_v._tuan.pdf",
+    "mtime": 1741568012.4526272,
+    "hash": "0ea2e35e633d030a05f3d0fdb28cca65e66958aa782e8708a9f42e2adb1cec91",
+    "last_processed": "2025-04-17T13:48:40.980138",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\vaneckbitcoinstrategyetfar.pdf": {
+    "filename": "vaneckbitcoinstrategyetfar.pdf",
+    "mtime": 1741568012.4546294,
+    "hash": "ce32e0b9abb825cbd5bf55992034ad33a7bd12ea5294ddd0ed06089e07fd261d",
+    "last_processed": "2025-04-17T13:48:53.841727",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\Virtual-Assets-Red-Flag-Indicators.pdf.coredownload.pdf": {
+    "filename": "Virtual-Assets-Red-Flag-Indicators.pdf.coredownload.pdf",
+    "mtime": 1741568011.898629,
+    "hash": "0da7c5e0fe3ff248aae990423c1b0d73a1e6699ad45344cad6551a23e3b3cc61",
+    "last_processed": "2025-04-17T13:49:00.100940",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\virtual_currency_guidance_brochure.pdf": {
+    "filename": "virtual_currency_guidance_brochure.pdf",
+    "mtime": 1741568070.9053001,
+    "hash": "ad028f6af192b7c87cf48bab16a8229b963090218bd72c7e291bb57d4ca8baa2",
+    "last_processed": "2025-04-17T13:49:06.302414",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\wallet-coinbase-terms-of-service.pdf": {
+    "filename": "wallet-coinbase-terms-of-service.pdf",
+    "mtime": 1741568070.9062989,
+    "hash": "f383d4a8cd51a674fd405ffef94bc95da10882915d2a7f786c0faf18357fec65",
+    "last_processed": "2025-04-17T13:49:11.712431",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\WEF_Digital_Assets_Regulation_2024 (1).pdf": {
+    "filename": "WEF_Digital_Assets_Regulation_2024 (1).pdf",
+    "mtime": 1741568070.8129752,
+    "hash": "5cc97e189f439d020bb86a8a4cb08e6d60d2f937284f7234833f1c598b1d3ce6",
+    "last_processed": "2025-04-17T13:49:26.116961",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\WEF_Digital_Assets_Regulation_2024.pdf": {
+    "filename": "WEF_Digital_Assets_Regulation_2024.pdf",
+    "mtime": 1741568012.0106354,
+    "hash": "5cc97e189f439d020bb86a8a4cb08e6d60d2f937284f7234833f1c598b1d3ce6",
+    "last_processed": "2025-04-17T13:49:40.885949",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\williams_v._binance.pdf": {
+    "filename": "williams_v._binance.pdf",
+    "mtime": 1741213017.0,
+    "hash": "0475289e54563d51e8730cdda769887e03215163ae97e3d3a0583aa5759de8ad",
+    "last_processed": "2025-04-17T13:49:47.719374",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\www-sec-gov-Archives-edgar-data-1725882-000121390019016285-ff12019ex4-1_inxlimit....pdf": {
+    "filename": "www-sec-gov-Archives-edgar-data-1725882-000121390019016285-ff12019ex4-1_inxlimit....pdf",
+    "mtime": 1741568070.908296,
+    "hash": "aa945827776e0b351234c95598506048086e45122b192c3cd9b1293f390cd331",
+    "last_processed": "2025-04-17T13:50:00.390240",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\www-sec-gov-Archives-edgar-data-1767057-000093041321001296-c101984_ex10-1-htm_ut....pdf": {
+    "filename": "www-sec-gov-Archives-edgar-data-1767057-000093041321001296-c101984_ex10-1-htm_ut....pdf",
+    "mtime": 1741568070.9112966,
+    "hash": "4bc84f5cc0382660d2c904923340bd276ef757920f8efae14140fe841ae6f96e",
+    "last_processed": "2025-04-17T13:50:14.819315",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\www-sec-gov-divisions-investment-noaction-2018-cryptocurrency.pdf": {
+    "filename": "www-sec-gov-divisions-investment-noaction-2018-cryptocurrency.pdf",
+    "mtime": 1741568070.912297,
+    "hash": "b699731d834f6462e1a506ae14d64522da5fee72f6b5accdbb7ddf757344d1fe",
+    "last_processed": "2025-04-17T13:50:17.169356",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\www-sec-gov-newsroom-speeches-statements-statement-clayton.pdf": {
+    "filename": "www-sec-gov-newsroom-speeches-statements-statement-clayton.pdf",
+    "mtime": 1741568070.9152951,
+    "hash": "ad0ac51f2857fe2432c8afcdfa646ba296fdeb2b6b233a47ee1b99e9e178d9b6",
+    "last_processed": "2025-04-17T13:50:20.453102",
+    "processed_success": true
+  },
+  "C:\\Users\\Mega-PC\\Desktop\\projectpi\\Sample_Data\\raw_documents\\zeth_cryptocurrency_security_agreement.pdf": {
+    "filename": "zeth_cryptocurrency_security_agreement.pdf",
+    "mtime": 1741568070.9188173,
+    "hash": "725e06a48ec2af87c02007b6ca8aa72f3b50fbbfc1554f9bb058e5dcf5555403",
+    "last_processed": "2025-04-17T13:50:24.829196",
+    "processed_success": true
+  }
+}

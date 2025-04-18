@@ -9,6 +9,7 @@ import time
 import threading
 import json
 from typing import Dict, List, Any, Optional, Union
+from Code.document_processing.integration import get_document_processor, store_processed_document
 
 # Configure logging
 logging.basicConfig(
@@ -51,6 +52,10 @@ class CryptoDueDiligenceSystem:
         self.storage = None
         self.time_series_manager = None
         self.onchain_manager = None
+        
+        # Initialize document processor
+        self.doc_processor = get_document_processor(use_gpu=False)
+        logger.info("Document processor initialized")
         
         # Create data directory
         os.makedirs(self.config.get("data_dir", "data"), exist_ok=True)
@@ -272,7 +277,7 @@ class CryptoDueDiligenceSystem:
         interval_hours = self.config.get("forecast_interval_hours", 12)
         
         if not force and self.last_forecast_update and \
-           (now - self.last_forecast_update).total_seconds() < interval_hours * 3600:
+        (now - self.last_forecast_update).total_seconds() < interval_hours * 3600:
             logger.info(f"Forecast update skipped (last update: {self.last_forecast_update})")
             return
         
@@ -285,23 +290,14 @@ class CryptoDueDiligenceSystem:
             
             for symbol in symbols:
                 try:
-                    # Get historical data for forecasting
-                    historical_data = self.storage.retrieve_time_series(symbol, interval="1d", limit=100)
-                    
-                    if not historical_data:
-                        logger.warning(f"No historical data available for {symbol}, skipping forecast")
-                        continue
-                    
-                    # Generate forecast
-                    forecast = self.processor.forecast_prices(
+                    # Use the time_series_manager for forecasting instead of the processor
+                    forecast = self.time_series_manager.forecast_prices(
                         symbol=symbol,
-                        historical_data=historical_data,
-                        days_ahead=days_ahead,
-                        use_sentiment=True
+                        days_ahead=days_ahead
                     )
                     
-                    if "error" in forecast:
-                        logger.error(f"Error forecasting {symbol}: {forecast['error']}")
+                    if forecast is None:
+                        logger.error(f"Error forecasting {symbol}")
                         continue
                     
                     # TODO: Store forecast in Weaviate (when forecast schema is implemented)
@@ -361,12 +357,12 @@ class CryptoDueDiligenceSystem:
             return {"error": str(e)}
     
     def store_document(self, content: str, filename: str, document_type: Optional[str] = None,
-                     title: Optional[str] = None, metadata: Optional[Dict] = None):
+                    title: Optional[str] = None, metadata: Optional[Dict] = None):
         """
         Store a document in the CryptoDueDiligenceDocuments collection.
         
         Args:
-            content (str): Document content
+            content (str): Document content or file path
             filename (str): Source filename
             document_type (str, optional): Document type
             title (str, optional): Document title
@@ -378,6 +374,32 @@ class CryptoDueDiligenceSystem:
         logger.info(f"Storing document: {filename}")
         
         try:
+            # For PDF and other binary files, we should read the file directly
+            # instead of trying to process content as a string
+            if os.path.exists(content) and filename.lower().endswith(('.pdf', '.docx', '.txt')):
+                # Content is actually a file path, read the file based on type
+                if filename.lower().endswith('.pdf'):
+                    from Code.document_processing.process_documents import read_pdf
+                    text = read_pdf(content)
+                elif filename.lower().endswith('.docx'):
+                    from Code.document_processing.process_documents import read_docx
+                    text = read_docx(content)
+                elif filename.lower().endswith('.txt'):
+                    from Code.document_processing.process_documents import read_text_file
+                    text = read_text_file(content)
+                    
+                if text is None:
+                    logger.error(f"Could not extract text from {filename}")
+                    return False
+                    
+                # Use the file path directly to maintain consistency with process_documents.py
+                file_path = content
+                actual_content = text
+            else:
+                # For content string, use a consistent approach
+                file_path = content if os.path.exists(content) else None
+                actual_content = content
+            
             # Determine document type if not provided
             if not document_type:
                 document_type = self._infer_document_type(filename)
@@ -386,15 +408,31 @@ class CryptoDueDiligenceSystem:
             if not title:
                 title = os.path.splitext(os.path.basename(filename))[0]
             
+            # Import the process_document_with_tracking function
+            from Code.document_processing.integration import process_document_with_tracking
+            
+            # Process the document with change tracking
+            # Pass the file path if available, otherwise the content
+            result = process_document_with_tracking(
+                content=file_path if file_path else actual_content, 
+                filename=filename, 
+                document_type=document_type
+            )
+            
+            # If result is None, it means no processing was needed (document unchanged)
+            if result is None:
+                logger.info(f"Document {filename} unchanged, using existing data")
+                return True
+            
             # Extract features from document
             features = self.processor.extract_features_from_document({
-                "content": content,
+                "content": actual_content,
                 "document_type": document_type
             })
             
             # Prepare document with features
             document = {
-                "content": content,
+                "content": actual_content,
                 "source": filename,
                 "document_type": document_type,
                 "title": title,
@@ -660,28 +698,54 @@ class CryptoDueDiligenceSystem:
                     print(json.dumps(result, indent=2))
                 
                 elif command.lower().startswith("forecast "):
-                    symbol = command.split(" ", 1)[1]
-                    
-                    # Format symbol
-                    if not symbol.upper().endswith("USDT"):
-                        symbol = f"{symbol.upper()}USDT"
-                    
-                    # Get historical data
-                    historical_data = self.get_historical_data(symbol, interval="1d", limit=100)
-                    
-                    if not historical_data:
-                        print(f"No historical data found for {symbol}")
+                    parts = command.split()
+                    if len(parts) < 2:
+                        print("Usage: forecast  [days]")
                         continue
                     
-                    # Generate forecast
-                    forecast = self.processor.forecast_prices(
-                        symbol=symbol,
-                        historical_data=historical_data,
-                        days_ahead=self.config.get("forecast_days_ahead", 7),
-                        use_sentiment=True
-                    )
+                    symbol = parts[1].upper()
+                    days = int(parts[2]) if len(parts) > 2 else self.config.get("forecast_days_ahead", 7)
                     
-                    print(json.dumps(forecast, indent=2))
+                    # Ensure symbol ends with USDT if not already
+                    if not symbol.endswith("USDT") and not symbol.endswith("USD"):
+                        symbol = f"{symbol}USDT"
+                    
+                    print(f"Generating {days}-day forecast for {symbol}...")
+                    
+                    # Get forecast from time series manager
+                    forecast = self.time_series_manager.forecast_prices(symbol, days_ahead=days)
+                    
+                    if forecast is not None:
+                        print(f"\nPrice Forecast for {symbol}:")
+                        print("-" * 50)
+                        print(f"{'Date':<12} {'Forecast':<15} {'Range':<20}")
+                        print("-" * 50)
+                        
+                        # Calculate percent changes
+                        last_price = None
+                        for date, row in forecast.iterrows():
+                            price = row['forecast_price']
+                            lower = row['lower_bound']
+                            upper = row['upper_bound']
+                            
+                            if last_price is not None:
+                                change = ((price / last_price) - 1) * 100
+                                change_str = f"{change:+.2f}%"
+                            else:
+                                change_str = "N/A"
+                                
+                            print(f"{date.strftime('%Y-%m-%d'):<12} "
+                                f"${price:<10.2f} {change_str:<4} "
+                                f"(${lower:.2f} - ${upper:.2f})")
+                            
+                            last_price = price
+                        
+                        print("-" * 50)
+                        print("Note: This is a simplified forecast model using historical trends")
+                        
+                    else:
+                        print(f"Could not generate forecast for {symbol}")
+                        print("Try loading historical data first with 'load-csv' command")
                 
                 elif command.lower().startswith("onchain "):
                     address = command.split(" ", 1)[1]
@@ -712,11 +776,9 @@ class CryptoDueDiligenceSystem:
                         continue
                     
                     try:
-                        with open(file_path, "r", encoding="utf-8") as f:
-                            content = f.read()
-                        
+                        # Pass the file path directly to store_document instead of reading it
                         success = self.store_document(
-                            content=content,
+                            content=file_path,  # Pass the file path as content
                             filename=os.path.basename(file_path)
                         )
                         

@@ -65,3 +65,4 @@ Sample_Data/feature_extraction.py
 
 venv/
 .qodo
+Code/document_processing/output/processed_documents.json

@@ -685,7 +685,7 @@ def store_forecast(forecast_results, market_insights, data_info, model_name, day
         bool: Success status
     """
     try:
-        from Sample_Data.vector_store.forecast_storage import store_chronos_forecast
+        #from Sample_Data.vector_store.forecast_storage import store_chronos_forecast
         
         base_currency = data_info['base_currency']
         quote_currency = data_info['quote_currency']

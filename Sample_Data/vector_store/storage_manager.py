@@ -127,6 +127,70 @@ class StorageManager:
         except Exception as e:
             logger.error(f"Error storing due diligence document: {e}")
             return False
+            
+    def store_user_document(self, document: Dict, user_id: str) -> bool:
+        """
+        Store a user document in the UserDocuments collection
+        
+        Args:
+            document (Dict): Document data including content, title, etc.
+            user_id (str): ID of the user who uploaded the document
+            
+        Returns:
+            bool: Success status
+        """
+        if not self.connect():
+            logger.error("Failed to connect to Weaviate")
+            return False
+            
+        try:
+            # Get the collection
+            collection = self.client.collections.get("UserDocuments")
+            
+            # Extract document content
+            content = document.get("content", "")
+            document_type = document.get("document_type", "unknown")
+            title = document.get("title", "Untitled")
+            
+            # Generate embedding with all-MPNet
+            vector = generate_mpnet_embedding(content)
+            
+            # Prepare properties
+            properties = {
+                "content": content,
+                "document_type": document_type,
+                "title": title,
+                "source": document.get("source", "unknown"),
+                "user_id": user_id,
+                "upload_date": datetime.now().isoformat(),
+                "is_public": document.get("is_public", False),
+                "processing_status": document.get("processing_status", "completed")
+            }
+            
+            # Add optional properties if present
+            for field in ["date", "author_issuer", "category", "risk_score", "keywords", "notes",
+                         "file_size", "file_type", "org_entities", "person_entities", 
+                         "location_entities", "crypto_entities", "risk_factors"]:
+                if field in document and document[field] is not None:
+                    properties[field] = document[field]
+            
+            # Format date if it exists but isn't already in the right format
+            if "date" in properties and not isinstance(properties["date"], str):
+                try:
+                    properties["date"] = properties["date"].isoformat()
+                except (AttributeError, TypeError):
+                    # Handle other date formats or issues
+                    del properties["date"]
+            
+            # Store the document
+            collection.data.insert(properties=properties, vector=vector)
+            
+            logger.info(f"Successfully stored user document: {title}")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Error storing user document: {e}")
+            return False
     
     def store_news_article(self, article: Dict) -> bool:
         """
@@ -391,7 +455,7 @@ class StorageManager:
             logger.error(f"Error storing on-chain analytics: {e}")
             return False
     
-    def retrieve_documents(self, query: str, collection_name: str = "CryptoDueDiligenceDocuments", limit: int = 5) -> List[Dict]:
+    def retrieve_documents(self, query: str, collection_name: str = "CryptoDueDiligenceDocuments", limit: int = 5, user_id: str = None) -> List[Dict]:
         """
         Retrieve documents from a collection based on a query
         
@@ -399,6 +463,7 @@ class StorageManager:
             query (str): Search query
             collection_name (str): Collection to search
             limit (int): Maximum number of results
+            user_id (str, optional): User ID for filtering user documents
             
         Returns:
             List[Dict]: Retrieved documents
@@ -417,13 +482,29 @@ class StorageManager:
             else:
                 query_vector = generate_mpnet_embedding(query)
             
-            # Perform hybrid search (vector + BM25)
-            response = collection.query.hybrid(
-                query=query,
-                vector=query_vector,
-                alpha=0.5,  # Balance between vector and keyword search
-                limit=limit
-            )
+            # For UserDocuments collection, filter by user_id if provided
+            if collection_name == "UserDocuments" and user_id:
+                from weaviate.classes.query import Filter
+                
+                # Filter for documents owned by this user or marked as public
+                user_filter = Filter.by_property("user_id").equal(user_id) | Filter.by_property("is_public").equal(True)
+                
+                # Perform hybrid search with filter
+                response = collection.query.hybrid(
+                    query=query,
+                    vector=query_vector,
+                    alpha=0.5,  # Balance between vector and keyword search
+                    limit=limit,
+                    filters=user_filter
+                )
+            else:
+                # Perform standard hybrid search
+                response = collection.query.hybrid(
+                    query=query,
+                    vector=query_vector,
+                    alpha=0.5,  # Balance between vector and keyword search
+                    limit=limit
+                )
             
             # Format results
             results = []

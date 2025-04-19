@@ -1,13 +1,13 @@
 import { QAResponse } from '@/types/qa';
 
-export async function askQuestion(question: string): Promise<QAResponse> {
+export async function askQuestion(question: string, documentId?: string): Promise<QAResponse> {
   try {
     const response = await fetch('/api/qa', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ question }),
+      body: JSON.stringify({ question, documentId }),
     });
 
     if (!response.ok) {

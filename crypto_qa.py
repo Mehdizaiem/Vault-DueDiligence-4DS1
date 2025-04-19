@@ -1465,8 +1465,6 @@ PRICE STATISTICS FOR {symbol} ({period}):
         except Exception as e:
             logger.error(f"Error formatting on-chain analytics: {e}")
             # Fallback
-            return f"ON-CHAIN ANALYTICS:\n{json.dumps(analytics, indent=2)[:1000]}..."
-    
     def _format_price_statistics(self, stats: Dict) -> str:
         """Format price statistics."""
         try:
@@ -1495,7 +1493,56 @@ PRICE STATISTICS FOR {symbol} ({period}):
             logger.error(f"Error formatting price statistics: {e}")
             # Fallback
             return f"PRICE STATISTICS:\n{json.dumps(stats, indent=2)[:1000]}..."
+def get_document_context(document_id, question):
+    """Get document context using DocumentAnalyzer"""
+    from UserQ_A.DocumentAnalyzer import DocumentAnalyzer
+    
+    analyzer = DocumentAnalyzer()
+    try:
+        context_data = analyzer.get_comprehensive_context(document_id, question)
+        return context_data.get("context", "")
+    finally:
+        analyzer.close()
 
+def build_document_prompt(question, document_context):
+    """Build a prompt specifically for document-related questions"""
+    document_prompt = f"""You are a comprehensive crypto document analyst specializing in cryptocurrency due diligence.
+Your role is to analyze documents thoroughly and provide detailed, accurate answers based on document content.
+
+When analyzing documents:
+1. Identify the main purpose and key points of the document
+2. Extract and highlight key entities, dates, and cryptocurrency assets mentioned
+3. Evaluate risk factors and potential concerns identified in the document
+4. Connect document information with related market and industry knowledge
+5. Provide context and explanations for technical or specialized terms
+
+DOCUMENT CONTEXT:
+{document_context}
+
+QUESTION: {question}
+
+Provide a detailed analysis based on the document content. If the question cannot be answered based on the document,
+clearly state what information is missing and provide general knowledge about the topic if relevant to cryptocurrency
+and blockchain."""
+    
+    return document_prompt
+
+def build_general_prompt(question, context):
+    """Build a prompt for general crypto questions"""
+    general_prompt = f"""You are a cryptocurrency and blockchain expert specializing in crypto due diligence.
+Your goal is to provide accurate, insightful answers about cryptocurrency, blockchain technology, and digital assets.
+
+CONTEXT:
+{context}
+
+QUESTION: {question}
+
+Provide a comprehensive answer based on the available context. If the context doesn't contain sufficient information
+to answer the question fully, enhance your answer with relevant knowledge about cryptocurrency and blockchain topics.
+For questions unrelated to cryptocurrency, blockchain, or due diligence, inform the user that you can only assist with
+cryptocurrency-related topics."""
+    
+    return general_prompt
 class AdvancedPromptBuilder:
     """
     Builds sophisticated prompts incorporating query analysis,
@@ -1988,23 +2035,21 @@ class EnhancedCryptoQA:
             analysis = self.query_analyzer.analyze(question)
             logger.info(f"Query analysis completed: {json.dumps(analysis, default=str)}")
             
-            # 2. Retrieve relevant context using advanced strategies
+            # 2. Retrieve context based on document_id or general question
             if document_id:
-                retrieved_data = {"specific_document": self.retrieval_engine.retrieve_document_by_id(document_id)}
+                # For document-specific queries, use the DocumentAnalyzer
+                document_context = get_document_context(document_id, question)
+                prompt = build_document_prompt(question, document_context)
             else:
-                # Pass user_id to include user-specific documents in retrieval
+                # For general queries, use the regular retrieval process
                 retrieved_data = self.retrieval_engine.retrieve(question, analysis, user_id)
+                context = self.context_formatter.format(retrieved_data, analysis)
+                prompt = self.prompt_builder.build_prompt(question, context, analysis)
             
-            # 3. Format the context for optimal LLM consumption
-            context = self.context_formatter.format(retrieved_data, analysis)
-            
-            # 4. Build sophisticated prompt incorporating analysis
-            prompt = self.prompt_builder.build_prompt(question, context, analysis)
-            
-            # 5. Generate answer with Llama 3.3 70B Versatile
+            # 3. Generate answer with Llama 3.3 70B Versatile
             answer = self.llama_client.generate_answer(prompt, temperature)
             
-            # 6. Post-process the answer if needed
+            # 4. Post-process the answer if needed
             answer = self._post_process_answer(answer, analysis)
             
             return answer
@@ -2079,14 +2124,14 @@ def check_market_data_availability(client):
 if __name__ == "__main__":
     import argparse
     
-    parser = argparse.ArgumentParser(description="Enhanced Crypto Due Diligence Q&A System with Llama 3.3")
-    parser.add_argument("--api-key", help="Groq API key (optional, defaults to env variable)")
-    parser.add_argument("--question", help="Question to answer")
-    parser.add_argument("--document-id", help="Optional document ID to query specifically")
-    parser.add_argument("--user-id", help="Optional user ID for personalized answers")
-    parser.add_argument("--model", default="llama-3.3-70b-versatile", help="Model to use (default: llama-3.3-70b-versatile)")
-    parser.add_argument("--temperature", type=float, default=0.7, help="Temperature (0.0-1.0, default: 0.7)")
-    parser.add_argument("--interactive", action="store_true", help="Run in interactive mode")
+    parser = argparse.ArgumentParser(description='Enhanced Crypto Due Diligence Q&A System with Llama 3.3')
+    parser.add_argument('--api-key', '--api_key', dest='api_key', help='Groq API key (optional, defaults to env variable)')
+    parser.add_argument('--question', help='Question to answer')
+    parser.add_argument('--document-id', '--document_id', dest='document_id', help='Optional document ID to query specifically')
+    parser.add_argument('--user-id', '--user_id', dest='user_id', help='Optional user ID for personalized answers')
+    parser.add_argument('--model', default='llama-3.3-70b-versatile', help='Model to use (default: llama-3.3-70b-versatile)')
+    parser.add_argument('--temperature', type=float, default=0.7, help='Temperature (0.0-1.0, default: 0.7)')
+    parser.add_argument('--interactive', action='store_true', help='Run in interactive mode')
     
     args = parser.parse_args()
     

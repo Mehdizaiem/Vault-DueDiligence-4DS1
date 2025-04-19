@@ -10,8 +10,15 @@ import argparse
 from datetime import datetime
 import traceback
 
-# Set up logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+# Set up logging to file instead of stdout
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler("user_documents.log"),  # Log to file instead of stdout
+        logging.StreamHandler(sys.stderr)  # Log to stderr, not stdout
+    ]
+)
 logger = logging.getLogger(__name__)
 
 # Add project root to the Python path
@@ -54,7 +61,7 @@ def get_user_documents(user_id, limit=20, offset=0, sort_by='upload_date', sort_
             logger.error(f"Error accessing UserDocuments collection: {e}")
             return []
         
-        # Build filter
+        # Build filter for user_id
         filters = Filter.by_property("user_id").equal(user_id)
         
         # Add status filter if provided
@@ -132,9 +139,8 @@ def main():
         args.status
     )
     
-    # Output as JSON
-    json.dump(documents, sys.stdout)
-
+    # Output ONLY the JSON to stdout - no other text or logs
+    print(json.dumps(documents))
     
     return 0
 

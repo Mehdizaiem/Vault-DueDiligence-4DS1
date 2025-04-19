@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from "@clerk/nextjs";
 import { join } from 'path';
-import { mkdir, writeFile } from 'fs/promises';
+import { mkdir, writeFile, stat } from 'fs/promises';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 
@@ -49,6 +49,9 @@ export async function POST(request: NextRequest) {
     const notes = formData.get('notes') as string || '';
     const isPublic = formData.get('isPublic') === 'true';
     
+    // Log file details for debugging
+    console.log(`Received file upload: ${file.name}, size: ${file.size}, type: ${file.type}`);
+    
     // Check file type
     const fileType = file.type;
     const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'];
@@ -69,6 +72,14 @@ export async function POST(request: NextRequest) {
       );
     }
     
+    // Check if file is empty
+    if (file.size === 0) {
+      return NextResponse.json(
+        { error: 'File appears to be empty.' },
+        { status: 400 }
+      );
+    }
+    
     // Create the upload directory if it doesn't exist
     const userUploadDir = join(UPLOAD_DIR, userId);
     await mkdir(userUploadDir, { recursive: true });
@@ -77,35 +88,68 @@ export async function POST(request: NextRequest) {
     const safeFilename = createSafeFilename(file.name, userId);
     const filePath = join(userUploadDir, safeFilename);
     
-    const arrayBuffer = await file.arrayBuffer();
-    const uint8Array = new Uint8Array(arrayBuffer);
-    await writeFile(filePath, uint8Array);
+    try {
+      // Get file data as ArrayBuffer and convert to Uint8Array
+      const arrayBuffer = await file.arrayBuffer();
+      const uint8Array = new Uint8Array(arrayBuffer);
+      
+      console.log(`Writing file to ${filePath} (${uint8Array.length} bytes)`);
+      
+      // Write file to disk
+      await writeFile(filePath, uint8Array);
+      
+      // Check if file was written correctly
+      const fileStats = await stat(filePath);
+      if (fileStats.size === 0) {
+        throw new Error("File was written but is empty");
+      }
+      
+      console.log(`File successfully written: ${filePath}, size: ${fileStats.size} bytes`);
+    } catch (fileError) {
+      console.error("Error writing file to disk:", fileError);
+      return NextResponse.json(
+        { error: 'Failed to save file to disk' },
+        { status: 500 }
+      );
+    }
 
-    // Record upload in database
-    // In a production app, you would likely use Prisma or another ORM here
-
-    // Trigger document processing asynchronously in the background
-    // This is a simplified approach - in production you'd use a task queue
+    // Create a unique document ID
     const documentId = `${userId}_${Date.now()}`;
     
+    // Process the document asynchronously
     try {
-      // Use the Python script to process the document
+      // First run schema setup to ensure collections exist
+      try {
+        await execPromise(`python ${join(process.cwd(), 'Sample_Data/vector_store/create_schemas.py')}`);
+        console.log("Schema creation script executed");
+      } catch (schemaErr) {
+        console.error("Warning: Schema creation failed:", schemaErr);
+        // Continue anyway, schema might already exist
+      }
+      
+      // Process the document
       const cmd = `python ${join(process.cwd(), 'Code/document_processing/process_user_document.py')} --file "${filePath}" --user_id "${userId}" --document_id "${documentId}" --is_public ${isPublic} --notes "${notes}"`;
       
-      // Run command asynchronously and don't wait for completion
+      console.log(`Executing document processing: ${cmd}`);
+      
+      // Execute the command but don't wait for it to complete
       execPromise(cmd).catch(err => {
         console.error(`Error processing document: ${err.message}`);
       });
-    } catch (err) {
-      console.error('Failed to start document processing:', err);
-      // We don't fail the request here, as the file upload succeeded
+      
+      console.log("Document processing started");
+    } catch (processErr) {
+      console.error("Failed to start document processing:", processErr);
+      // Continue since the file upload succeeded
     }
     
     return NextResponse.json({
       success: true,
-      message: 'File uploaded successfully',
+      message: 'File uploaded successfully. Processing started.',
       documentId,
+      fileName: file.name,
       filePath: safeFilename,
+      fileSize: file.size,
       processingStatus: 'pending',
       uploadDate: new Date().toISOString(),
     });
@@ -113,18 +157,12 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error uploading file:', error);
     return NextResponse.json(
-      { error: 'Failed to upload file' },
+      { error: 'Failed to upload file', details: String(error) },
       { status: 500 }
     );
   }
 }
 
-/**
- * Configuration for file uploads (increased limit for large documents)
- */
-export const config = {
-  api: {
-    bodyParser: false, // Disable the built-in parser
-    responseLimit: '10mb',
-  },
-};
+// Use modern route config
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';

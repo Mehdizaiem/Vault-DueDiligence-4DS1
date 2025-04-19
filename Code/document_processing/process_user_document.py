@@ -26,22 +26,21 @@ from Sample_Data.vector_store.storage_manager import StorageManager
 from Sample_Data.vector_store.embed import generate_mpnet_embedding
 from weaviate.classes.config import DataType, Configure
 
+# In process_user_document.py
 def setup_user_documents_schema(storage_manager):
     """
     Set up the UserDocuments collection if it doesn't exist.
-    
-    Args:
-        storage_manager: StorageManager instance
     """
     try:
         if not storage_manager.connect():
             logger.error("Failed to connect to Weaviate")
             return False
         
-        client = storage_manager.client
-        
         # Import the schema creation function
         from Sample_Data.vector_store.schema_manager import create_user_documents_schema
+        
+        # Get the client from storage manager
+        client = storage_manager.client
         
         # Create the schema
         create_user_documents_schema(client)
@@ -50,7 +49,6 @@ def setup_user_documents_schema(storage_manager):
         return True
     except Exception as e:
         logger.error(f"Error setting up UserDocuments schema: {e}")
-        logger.error(traceback.format_exc())
         return False
 
 def get_document_type_from_extension(file_path):

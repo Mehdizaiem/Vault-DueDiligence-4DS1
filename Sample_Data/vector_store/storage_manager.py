@@ -130,6 +130,70 @@ class StorageManager:
         except Exception as e:
             logger.error(f"Error storing due diligence document: {e}")
             return False
+            
+    def store_user_document(self, document: Dict, user_id: str) -> bool:
+        """
+        Store a user document in the UserDocuments collection
+        
+        Args:
+            document (Dict): Document data including content, title, etc.
+            user_id (str): ID of the user who uploaded the document
+            
+        Returns:
+            bool: Success status
+        """
+        if not self.connect():
+            logger.error("Failed to connect to Weaviate")
+            return False
+            
+        try:
+            # Get the collection
+            collection = self.client.collections.get("UserDocuments")
+            
+            # Extract document content
+            content = document.get("content", "")
+            document_type = document.get("document_type", "unknown")
+            title = document.get("title", "Untitled")
+            
+            # Generate embedding with all-MPNet
+            vector = generate_mpnet_embedding(content)
+            
+            # Prepare properties
+            properties = {
+                "content": content,
+                "document_type": document_type,
+                "title": title,
+                "source": document.get("source", "unknown"),
+                "user_id": user_id,
+                "upload_date": datetime.now().isoformat(),
+                "is_public": document.get("is_public", False),
+                "processing_status": document.get("processing_status", "completed")
+            }
+            
+            # Add optional properties if present
+            for field in ["date", "author_issuer", "category", "risk_score", "keywords", "notes",
+                         "file_size", "file_type", "org_entities", "person_entities", 
+                         "location_entities", "crypto_entities", "risk_factors"]:
+                if field in document and document[field] is not None:
+                    properties[field] = document[field]
+            
+            # Format date if it exists but isn't already in the right format
+            if "date" in properties and not isinstance(properties["date"], str):
+                try:
+                    properties["date"] = properties["date"].isoformat()
+                except (AttributeError, TypeError):
+                    # Handle other date formats or issues
+                    del properties["date"]
+            
+            # Store the document
+            collection.data.insert(properties=properties, vector=vector)
+            
+            logger.info(f"Successfully stored user document: {title}")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Error storing user document: {e}")
+            return False
     
     def store_news_article(self, article: Dict) -> bool:
         """
@@ -394,169 +458,7 @@ class StorageManager:
             logger.error(f"Error storing on-chain analytics: {e}")
             return False
     
-    def store_chronos_forecast(self, forecast_results: Dict, market_insights: Dict, 
-                        symbol: str, model_name: str, days_ahead: int, 
-                        plot_path: Optional[str] = None) -> bool:
-        """
-        Store Chronos forecast results in the Forecast collection.
-        
-        Args:
-            forecast_results: Results from Chronos forecaster.forecast() method
-            market_insights: Results from Chronos forecaster.generate_market_insights() method
-            symbol: Cryptocurrency symbol
-            model_name: Name of the Chronos model used
-            days_ahead: Number of days in forecast horizon
-            plot_path: Path to the saved forecast plot
-            
-        Returns:
-            bool: Success status
-        """
-        if not self.connect():
-            logger.error("Failed to connect to Weaviate")
-            return False
-            
-        try:
-            # Ensure the Forecast schema exists
-            collection = create_forecast_schema(self.client)
-            
-            # Format dates to ISO format strings for Weaviate
-            forecast_dates = [date.isoformat() for date in forecast_results.get('dates', [])]
-            
-            # Extract forecast values
-            # Get median forecast from quantiles
-            quantiles = forecast_results.get('quantiles', [None])[0]
-            quantile_levels = forecast_results.get('quantile_levels', [0.1, 0.5, 0.9])
-            
-            if quantiles is not None:
-                # Find index of median or closest to median
-                if 0.5 in quantile_levels:
-                    median_idx = quantile_levels.index(0.5)
-                else:
-                    median_idx = len(quantile_levels) // 2
-                    
-                # Get lower, median, and upper bounds
-                low_idx = 0  # Lowest quantile
-                high_idx = len(quantile_levels) - 1  # Highest quantile
-                
-                # Safe conversion function
-                def safe_float(x):
-                    if isinstance(x, (list, tuple)):
-                        # If it's a list, take first element or average
-                        if len(x) == 1:
-                            return safe_float(x[0])
-                        else:
-                            return float(sum(safe_float(i) for i in x) / len(x))
-                    elif hasattr(x, 'item'):
-                        # Handle numpy/torch tensor items
-                        return float(x.item())
-                    else:
-                        # Direct conversion
-                        return float(x)
-                
-                # Extract forecast values arrays and convert to Python native types
-                try:
-                    # Try handling as a 2D array
-                    forecast_values = []
-                    lower_bounds = []
-                    upper_bounds = []
-                    
-                    # Handle the structure based on its actual shape
-                    if hasattr(quantiles, 'shape') and len(quantiles.shape) > 1:
-                        # 2D array processing
-                        for i in range(quantiles.shape[0]):
-                            forecast_values.append(safe_float(quantiles[i, median_idx]))
-                            lower_bounds.append(safe_float(quantiles[i, low_idx]))
-                            upper_bounds.append(safe_float(quantiles[i, high_idx]))
-                    else:
-                        # Process as a list structure
-                        q_list = quantiles.tolist() if hasattr(quantiles, 'tolist') else quantiles
-                        
-                        for row in q_list:
-                            if isinstance(row, (list, tuple)) and len(row) > median_idx:
-                                forecast_values.append(safe_float(row[median_idx]))
-                                lower_bounds.append(safe_float(row[low_idx]))
-                                upper_bounds.append(safe_float(row[high_idx]))
-                            else:
-                                # Just use the value directly
-                                val = safe_float(row)
-                                forecast_values.append(val)
-                                lower_bounds.append(val * 0.9)  # Create artificial bounds
-                                upper_bounds.append(val * 1.1)
-                except Exception as e:
-                    logger.warning(f"Error processing quantiles: {e}, falling back to mean")
-                    # If all else fails, fall back to mean values
-                    mean = forecast_results.get('mean', [None])[0]
-                    if mean is not None:
-                        mean_list = mean.tolist() if hasattr(mean, 'tolist') else mean
-                        forecast_values = [safe_float(x) for x in mean_list]
-                        # Create artificial bounds (±10%)
-                        lower_bounds = [val * 0.9 for val in forecast_values]
-                        upper_bounds = [val * 1.1 for val in forecast_values]
-                    else:
-                        logger.error("No usable forecast data found")
-                        return False
-            else:
-                # Fallback to mean if quantiles not available
-                mean = forecast_results.get('mean', [None])[0]
-                forecast_values = [safe_float(x) for x in (mean.tolist() if hasattr(mean, 'tolist') else mean)]
-                # Create artificial bounds
-                lower_bounds = [val * 0.9 for val in forecast_values]
-                upper_bounds = [val * 1.1 for val in forecast_values]
-            
-            # Read and encode the plot image if path is provided
-            plot_image = None
-            if plot_path and os.path.exists(plot_path):
-                try:
-                    with open(plot_path, 'rb') as f:
-                        plot_image = base64.b64encode(f.read()).decode('utf-8')
-                except Exception as e:
-                    logger.error(f"Error reading plot image: {e}")
-            
-            # Create properties dictionary with native Python types
-            properties = {
-                "symbol": symbol,
-                "forecast_timestamp": datetime.now().isoformat(),
-                "model_name": model_name,
-                "model_type": "chronos",
-                "days_ahead": days_ahead,
-                
-                # Current market state
-                "current_price": float(market_insights.get('current_price', 0.0)),
-                
-                # Forecast data
-                "forecast_dates": forecast_dates,
-                "forecast_values": forecast_values,
-                "lower_bounds": lower_bounds,
-                "upper_bounds": upper_bounds,
-                
-                # Forecast statistics
-                "final_forecast": float(market_insights.get('final_forecast', 0.0)),
-                "change_pct": float(market_insights.get('change_pct', 0.0)),
-                "trend": market_insights.get('trend', "unknown"),
-                "probability_increase": float(market_insights.get('probability_increase', 0.0)),
-                "average_uncertainty": float(market_insights.get('average_uncertainty', 0.0)),
-                "insight": market_insights.get('insight', ""),
-            }
-            
-            # Add plot path and image if available
-            if plot_path:
-                properties["plot_path"] = plot_path
-            if plot_image:
-                properties["plot_image"] = plot_image
-            
-            # Store in Weaviate
-            collection.data.insert(properties=properties)
-            
-            logger.info(f"Successfully stored forecast for {symbol}")
-            return True
-            
-        except Exception as e:
-            logger.error(f"Error storing forecast: {e}")
-            import traceback
-            logger.error(traceback.format_exc())
-        return False
-    
-    def retrieve_documents(self, query: str, collection_name: str = "CryptoDueDiligenceDocuments", limit: int = 5) -> List[Dict]:
+    def retrieve_documents(self, query: str, collection_name: str = "CryptoDueDiligenceDocuments", limit: int = 5, user_id: str = None) -> List[Dict]:
         """
         Retrieve documents from a collection based on a query
         
@@ -564,6 +466,7 @@ class StorageManager:
             query (str): Search query
             collection_name (str): Collection to search
             limit (int): Maximum number of results
+            user_id (str, optional): User ID for filtering user documents
             
         Returns:
             List[Dict]: Retrieved documents
@@ -582,13 +485,29 @@ class StorageManager:
             else:
                 query_vector = generate_mpnet_embedding(query)
             
-            # Perform hybrid search (vector + BM25)
-            response = collection.query.hybrid(
-                query=query,
-                vector=query_vector,
-                alpha=0.5,  # Balance between vector and keyword search
-                limit=limit
-            )
+            # For UserDocuments collection, filter by user_id if provided
+            if collection_name == "UserDocuments" and user_id:
+                from weaviate.classes.query import Filter
+                
+                # Filter for documents owned by this user or marked as public
+                user_filter = Filter.by_property("user_id").equal(user_id) | Filter.by_property("is_public").equal(True)
+                
+                # Perform hybrid search with filter
+                response = collection.query.hybrid(
+                    query=query,
+                    vector=query_vector,
+                    alpha=0.5,  # Balance between vector and keyword search
+                    limit=limit,
+                    filters=user_filter
+                )
+            else:
+                # Perform standard hybrid search
+                response = collection.query.hybrid(
+                    query=query,
+                    vector=query_vector,
+                    alpha=0.5,  # Balance between vector and keyword search
+                    limit=limit
+                )
             
             # Format results
             results = []

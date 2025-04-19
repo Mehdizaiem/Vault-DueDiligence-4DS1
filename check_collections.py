@@ -39,7 +39,8 @@ def check_collections():
                 "MarketMetrics", 
                 "CryptoNewsSentiment",
                 "CryptoDueDiligenceDocuments",
-                "OnChainAnalytics"
+                "OnChainAnalytics",
+                "UserDocuments"
             ]
             
             # Check which expected collections are missing

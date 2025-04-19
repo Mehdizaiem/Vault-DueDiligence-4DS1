@@ -471,22 +471,22 @@ class QueryAnalyzer:
         """Determine which collections to search based on category, entities, and intent."""
         # Define mappings from categories to collections
         category_to_collections = {
-            "legal_regulatory": ["CryptoDueDiligenceDocuments"],
-            "team_background": ["CryptoDueDiligenceDocuments"],
-            "technical": ["CryptoDueDiligenceDocuments"],
-            "financial": ["CryptoDueDiligenceDocuments", "MarketMetrics"],
+            "legal_regulatory": ["UserDocuments", "CryptoDueDiligenceDocuments"],
+            "team_background": ["UserDocuments", "CryptoDueDiligenceDocuments"],
+            "technical": ["UserDocuments", "CryptoDueDiligenceDocuments"],
+            "financial": ["UserDocuments", "CryptoDueDiligenceDocuments", "MarketMetrics"],
             "market_price": ["MarketMetrics", "CryptoTimeSeries", "CryptoNewsSentiment"],
-            "market_analysis": ["CryptoNewsSentiment", "MarketMetrics", "CryptoDueDiligenceDocuments"],
-            "governance": ["CryptoDueDiligenceDocuments", "CryptoNewsSentiment"],
-            "risk": ["CryptoDueDiligenceDocuments", "CryptoNewsSentiment", "OnChainAnalytics"],
+            "market_analysis": ["CryptoNewsSentiment", "MarketMetrics", "UserDocuments", "CryptoDueDiligenceDocuments"],
+            "governance": ["UserDocuments", "CryptoDueDiligenceDocuments", "CryptoNewsSentiment"],
+            "risk": ["UserDocuments", "CryptoDueDiligenceDocuments", "CryptoNewsSentiment", "OnChainAnalytics"],
             "sentiment": ["CryptoNewsSentiment"],
             "on_chain": ["OnChainAnalytics"],
-            "defi": ["CryptoDueDiligenceDocuments", "CryptoNewsSentiment"],
-            "nft": ["CryptoDueDiligenceDocuments", "CryptoNewsSentiment"],
-            "macroeconomic": ["CryptoNewsSentiment", "CryptoDueDiligenceDocuments"],
-            "comparative": ["CryptoDueDiligenceDocuments", "MarketMetrics", "CryptoTimeSeries"],
-            "due_diligence": ["CryptoDueDiligenceDocuments"],
-            "general": ["CryptoDueDiligenceDocuments", "CryptoNewsSentiment", "MarketMetrics"]
+            "defi": ["UserDocuments", "CryptoDueDiligenceDocuments", "CryptoNewsSentiment"],
+            "nft": ["UserDocuments", "CryptoDueDiligenceDocuments", "CryptoNewsSentiment"],
+            "macroeconomic": ["CryptoNewsSentiment", "UserDocuments", "CryptoDueDiligenceDocuments"],
+            "comparative": ["UserDocuments", "CryptoDueDiligenceDocuments", "MarketMetrics", "CryptoTimeSeries"],
+            "due_diligence": ["UserDocuments", "CryptoDueDiligenceDocuments"],
+            "general": ["UserDocuments", "CryptoDueDiligenceDocuments", "CryptoNewsSentiment", "MarketMetrics"]
         }
         
         # Adjust for intent
@@ -534,13 +534,14 @@ class RetrievalEngine:
         self.storage = storage_manager
         self.due_diligence = due_diligence_system
     
-    def retrieve(self, question: str, analysis: Dict) -> Dict[str, List[Dict]]:
+    def retrieve(self, question: str, analysis: Dict, user_id: Optional[str] = None) -> Dict[str, List[Dict]]:
         """
         Retrieve relevant information based on query analysis.
         
         Args:
             question (str): The original question
             analysis (Dict): Analysis results from QueryAnalyzer
+            user_id (str, optional): The user ID for retrieving personal documents
             
         Returns:
             Dict[str, List[Dict]]: Retrieved data organized by collection
@@ -549,6 +550,10 @@ class RetrievalEngine:
         
         # Get the prioritized collections
         collections = analysis["collections_to_search"]
+        
+        # If we have a user_id, add UserDocuments to the collections
+        if user_id and "UserDocuments" not in collections:
+            collections.insert(0, "UserDocuments")  # Prioritize user documents
         
         # Handle specific retrieval strategies based on intent and category
         if analysis["primary_category"] == "market_price" or analysis["intent"] == "price":
@@ -566,10 +571,30 @@ class RetrievalEngine:
         if analysis["primary_category"] == "due_diligence" or analysis["intent"] == "due_diligence":
             results.update(self._retrieve_due_diligence_data(question, analysis))
         
+        # First, try to retrieve from user documents if a user_id is provided
+        if user_id and "UserDocuments" in collections:
+            try:
+                user_docs = self.storage.retrieve_documents(
+                    query=question,
+                    collection_name="UserDocuments",
+                    limit=5,
+                    user_id=user_id
+                )
+                
+                if user_docs:
+                    results["UserDocuments"] = user_docs
+            except Exception as e:
+                logger.error(f"Error retrieving from UserDocuments: {e}")
+                logger.error(traceback.format_exc())
+        
         # General document retrieval based on collections
         for collection in collections:
             if collection not in results:
                 try:
+                    # For UserDocuments, we've already handled it above
+                    if collection == "UserDocuments":
+                        continue
+                        
                     retrieved = self.storage.retrieve_documents(
                         query=question,
                         collection_name=collection,
@@ -1945,7 +1970,7 @@ class EnhancedCryptoQA:
             logger.error(traceback.format_exc())
             return False
     
-    def answer_question(self, question: str, document_id: Optional[str] = None, temperature: float = 0.7) -> str:
+    def answer_question(self, question: str, document_id: Optional[str] = None, temperature: float = 0.7, user_id: Optional[str] = None) -> str:
         """
         Answer a user question using advanced RAG techniques with Llama 3.3 70B Versatile.
         
@@ -1953,6 +1978,7 @@ class EnhancedCryptoQA:
             question (str): The user's question
             document_id (str, optional): ID of a specific document to query
             temperature (float): Temperature for generation (0.0-1.0)
+            user_id (str, optional): ID of the user asking the question, for personalized answers
             
         Returns:
             str: The answer
@@ -1966,7 +1992,8 @@ class EnhancedCryptoQA:
             if document_id:
                 retrieved_data = {"specific_document": self.retrieval_engine.retrieve_document_by_id(document_id)}
             else:
-                retrieved_data = self.retrieval_engine.retrieve(question, analysis)
+                # Pass user_id to include user-specific documents in retrieval
+                retrieved_data = self.retrieval_engine.retrieve(question, analysis, user_id)
             
             # 3. Format the context for optimal LLM consumption
             context = self.context_formatter.format(retrieved_data, analysis)
@@ -2056,6 +2083,7 @@ if __name__ == "__main__":
     parser.add_argument("--api-key", help="Groq API key (optional, defaults to env variable)")
     parser.add_argument("--question", help="Question to answer")
     parser.add_argument("--document-id", help="Optional document ID to query specifically")
+    parser.add_argument("--user-id", help="Optional user ID for personalized answers")
     parser.add_argument("--model", default="llama-3.3-70b-versatile", help="Model to use (default: llama-3.3-70b-versatile)")
     parser.add_argument("--temperature", type=float, default=0.7, help="Temperature (0.0-1.0, default: 0.7)")
     parser.add_argument("--interactive", action="store_true", help="Run in interactive mode")
@@ -2069,16 +2097,21 @@ if __name__ == "__main__":
             print("\n=== Enhanced Crypto Q&A System with Llama 3.3 70B Versatile ===")
             print("Type 'exit' to quit")
             
+            # Optional user ID for interactive mode
+            user_id = args.user_id
+            if user_id:
+                print(f"Using personalized answers for user: {user_id}")
+            
             while True:
                 question = input("\nQuestion: ")
                 if question.lower() == "exit":
                     break
                 
                 print("\nGenerating answer...")
-                answer = qa_system.answer_question(question, temperature=args.temperature)
+                answer = qa_system.answer_question(question, temperature=args.temperature, user_id=user_id)
                 print(f"\nAnswer: {answer}")
         elif args.question:
-            answer = qa_system.answer_question(args.question, args.document_id, args.temperature)
+            answer = qa_system.answer_question(args.question, args.document_id, args.temperature, args.user_id)
             print(f"\nQuestion: {args.question}")
             print(f"\nAnswer: {answer}")
         else:

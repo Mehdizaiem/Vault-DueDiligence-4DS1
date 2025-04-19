@@ -34,24 +34,6 @@ export default function QAPage() {
   ];
 
   useEffect(() => {
-    // Initialize conversation ID if it doesn't exist
-    if (!conversationId) {
-      setConversationId(uuidv4());
-    }
-    
-    // Load saved conversations from local storage
-    const loadSavedConversations = () => {
-      try {
-        const saved = localStorage.getItem('qa_conversations');
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          setSavedConversations(parsed);
-        }
-      } catch (error) {
-        console.error('Error loading conversations from localStorage:', error);
-      }
-    };
-    
     // Load conversation history if we have a conversation ID
     const loadConversation = () => {
       try {
@@ -74,8 +56,21 @@ export default function QAPage() {
       }
     };
     
-    loadSavedConversations();
     loadConversation();
+    
+    // Check for document context in URL
+    const searchParams = new URLSearchParams(window.location.search);
+    const documentId = searchParams.get('documentId');
+    
+    if (documentId && messages.length === 0) {
+      // Automatically add a hint about the document
+      setMessages([{
+        id: uuidv4(),
+        role: 'assistant',
+        content: "I'm ready to answer questions about the document you've selected. What would you like to know?",
+        createdAt: new Date(),
+      }]);
+    }
   }, [conversationId, messages.length]);
   
   useEffect(() => {
@@ -141,7 +136,11 @@ export default function QAPage() {
     setIsLoading(true);
     
     try {
-      const response = await askQuestion(userMessage.content);
+      // Get the document ID from URL if present
+      const searchParams = new URLSearchParams(window.location.search);
+      const documentId = searchParams.get('documentId');
+      
+      const response = await askQuestion(userMessage.content, documentId || undefined);
       
       const assistantMessage: Message = {
         id: uuidv4(),

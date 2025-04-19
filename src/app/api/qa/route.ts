@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { spawn } from 'child_process';
 import path from 'path';
+import { auth } from '@clerk/nextjs';
 
 // Maximum time to wait for a response (in milliseconds)
 const TIMEOUT = 60000; // 1 minute
 
 export async function POST(request: NextRequest) {
   try {
-    const { question } = await request.json();
+    const { question, documentId } = await request.json();
     
     if (!question) {
       return NextResponse.json(
@@ -16,12 +17,15 @@ export async function POST(request: NextRequest) {
       );
     }
     
+    // Get the authenticated user ID from Clerk
+    const { userId } = auth();
+    
     // Get the root directory of the project
     const rootDir = process.cwd();
     
     console.log(`Processing question: ${question}`);
     
-    const answer = await runPythonScript(question, rootDir);
+    const answer = await runPythonScript(question, rootDir, userId || undefined, documentId);
     
     return NextResponse.json({ answer });
   } catch (error) {
@@ -33,14 +37,32 @@ export async function POST(request: NextRequest) {
   }
 }
 
-function runPythonScript(question: string, cwd: string): Promise<string> {
+function runPythonScript(
+  question: string, 
+  cwd: string, 
+  userId?: string, 
+  documentId?: string
+): Promise<string> {
   return new Promise((resolve, reject) => {
-    // Create the process
-    const pythonProcess = spawn('python', [
+    // Build command arguments
+    const args = [
       path.join(cwd, 'crypto_qa.py'),
       '--question', 
       question
-    ], { cwd });
+    ];
+    
+    // Add user ID if available
+    if (userId) {
+      args.push('--user_id', userId);
+    }
+    
+    // Add document ID if available
+    if (documentId) {
+      args.push('--document_id', documentId);
+    }
+    
+    // Create the process
+    const pythonProcess = spawn('python', args, { cwd });
     
     let output = '';
     let errorOutput = '';

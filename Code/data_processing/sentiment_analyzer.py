@@ -90,18 +90,20 @@ def format_date_rfc3339(date_value):
 class CryptoSentimentAnalyzer:
     def __init__(self):
         logger.info("Initializing FinBERT sentiment pipeline...")
-        model_path = os.path.join(project_root, "models", "multi_model_test", "finbert_tone")
-        if not os.path.exists(model_path):
-            raise FileNotFoundError(f"Model path not found: {model_path}")
-
-        self.tokenizer = AutoTokenizer.from_pretrained(model_path)
-        self.model = AutoModelForSequenceClassification.from_pretrained(model_path)
-        self.pipeline = pipeline("sentiment-analysis", model=self.model, tokenizer=self.tokenizer)
-
+        self.model_name = "yiyanghkust/finbert-tone"
+        
         try:
-            data.find("tokenizers/punkt")
-        except LookupError:
-            download("punkt")
+            self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+            self.model = AutoModelForSequenceClassification.from_pretrained(self.model_name)
+            self.pipeline = pipeline("sentiment-analysis", model=self.model, tokenizer=self.tokenizer)
+            
+            try:
+                data.find("tokenizers/punkt")
+            except LookupError:
+                download("punkt")
+        except Exception as e:
+            logger.error(f"Error initializing sentiment analyzer: {e}")
+            raise
 
     def analyze_text(self, text: str) -> Dict:
         text = preprocess_text(text)

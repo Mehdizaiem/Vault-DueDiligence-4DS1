@@ -395,8 +395,8 @@ class StorageManager:
             return False
     
     def store_chronos_forecast(self, forecast_results: Dict, market_insights: Dict, 
-                            symbol: str, model_name: str, days_ahead: int, 
-                            plot_path: Optional[str] = None) -> bool:
+                        symbol: str, model_name: str, days_ahead: int, 
+                        plot_path: Optional[str] = None) -> bool:
         """
         Store Chronos forecast results in the Forecast collection.
         
@@ -438,16 +438,70 @@ class StorageManager:
                 low_idx = 0  # Lowest quantile
                 high_idx = len(quantile_levels) - 1  # Highest quantile
                 
+                # Safe conversion function
+                def safe_float(x):
+                    if isinstance(x, (list, tuple)):
+                        # If it's a list, take first element or average
+                        if len(x) == 1:
+                            return safe_float(x[0])
+                        else:
+                            return float(sum(safe_float(i) for i in x) / len(x))
+                    elif hasattr(x, 'item'):
+                        # Handle numpy/torch tensor items
+                        return float(x.item())
+                    else:
+                        # Direct conversion
+                        return float(x)
+                
                 # Extract forecast values arrays and convert to Python native types
-                forecast_values = [float(x) for x in quantiles[:, median_idx].tolist()]
-                lower_bounds = [float(x) for x in quantiles[:, low_idx].tolist()]
-                upper_bounds = [float(x) for x in quantiles[:, high_idx].tolist()]
+                try:
+                    # Try handling as a 2D array
+                    forecast_values = []
+                    lower_bounds = []
+                    upper_bounds = []
+                    
+                    # Handle the structure based on its actual shape
+                    if hasattr(quantiles, 'shape') and len(quantiles.shape) > 1:
+                        # 2D array processing
+                        for i in range(quantiles.shape[0]):
+                            forecast_values.append(safe_float(quantiles[i, median_idx]))
+                            lower_bounds.append(safe_float(quantiles[i, low_idx]))
+                            upper_bounds.append(safe_float(quantiles[i, high_idx]))
+                    else:
+                        # Process as a list structure
+                        q_list = quantiles.tolist() if hasattr(quantiles, 'tolist') else quantiles
+                        
+                        for row in q_list:
+                            if isinstance(row, (list, tuple)) and len(row) > median_idx:
+                                forecast_values.append(safe_float(row[median_idx]))
+                                lower_bounds.append(safe_float(row[low_idx]))
+                                upper_bounds.append(safe_float(row[high_idx]))
+                            else:
+                                # Just use the value directly
+                                val = safe_float(row)
+                                forecast_values.append(val)
+                                lower_bounds.append(val * 0.9)  # Create artificial bounds
+                                upper_bounds.append(val * 1.1)
+                except Exception as e:
+                    logger.warning(f"Error processing quantiles: {e}, falling back to mean")
+                    # If all else fails, fall back to mean values
+                    mean = forecast_results.get('mean', [None])[0]
+                    if mean is not None:
+                        mean_list = mean.tolist() if hasattr(mean, 'tolist') else mean
+                        forecast_values = [safe_float(x) for x in mean_list]
+                        # Create artificial bounds (±10%)
+                        lower_bounds = [val * 0.9 for val in forecast_values]
+                        upper_bounds = [val * 1.1 for val in forecast_values]
+                    else:
+                        logger.error("No usable forecast data found")
+                        return False
             else:
                 # Fallback to mean if quantiles not available
                 mean = forecast_results.get('mean', [None])[0]
-                forecast_values = [float(x) for x in mean.tolist()] if mean is not None else []
-                lower_bounds = []
-                upper_bounds = []
+                forecast_values = [safe_float(x) for x in (mean.tolist() if hasattr(mean, 'tolist') else mean)]
+                # Create artificial bounds
+                lower_bounds = [val * 0.9 for val in forecast_values]
+                upper_bounds = [val * 1.1 for val in forecast_values]
             
             # Read and encode the plot image if path is provided
             plot_image = None
@@ -500,7 +554,7 @@ class StorageManager:
             logger.error(f"Error storing forecast: {e}")
             import traceback
             logger.error(traceback.format_exc())
-            return False
+        return False
     
     def retrieve_documents(self, query: str, collection_name: str = "CryptoDueDiligenceDocuments", limit: int = 5) -> List[Dict]:
         """

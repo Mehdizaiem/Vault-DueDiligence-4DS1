@@ -67,3 +67,4 @@ risk_visualizations/
 venv/
 .qodo
 Code/document_processing/output/processed_documents.json
+Code/document_processing/output/processed_documents.json

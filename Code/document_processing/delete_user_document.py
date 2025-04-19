@@ -9,8 +9,15 @@ import logging
 import argparse
 import traceback
 
-# Set up logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+# Set up logging - redirect to file instead of stdout
+logging.basicConfig(
+    level=logging.INFO, 
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler("delete_document.log"),  # Log to file
+        logging.StreamHandler(sys.stderr)  # Log to stderr, not stdout
+    ]
+)
 logger = logging.getLogger(__name__)
 
 # Add project root to the Python path
@@ -105,7 +112,7 @@ def main():
     # Delete document
     success = delete_user_document(args.user_id, args.document_id)
     
-    # Output as JSON
+    # Output as JSON (and nothing else)
     result = {
         "success": success,
         "message": "Document deleted successfully" if success else "Failed to delete document"

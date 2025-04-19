@@ -6,6 +6,7 @@ Chronos Cryptocurrency Forecaster with Simplified Weight Freezing
 This script loads a pre-trained Chronos model, freezes most weights,
 then fine-tunes on your specific cryptocurrency data.
 Enhanced to fetch recent data from APIs for up-to-date training.
+Results are automatically stored in Weaviate for future analysis.
 """
 
 import os
@@ -63,6 +64,15 @@ logger.info(f"Using project root: {PROJECT_ROOT}")
 if PROJECT_ROOT not in sys.path:
     sys.path.append(PROJECT_ROOT)
 
+# Import storage manager
+try:
+    from Sample_Data.vector_store.storage_manager import StorageManager
+    STORAGE_AVAILABLE = True
+    logger.info("StorageManager successfully imported")
+except ImportError:
+    logger.warning("StorageManager not available - results will not be stored in Weaviate")
+    STORAGE_AVAILABLE = False
+
 def check_chronos_availability():
     """Check if Chronos package is installed and install if needed."""
     try:
@@ -110,7 +120,7 @@ def convert_symbol_for_api(symbol):
         quote_currency = parts[1].lower() if len(parts) > 1 else "usd"
     else:
         # Handle symbols without separator
-        matches = re.match(r"([A-Za-z]+)([A-Za-z]{3,4})$", symbol)
+        matches = re.match(r"([A-Z]+)([A-Z]{3,4})$", symbol)
         if matches:
             base_symbol = matches.group(1).upper()
             quote_currency = matches.group(2).lower()
@@ -137,6 +147,29 @@ def convert_symbol_for_api(symbol):
     coin_id = coin_id_map.get(base_symbol, base_symbol.lower())
     
     return coin_id, base_symbol, quote_currency
+
+def format_symbol_for_storage(symbol):
+    """
+    Format symbol for storage in Weaviate.
+    Converts any symbol format to the standard format used in the database.
+    
+    Args:
+        symbol (str): Symbol in any format (e.g. "BTC", "BTC_USD", "BTCUSD")
+        
+    Returns:
+        str: Formatted symbol for storage (e.g. "BTCUSD")
+    """
+    # Get base and quote parts
+    _, base_symbol, quote_currency = convert_symbol_for_api(symbol)
+    
+    # Format quote currency
+    if quote_currency.lower() in ["usd", "usdt", "usdc"]:
+        quote_formatted = "USD"
+    else:
+        quote_formatted = quote_currency.upper()
+    
+    # Combine into standard format
+    return f"{base_symbol}{quote_formatted}"
 
 def fetch_api_data(symbol, days=365, retries=3, delay=1):
     """
@@ -1006,6 +1039,134 @@ def fine_tune_simplified(original_model, train_loader, epochs=10, device="cpu"):
     logger.info("Fine-tuning complete")
     return fine_tuned_model
 
+def prepare_forecast_results(finetuned_model, data, val_data, prediction_length, symbol):
+    """
+    Prepare forecast results in the format expected by store_chronos_forecast.
+    
+    Args:
+        finetuned_model: Fine-tuned Chronos model
+        data (pd.DataFrame): Historical price data
+        val_data (dict): Validation data dictionary
+        prediction_length (int): Number of days to predict
+        symbol (str): Cryptocurrency symbol
+        
+    Returns:
+        tuple: (forecast_results, market_insights)
+    """
+    # Get the context and price scaling info
+    context = val_data['context']
+    price_mean = data.attrs['price_mean']
+    price_std = data.attrs['price_std']
+    
+    # Generate forecast dates
+    last_date = data.index[-1]
+    forecast_dates = [last_date + timedelta(days=i+1) for i in range(prediction_length)]
+    
+    # Get multiple samples for uncertainty quantification
+    samples = finetuned_model.predict(
+        context=context,
+        prediction_length=prediction_length,
+        num_samples=100
+    )
+    
+    # Get quantiles
+    quantiles, mean = finetuned_model.predict_quantiles(
+        context=context,
+        prediction_length=prediction_length,
+        quantile_levels=[0.1, 0.5, 0.9]
+    )
+    
+    # Unnormalize to real price scale
+    def unnormalize(normalized_values):
+        if isinstance(normalized_values, torch.Tensor):
+            return normalized_values.cpu().numpy() * price_std + price_mean
+        return normalized_values * price_std + price_mean
+    
+    # Prepare forecast results
+    forecast_results = {
+        'dates': forecast_dates,
+        'samples': [unnormalize(samples.cpu().numpy())],
+        'quantiles': [unnormalize(quantiles.cpu().numpy())],
+        'quantile_levels': [0.1, 0.5, 0.9],
+        'mean': [unnormalize(mean.cpu().numpy())]
+    }
+    
+    # Get current price and forecasted final price
+    current_price = data['price'].iloc[-1]
+    median_forecast = quantiles[0, :, 1].cpu().numpy()  # 0.5 quantile (median)
+    final_forecast = unnormalize(median_forecast)[-1]
+    change_pct = ((final_forecast / current_price) - 1) * 100
+    
+    # Calculate uncertainty
+    low_idx, high_idx = 0, 2  # 0.1 and 0.9 quantiles
+    uncertainty = (unnormalize(quantiles[0, :, high_idx].cpu().numpy()) - 
+                  unnormalize(quantiles[0, :, low_idx].cpu().numpy())) / unnormalize(median_forecast) * 100
+    avg_uncertainty = np.mean(uncertainty)
+    
+    # Calculate probability of increase
+    samples_numpy = samples.cpu().numpy()
+    prob_increase = np.mean(unnormalize(samples_numpy[:, -1]) > current_price) * 100
+    
+    # Determine trend
+    if change_pct > 5:
+        trend = "strongly bullish"
+    elif change_pct > 1:
+        trend = "bullish"
+    elif change_pct < -5:
+        trend = "strongly bearish"
+    elif change_pct < -1:
+        trend = "bearish"
+    else:
+        trend = "neutral"
+    
+    # Format coin name
+    coin_id, base_symbol, quote_currency = convert_symbol_for_api(symbol)
+    
+    # Generate insight text
+    if trend in ["strongly bullish", "bullish"]:
+        insight = f"Fine-tuned Chronos forecasts a {trend} outlook for {base_symbol}/{quote_currency} with a projected increase of {change_pct:.2f}% over the next {prediction_length} days."
+    elif trend in ["strongly bearish", "bearish"]:
+        insight = f"Fine-tuned Chronos forecasts a {trend} outlook for {base_symbol}/{quote_currency} with a projected decrease of {abs(change_pct):.2f}% over the next {prediction_length} days."
+    else:
+        insight = f"Fine-tuned Chronos forecasts a {trend} outlook for {base_symbol}/{quote_currency} with minimal price movement (expected change: {change_pct:.2f}%) over the next {prediction_length} days."
+        
+    # Add probability context
+    if prob_increase > 75:
+        insight += f" There is a strong probability ({prob_increase:.1f}%) that the price will increase."
+    elif prob_increase > 60:
+        insight += f" There is a moderate probability ({prob_increase:.1f}%) that the price will increase."
+    elif prob_increase < 25:
+        insight += f" There is a strong probability ({100-prob_increase:.1f}%) that the price will decrease."
+    elif prob_increase < 40:
+        insight += f" There is a moderate probability ({100-prob_increase:.1f}%) that the price will decrease."
+    else:
+        insight += f" The price direction is uncertain with {prob_increase:.1f}% probability of increase."
+    
+    # Comment on uncertainty
+    if avg_uncertainty > 20:
+        insight += f" The forecast shows high uncertainty (±{avg_uncertainty:.1f}% on average), suggesting caution."
+    elif avg_uncertainty > 10:
+        insight += f" The forecast shows moderate uncertainty (±{avg_uncertainty:.1f}% on average)."
+    else:
+        insight += f" The forecast shows relatively low uncertainty (±{avg_uncertainty:.1f}% on average)."
+    
+    # Prepare market insights
+    market_insights = {
+        "symbol": f"{base_symbol}/{quote_currency}",
+        "base_currency": base_symbol,
+        "quote_currency": quote_currency,
+        "current_price": float(current_price),
+        "final_forecast": float(final_forecast),
+        "change_pct": float(change_pct),
+        "trend": trend,
+        "probability_increase": float(prob_increase),
+        "average_uncertainty": float(avg_uncertainty),
+        "insight": insight,
+        "generated_at": datetime.now().isoformat()
+    }
+    
+    return forecast_results, market_insights
+
 def run_finetuning(args):
     """
     Run the complete fine-tuning process.
@@ -1096,6 +1257,48 @@ def run_finetuning(args):
             args.days_ahead
         )
         
+        # Store the forecast results in Weaviate
+        if STORAGE_AVAILABLE:
+            logger.info("Preparing forecast data for storage")
+            # Format symbol for database storage
+            storage_symbol = format_symbol_for_storage(args.symbol)
+            
+            # Prepare forecast results and market insights
+            forecast_results, market_insights = prepare_forecast_results(
+                fine_tuned_model,
+                data,
+                val_data,
+                args.days_ahead,
+                args.symbol
+            )
+            
+            try:
+                # Store in database using StorageManager
+                storage_manager = StorageManager()
+                logger.info(f"Storing forecast for {storage_symbol} in Weaviate")
+                
+                storage_success = storage_manager.store_chronos_forecast(
+                    forecast_results=forecast_results,
+                    market_insights=market_insights,
+                    symbol=storage_symbol,
+                    model_name=f"{args.model}-finetuned",
+                    days_ahead=args.days_ahead,
+                    plot_path=plot_path
+                )
+                
+                if storage_success:
+                    logger.info("Forecast successfully stored in Weaviate!")
+                else:
+                    logger.warning("Failed to store forecast in Weaviate")
+                    
+                # Close connection
+                storage_manager.close()
+                
+            except Exception as e:
+                logger.error(f"Error storing forecast in Weaviate: {e}")
+        else:
+            logger.warning("Storage functionality not available - forecast not stored in database")
+        
         # Print results
         print("\n===== FINE-TUNING RESULTS =====")
         print(f"Symbol: {args.symbol}")
@@ -1117,6 +1320,13 @@ def run_finetuning(args):
             print(f"  RMSE Improvement: {evaluation_results['rmse_improvement']:.2f}%")
         
         print(f"\nComparison plot: {plot_path}")
+        
+        # Print storage status
+        if STORAGE_AVAILABLE:
+            print(f"Forecast {'successfully stored' if storage_success else 'not stored'} in Weaviate database")
+        else:
+            print("Storage functionality not available - forecast not stored in database")
+            
         print("================================\n")
         
         return 0
@@ -1155,7 +1365,17 @@ def main():
     parser.add_argument("--freeze-percentage", type=float, default=80, 
                       help="Percentage of weights to freeze (0-100)")
     
+    # Storage options
+    parser.add_argument("--no-store", action="store_true", 
+                      help="Disable storage of results in Weaviate")
+    
     args = parser.parse_args()
+    
+    # Override storage availability if requested
+    if args.no_store:
+        global STORAGE_AVAILABLE
+        STORAGE_AVAILABLE = False
+        logger.info("Storage has been disabled via --no-store flag")
     
     try:
         return run_finetuning(args)

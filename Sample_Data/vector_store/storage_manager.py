@@ -3,11 +3,12 @@ import os
 import sys
 import logging
 from typing import Dict, List, Any, Optional, Union
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
-from datetime import timedelta
+import base64
 import weaviate
-from weaviate.classes.query import Sort
+from weaviate.classes.query import Sort, Filter
+
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -25,7 +26,8 @@ from Sample_Data.vector_store.schema_manager import (
     create_crypto_news_sentiment_schema,
     create_market_metrics_schema,
     create_crypto_time_series_schema,
-    create_onchain_analytics_schema
+    create_onchain_analytics_schema,
+    create_forecast_schema
 )
 
 class StorageManager:
@@ -64,6 +66,7 @@ class StorageManager:
             create_market_metrics_schema(self.client)
             create_crypto_time_series_schema(self.client)
             create_onchain_analytics_schema(self.client)
+            create_forecast_schema(self.client)  # Added forecast schema
             
             logger.info("All schemas set up successfully")
             return True
@@ -541,7 +544,6 @@ class StorageManager:
             collection = self.client.collections.get("MarketMetrics")
             
             # Build filter
-            from weaviate.classes.query import Filter, Sort
             response = collection.query.fetch_objects(
                 filters=Filter.by_property("symbol").equal(symbol),
                 limit=limit,
@@ -596,7 +598,6 @@ class StorageManager:
             alt_symbol = symbol.replace("USDT", "USD") if "USDT" in symbol else symbol.replace("USD", "USDT")
             
             # Create filter for symbol
-            from weaviate.classes.query import Filter
             main_filter = Filter.by_property("symbol").equal(symbol)
             alt_filter = Filter.by_property("symbol").equal(alt_symbol)
             combined_filter = main_filter | alt_filter
@@ -634,7 +635,6 @@ class StorageManager:
                         combined_filter = main_filter & (interval_filter if interval else None)
             
             # Execute query with proper sort (corrected to not use a list)
-            from weaviate.classes.query import Sort
             response = collection.query.fetch_objects(
                 filters=combined_filter,
                 limit=limit,
@@ -678,11 +678,10 @@ class StorageManager:
             collection = self.client.collections.get("OnChainAnalytics")
             
             # Build filter
-            from weaviate.classes.query import Filter
             response = collection.query.fetch_objects(
                 filters=Filter.by_property("address").equal(address),
                 limit=1,
-                sort=[{"path": ["analysis_timestamp"], "order": "desc"}]
+                sort=Sort.by_property("analysis_timestamp", ascending=False)
             )
             
             # Format result
@@ -699,6 +698,216 @@ class StorageManager:
         except Exception as e:
             logger.error(f"Error retrieving on-chain analytics: {e}")
             return None
+    
+    def retrieve_latest_forecast(self, symbol: str, limit: int = 1) -> List[Dict[str, Any]]:
+        """
+        Retrieve the latest forecast(s) for a symbol.
+        
+        Args:
+            symbol: Cryptocurrency symbol
+            limit: Maximum number of forecasts to retrieve
+            
+        Returns:
+            List of forecast objects
+        """
+        if not self.connect():
+            logger.error("Failed to connect to Weaviate")
+            return []
+            
+        try:
+            collection = self.client.collections.get("Forecast")
+            
+            # Query for forecasts for this symbol, ordered by timestamp
+            response = collection.query.fetch_objects(
+                filters=Filter.by_property("symbol").equal(symbol),
+                sort=Sort.by_property("forecast_timestamp", ascending=False),
+                limit=limit
+            )
+            
+            # Format results
+            results = []
+            for obj in response.objects:
+                result = {
+                    "id": str(obj.uuid),
+                    **obj.properties
+                }
+                results.append(result)
+            
+            return results
+            
+        except Exception as e:
+            logger.error(f"Error retrieving forecasts: {e}")
+            return []
+    
+    def compare_forecasts(self, symbol: str, date_range: Optional[int] = 30) -> Dict[str, Any]:
+        """
+        Compare forecasts over time for a symbol.
+        
+        Args:
+            symbol: Cryptocurrency symbol
+            date_range: Number of days to look back for forecasts
+            
+        Returns:
+            Dict with forecast comparison analysis
+        """
+        if not self.connect():
+            logger.error("Failed to connect to Weaviate")
+            return {"error": "Failed to connect to Weaviate"}
+            
+        try:
+            collection = self.client.collections.get("Forecast")
+            
+            # Calculate date range
+            end_date = datetime.now()
+            start_date = end_date - timedelta(days=date_range)
+            start_date_str = start_date.isoformat()
+            
+            # Query for forecasts
+            response = collection.query.fetch_objects(
+                filters=(Filter.by_property("symbol").equal(symbol) & 
+                        Filter.by_property("forecast_timestamp").greater_than(start_date_str)),
+                return_properties=[
+                    "forecast_timestamp", "final_forecast", "current_price", 
+                    "change_pct", "trend", "model_type"
+                ],
+                sort=Sort.by_property("forecast_timestamp", ascending=True)
+            )
+            
+            if not response.objects:
+                return {
+                    "symbol": symbol,
+                    "forecasts_count": 0,
+                    "message": f"No forecasts found for {symbol} in the last {date_range} days"
+                }
+            
+            # Extract forecast trends over time
+            forecasts = []
+            for obj in response.objects:
+                forecasts.append({
+                    "timestamp": obj.properties.get("forecast_timestamp"),
+                    "current_price": obj.properties.get("current_price"),
+                    "final_forecast": obj.properties.get("final_forecast"),
+                    "change_pct": obj.properties.get("change_pct"),
+                    "trend": obj.properties.get("trend"),
+                    "model_type": obj.properties.get("model_type")
+                })
+            
+            # Calculate trend consistency
+            trend_counts = {}
+            for forecast in forecasts:
+                trend = forecast.get("trend")
+                if trend:
+                    trend_counts[trend] = trend_counts.get(trend, 0) + 1
+            
+            # Find most common trend
+            most_common_trend = max(trend_counts.items(), key=lambda x: x[1])[0] if trend_counts else "unknown"
+            trend_consistency = (trend_counts.get(most_common_trend, 0) / len(forecasts)) * 100 if forecasts else 0
+            
+            # Calculate average forecasted change
+            avg_change = sum(f.get("change_pct", 0) for f in forecasts) / len(forecasts) if forecasts else 0
+            
+            # Check forecast direction changes
+            direction_changes = 0
+            prev_direction = None
+            for forecast in forecasts:
+                current_direction = "up" if forecast.get("change_pct", 0) > 0 else "down"
+                if prev_direction is not None and current_direction != prev_direction:
+                    direction_changes += 1
+                prev_direction = current_direction
+            
+            return {
+                "symbol": symbol,
+                "forecasts_count": len(forecasts),
+                "date_range": date_range,
+                "trend_distribution": trend_counts,
+                "most_common_trend": most_common_trend,
+                "trend_consistency": trend_consistency,
+                "avg_forecasted_change": avg_change,
+                "direction_changes": direction_changes,
+                "forecasts": forecasts
+            }
+            
+        except Exception as e:
+            logger.error(f"Error comparing forecasts: {e}")
+            return {"error": str(e)}
+    
+    def run_and_store_chronos_forecast(self, symbol: str, days_ahead: int = 14, 
+                                    model_name: str = "amazon/chronos-t5-small",
+                                    use_gpu: bool = True) -> Dict[str, Any]:
+        """
+        Run a Chronos forecast and store the results in Weaviate.
+        
+        Args:
+            symbol: Cryptocurrency symbol
+            days_ahead: Number of days to forecast
+            model_name: Name of the Chronos model to use
+            use_gpu: Whether to use GPU for inference
+            
+        Returns:
+            Dict with forecast results and storage status
+        """
+        try:
+            # Import the ChronosForecaster class
+            from models.chronos.chronos_crypto_forecaster import ChronosForecaster, prepare_crypto_data
+            
+            # Load cryptocurrency data
+            data = prepare_crypto_data(symbol)
+            
+            if data is None or len(data) == 0:
+                return {"error": f"Failed to load data for {symbol}"}
+            
+            # Initialize forecaster
+            forecaster = ChronosForecaster(
+                model_name=model_name,
+                use_gpu=use_gpu
+            )
+            
+            # Generate forecast
+            forecast_results = forecaster.forecast(
+                data,
+                prediction_length=days_ahead,
+                num_samples=100,
+                quantile_levels=[0.1, 0.5, 0.9]
+            )
+            
+            # Plot forecast
+            plot_path = forecaster.plot_forecast(
+                data,
+                forecast_results,
+                symbol
+            )
+            
+            # Generate insights
+            insights = forecaster.generate_market_insights(
+                data,
+                forecast_results,
+                symbol
+            )
+            
+            # Store in Weaviate
+            storage_success = self.store_chronos_forecast(
+                forecast_results=forecast_results,
+                market_insights=insights,
+                symbol=symbol,
+                model_name=model_name,
+                days_ahead=days_ahead,
+                plot_path=plot_path
+            )
+            
+            # Return combined results
+            return {
+                "symbol": symbol,
+                "forecast_timestamp": datetime.now().isoformat(),
+                "insights": insights,
+                "storage_success": storage_success,
+                "plot_path": plot_path
+            }
+            
+        except Exception as e:
+            logger.error(f"Error in run_and_store_chronos_forecast: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
+            return {"error": str(e)}
     
     def get_sentiment_stats(self, asset: Optional[str] = None, days: int = 7) -> Dict:
         """
@@ -723,8 +932,6 @@ class StorageManager:
             from_date = (datetime.now() - timedelta(days=days)).isoformat()
             
             # Build filters
-            from weaviate.classes.query import Filter
-            
             date_filter = Filter.by_property("date").greater_than(from_date)
             
             if asset:

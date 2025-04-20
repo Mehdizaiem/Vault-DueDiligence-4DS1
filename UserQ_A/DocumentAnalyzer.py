@@ -64,6 +64,8 @@ class DocumentAnalyzer:
                 logger.error("Failed to connect to Weaviate")
                 return None
                 
+            logger.info(f"Attempting to retrieve document with ID: {document_id}")
+            
             # Get collections to search in
             collections = ["UserDocuments"]
             
@@ -75,39 +77,111 @@ class DocumentAnalyzer:
                     
                     # Try looking up by ID first
                     try:
+                        # Log attempt to retrieve by ID
+                        logger.info(f"Attempting direct ID lookup for: {document_id}")
                         object_by_id = collection.data.get_by_id(document_id)
+                        
                         if object_by_id:
-                            logger.info(f"Found document by ID in {collection_name}")
-                            return {
+                            logger.info(f"Successfully found document by direct ID lookup")
+                            document_data = {
                                 "id": document_id,
                                 "collection": collection_name,
                                 **object_by_id.properties
                             }
+                            
+                            # Log content length to verify content is retrieved
+                            content_length = len(document_data.get("content", ""))
+                            logger.info(f"Retrieved document content length: {content_length}")
+                            
+                            return document_data
                     except Exception as e:
-                        logger.warning(f"Error getting document by ID: {e}")
+                        logger.warning(f"Error getting document by direct ID: {e}")
                     
-                    # If ID lookup fails, try filter-based lookup
-                    # This handles cases where document_id is stored as a property
-                    response = collection.query.fetch_objects(
-                        filters=(Filter.by_property("title").equal(document_id) | 
-                                Filter.by_property("source").equal(document_id)),
-                        limit=1
-                    )
+                    # Try filter-based lookup with UUID
+                    try:
+                        logger.info(f"Attempting filter-based UUID lookup for: {document_id}")
+                        response = collection.query.fetch_objects(
+                            filters=Filter.by_id().equal(document_id),
+                            limit=1
+                        )
+                        
+                        if response.objects:
+                            obj = response.objects[0]
+                            logger.info(f"Found document via UUID filter")
+                            document_data = {
+                                "id": str(obj.uuid),
+                                "collection": collection_name,
+                                **obj.properties
+                            }
+                            
+                            # Log content length to verify content is retrieved
+                            content_length = len(document_data.get("content", ""))
+                            logger.info(f"Retrieved document content length: {content_length}")
+                            
+                            return document_data
+                    except Exception as e:
+                        logger.warning(f"Error with UUID filter lookup: {e}")
                     
-                    if response.objects:
-                        obj = response.objects[0]
-                        logger.info(f"Found document by property in {collection_name}")
-                        return {
-                            "id": str(obj.uuid),
-                            "collection": collection_name,
-                            **obj.properties
-                        }
+                    # Try filter by title or source
+                    try:
+                        logger.info(f"Attempting property filter lookup (title/source)")
+                        response = collection.query.fetch_objects(
+                            filters=(Filter.by_property("title").equal(document_id) | 
+                                    Filter.by_property("source").equal(document_id)),
+                            limit=1
+                        )
+                        
+                        if response.objects:
+                            obj = response.objects[0]
+                            logger.info(f"Found document via property filter")
+                            document_data = {
+                                "id": str(obj.uuid),
+                                "collection": collection_name,
+                                **obj.properties
+                            }
+                            
+                            # Log content length to verify content is retrieved
+                            content_length = len(document_data.get("content", ""))
+                            logger.info(f"Retrieved document content length: {content_length}")
+                            
+                            return document_data
+                    except Exception as e:
+                        logger.warning(f"Error with property filter lookup: {e}")
+                    
+                    # Last resort: list all documents to find a match
+                    try:
+                        logger.info("Last resort: listing all documents to find a match")
+                        all_docs = collection.query.fetch_objects(limit=20)
+                        
+                        logger.info(f"Found {len(all_docs.objects)} documents in collection")
+                        
+                        # Log all document IDs for debugging
+                        for doc in all_docs.objects:
+                            logger.info(f"Document in collection: {doc.uuid}")
+                            
+                            # Check if this document matches our target ID
+                            if str(doc.uuid) == document_id:
+                                logger.info(f"Found matching document: {doc.uuid}")
+                                document_data = {
+                                    "id": str(doc.uuid),
+                                    "collection": collection_name,
+                                    **doc.properties
+                                }
+                                
+                                # Log content length to verify content is retrieved
+                                content_length = len(document_data.get("content", ""))
+                                logger.info(f"Retrieved document content length: {content_length}")
+                                
+                                return document_data
+                    except Exception as e:
+                        logger.warning(f"Error listing all documents: {e}")
+                        
                 except Exception as e:
                     logger.error(f"Error querying {collection_name}: {e}")
                     logger.error(traceback.format_exc())
                     continue
             
-            logger.warning(f"Document not found: {document_id}")
+            logger.warning(f"Document not found after all attempts: {document_id}")
             return None
             
         except Exception as e:
@@ -192,13 +266,25 @@ class DocumentAnalyzer:
         """
         try:
             # Retrieve the document
+            logger.info(f"Getting comprehensive context for document: {document_id}")
             document = self.get_document_by_id(document_id)
             
             if not document:
+                logger.error(f"Document not found: {document_id}")
                 return {
                     "error": f"Document not found: {document_id}",
                     "context": "No document information available."
                 }
+            
+            # Log document properties to verify retrieval
+            logger.info(f"Retrieved document: {document.get('title', 'Untitled')}")
+            
+            # Check if content exists and log its length
+            content = document.get('content', '')
+            logger.info(f"Document content length: {len(content)}")
+            
+            if not content:
+                logger.warning("Document content is empty!")
             
             # Perform document analysis
             analysis = self.analyze_document(document)

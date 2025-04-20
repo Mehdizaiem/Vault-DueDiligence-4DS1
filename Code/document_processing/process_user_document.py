@@ -166,9 +166,18 @@ def store_user_document(storage_manager, processed_data, user_id, document_id, f
         
         # Extract document content
         content = processed_data.get("metadata", {}).get("text", "")
-        if not content and "content" in processed_data:
+        if not content:
+            # Check multiple possible locations for content
             content = processed_data.get("content", "")
-        
+            if not content and "metadata" in processed_data:
+                content = processed_data["metadata"].get("content", "")
+            # Also check if raw content might be directly in processed_data
+        if not content:
+            content = read_document_content(file_path)  # Fallback to re-reading the file
+        logger.info(f"Content length before storing: {len(content)} characters")
+        logger.info(f"Content structure in processed_data: {json.dumps(list(processed_data.keys()))}")
+        if "metadata" in processed_data:
+            logger.info(f"Metadata keys: {json.dumps(list(processed_data['metadata'].keys()))}")
         # Generate embedding with MPNet
         vector = generate_mpnet_embedding(content)
         

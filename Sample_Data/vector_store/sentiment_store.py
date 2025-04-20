@@ -1,4 +1,3 @@
-# === sentiment_store.py FIXED & FINAL ===
 import os
 import sys
 import logging
@@ -17,19 +16,14 @@ sys.path.insert(0, project_root)
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
-# Imports
-from Code.data_processing.sentiment_analyzer import CryptoSentimentAnalyzer
-from Sample_Data.vector_store.weaviate_client import get_weaviate_client
-from weaviate.classes.query import Filter
-from weaviate.exceptions import WeaviateBaseError
-
-analyzer = CryptoSentimentAnalyzer()
+# Delayed import so it doesn't trigger on multiprocessing load
+analyzer = None
 
 def store_sentiment_data(df: pd.DataFrame) -> bool:
     try:
         analyzed_df = analyzer.analyze_dataframe(df)
 
-        # Normalize scores for better distribution
+        # Normalize scores
         scores = analyzed_df['sentiment_score'].values
         if len(scores) > 0:
             min_score = scores.min()
@@ -44,84 +38,6 @@ def store_sentiment_data(df: pd.DataFrame) -> bool:
         logger.error(f"Failed to analyze/store sentiment data: {e}")
         return False
 
-def get_sentiment_stats(symbol: Optional[str] = None, days: int = 7) -> Dict[str, Any]:
-    client = get_weaviate_client()
-    try:
-        collection = client.collections.get("CryptoNewsSentiment")
-    except WeaviateBaseError:
-        logger.warning("Collection not found.")
-        return {
-            "total_articles": 0,
-            "sentiment_distribution": {"POSITIVE": 0, "NEUTRAL": 0, "NEGATIVE": 0},
-            "avg_sentiment": 0.5,
-            "error": "Collection not found"
-        }
-
-    try:
-        start_date = (datetime.now() - timedelta(days=days)).strftime("%Y-%m-%dT%H:%M:%SZ")
-        filters = Filter.by_property("date").greater_than(start_date)
-        if symbol:
-            filters = filters & (
-                Filter.by_property("content").contains_all([symbol.lower()]) |
-                Filter.by_property("title").contains_all([symbol.lower()])
-            )
-
-        result = collection.query.fetch_objects(
-            filters=filters,
-            return_properties=["sentiment_label", "sentiment_score"],
-            limit=100
-        )
-
-        sentiment_distribution = {"POSITIVE": 0, "NEUTRAL": 0, "NEGATIVE": 0}
-        scores = []
-
-        for obj in result.objects:
-            label = obj.properties.get("sentiment_label", "NEUTRAL").upper()
-            raw_score = obj.properties.get("sentiment_score", 0.5)
-
-            # Apply dynamic sentiment scaling
-            if label == "POSITIVE":
-                score = 0.7 + 0.3 * raw_score
-            elif label == "NEGATIVE":
-                score = 0.3 * raw_score
-            else:
-                score = 0.5  # Keep neutral scores fixed
-
-            sentiment_distribution[label if label in sentiment_distribution else "NEUTRAL"] += 1
-            scores.append(score)
-
-        avg = sum(scores) / len(scores) if scores else 0.5
-
-        return {
-            "total_articles": len(scores),
-            "sentiment_distribution": sentiment_distribution,
-            "avg_sentiment": round(avg, 3),
-            "timeframe": f"Last {days} days"
-        }
-
-    except Exception as e:
-        logger.error(f"Error fetching sentiment stats: {e}")
-        return {
-            "total_articles": 0,
-            "sentiment_distribution": {"POSITIVE": 0, "NEUTRAL": 0, "NEGATIVE": 0},
-            "avg_sentiment": 0.5,
-            "error": str(e)
-        }
-    finally:
-        client.close()
-
-def cleanup_sentiment_data() -> bool:
-    client = get_weaviate_client()
-    try:
-        client.collections.delete("CryptoNewsSentiment")
-        logger.info("🗑️ Collection deleted successfully.")
-        return True
-    except Exception as e:
-        logger.warning(f"Couldn't delete collection: {e}")
-        return False
-    finally:
-        client.close()
-
 def fix_and_reload_data() -> bool:
     logger.info("Fixing and reloading data...")
     from pathlib import Path
@@ -132,10 +48,12 @@ def fix_and_reload_data() -> bool:
     df = pd.read_csv(file_path)
     return store_sentiment_data(df)
 
-if __name__ == "__main__":
-    freeze_support()
-    default_file = os.path.join(project_root, "Sample_Data", "data_ingestion", "processed", "crypto_news.csv")
+def main():
+    global analyzer
+    from Code.data_processing.sentiment_analyzer import CryptoSentimentAnalyzer
+    analyzer = CryptoSentimentAnalyzer()
 
+    default_file = os.path.join(project_root, "Sample_Data", "data_ingestion", "processed", "crypto_news.csv")
     print(f"📁 Looking for: {default_file}")
 
     if len(sys.argv) > 1 and sys.argv[1] == "--fix":
@@ -158,19 +76,22 @@ if __name__ == "__main__":
                 print(f"   💬 Explanation: {row['explanation']}")
                 try:
                     top_sentences = json.loads(row["top_sentences"])
-                    if isinstance(top_sentences, list):
-                        for s_idx, s in enumerate(top_sentences, start=1):
-                            if s['text'] != row['explanation']:
-                                scaled = (
-                                    0.6 + 0.4 * s['score'] if s['label'] == 'POSITIVE' else
-                                    0.4 * s['score'] if s['label'] == 'NEGATIVE' else
-                                    0.5
-                                )
-                                print(f"     {s_idx}. [{s['label']}] (confidence={s['score']:.2f}, scaled={scaled:.2f}): {s['text'][:120]}...")
-                except Exception as e:
+                    for s_idx, s in enumerate(top_sentences, start=1):
+                        if s['text'] != row['explanation']:
+                            scaled = (
+                                0.6 + 0.4 * s['score'] if s['label'] == 'POSITIVE' else
+                                0.4 * s['score'] if s['label'] == 'NEGATIVE' else
+                                0.5
+                            )
+                            print(f"     {s_idx}. [{s['label']}] (confidence={s['score']:.2f}, scaled={scaled:.2f}): {s['text'][:120]}...")
+                except:
                     print("     ⚠️ Error loading top sentences.")
         else:
             print("❌ Analysis returned no results.")
     else:
         print(f"❌ Default news file not found: {default_file}")
         print("⚠️ Run the news_scraper.py script first to generate news data.")
+
+if __name__ == "__main__":
+    freeze_support()
+    main()

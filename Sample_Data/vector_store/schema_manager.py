@@ -451,7 +451,6 @@ def create_crypto_time_series_schema(client):
             logger.error(f"Failed to create CryptoTimeSeries collection: {str(e)}")
             raise
 
-
 def create_onchain_analytics_schema(client):
     """
     Create the OnChainAnalytics collection without embeddings.
@@ -575,6 +574,139 @@ def create_onchain_analytics_schema(client):
             logger.error(f"Failed to create OnChainAnalytics collection: {e}")
             raise
 
+def create_forecast_schema(client):
+    """
+    Create the Forecast collection if it doesn't exist.
+    
+    Args:
+        client: Weaviate client
+        
+    Returns:
+        The created or existing collection
+    """
+    try:
+        # Check if collection already exists
+        collection = client.collections.get("Forecast")
+        logger.info("Forecast collection already exists")
+        return collection
+    except Exception:
+        logger.info("Creating Forecast collection")
+        
+        try:
+            # Create the collection without vectorizer since we don't need embeddings
+            collection = client.collections.create(
+                name="Forecast",
+                description="Collection for cryptocurrency price forecasts",
+                vectorizer_config=Configure.Vectorizer.none(),  # No vectorizer needed
+                properties=[
+                    # Basic forecast metadata
+                    {
+                        "name": "symbol",
+                        "data_type": DataType.TEXT,
+                        "description": "Cryptocurrency symbol (e.g., BTCUSDT)"
+                    },
+                    {
+                        "name": "forecast_timestamp",
+                        "data_type": DataType.DATE,
+                        "description": "When the forecast was generated"
+                    },
+                    {
+                        "name": "model_name",
+                        "data_type": DataType.TEXT,
+                        "description": "Name of the model used for forecasting"
+                    },
+                    {
+                        "name": "model_type",
+                        "data_type": DataType.TEXT,
+                        "description": "Type of forecasting model (e.g., chronos, ensemble, lstm)"
+                    },
+                    {
+                        "name": "days_ahead",
+                        "data_type": DataType.INT,
+                        "description": "Number of days in the forecast horizon"
+                    },
+                    
+                    # Current market state
+                    {
+                        "name": "current_price",
+                        "data_type": DataType.NUMBER,
+                        "description": "Current price at time of forecast"
+                    },
+                    
+                    # Forecast data
+                    {
+                        "name": "forecast_dates",
+                        "data_type": DataType.DATE_ARRAY,
+                        "description": "Array of forecast dates"
+                    },
+                    {
+                        "name": "forecast_values",
+                        "data_type": DataType.NUMBER_ARRAY,
+                        "description": "Array of forecasted price values (typically median forecast)"
+                    },
+                    {
+                        "name": "lower_bounds",
+                        "data_type": DataType.NUMBER_ARRAY,
+                        "description": "Array of lower confidence interval bounds"
+                    },
+                    {
+                        "name": "upper_bounds",
+                        "data_type": DataType.NUMBER_ARRAY,
+                        "description": "Array of upper confidence interval bounds"
+                    },
+                    
+                    # Forecast statistics
+                    {
+                        "name": "final_forecast",
+                        "data_type": DataType.NUMBER,
+                        "description": "Final forecasted price value"
+                    },
+                    {
+                        "name": "change_pct",
+                        "data_type": DataType.NUMBER,
+                        "description": "Forecasted percentage change from current price"
+                    },
+                    {
+                        "name": "trend",
+                        "data_type": DataType.TEXT,
+                        "description": "Overall trend description (e.g., bullish, bearish, neutral)"
+                    },
+                    {
+                        "name": "probability_increase",
+                        "data_type": DataType.NUMBER,
+                        "description": "Probability of price increase (0-100)"
+                    },
+                    {
+                        "name": "average_uncertainty",
+                        "data_type": DataType.NUMBER,
+                        "description": "Average uncertainty in the forecast (%)"
+                    },
+                    {
+                        "name": "insight",
+                        "data_type": DataType.TEXT,
+                        "description": "Text description of forecast insights"
+                    },
+                    
+                    # Image storage
+                    {
+                        "name": "plot_path",
+                        "data_type": DataType.TEXT,
+                        "description": "Path to the forecast plot image"
+                    },
+                    {
+                        "name": "plot_image",
+                        "data_type": DataType.BLOB,
+                        "description": "Base64 encoded forecast plot image"
+                    }
+                ]
+            )
+            
+            logger.info("Successfully created Forecast collection")
+            return collection
+        except Exception as e:
+            logger.error(f"Failed to create Forecast collection: {e}")
+            raise
+
 def setup_all_schemas(client):
     """Setup all required schemas"""
     try:
@@ -584,6 +716,7 @@ def setup_all_schemas(client):
         create_crypto_time_series_schema(client)
         create_onchain_analytics_schema(client)
         create_user_documents_schema(client)
+        create_forecast_schema(client)  # Added forecast schema
         logger.info("✅ All collections created successfully")
         return True
     except Exception as e:

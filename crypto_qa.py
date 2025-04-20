@@ -1499,8 +1499,13 @@ def get_document_context(document_id, question):
     
     analyzer = DocumentAnalyzer()
     try:
+        logger.info(f"Getting document context for ID: {document_id}")
         context_data = analyzer.get_comprehensive_context(document_id, question)
-        return context_data.get("context", "")
+        
+        if "error" in context_data:
+            logger.error(f"Error getting document context: {context_data['error']}")
+        
+        return context_data.get("context", "No document context available")
     finally:
         analyzer.close()
 
@@ -2019,41 +2024,55 @@ class EnhancedCryptoQA:
     
     def answer_question(self, question: str, document_id: Optional[str] = None, temperature: float = 0.7, user_id: Optional[str] = None) -> str:
         """
-        Answer a user question using advanced RAG techniques with Llama 3.3 70B Versatile.
+        Answer a user question using advanced RAG techniques.
         
         Args:
             question (str): The user's question
             document_id (str, optional): ID of a specific document to query
-            temperature (float): Temperature for generation (0.0-1.0)
-            user_id (str, optional): ID of the user asking the question, for personalized answers
+            temperature (float): Temperature for generation
+            user_id (str, optional): ID of the user asking the question
             
         Returns:
             str: The answer
         """
         try:
+            # Log arguments for debugging
+            logger.info(f"Question: {question}")
+            logger.info(f"Document ID: {document_id}")
+            logger.info(f"User ID: {user_id}")
+            
             # 1. Perform deep query analysis
             analysis = self.query_analyzer.analyze(question)
-            logger.info(f"Query analysis completed: {json.dumps(analysis, default=str)}")
+            logger.info(f"Query analysis completed")
             
             # 2. Retrieve context based on document_id or general question
             if document_id:
                 # For document-specific queries, use the DocumentAnalyzer
+                logger.info(f"Getting document context for document ID: {document_id}")
                 document_context = get_document_context(document_id, question)
+                
+                # Check if document context was found
+                if "Document not found" in document_context or "No document information available" in document_context:
+                    logger.error(f"Failed to retrieve document context: {document_context}")
+                    # You could fall back to general retrieval here
+                
                 prompt = build_document_prompt(question, document_context)
             else:
                 # For general queries, use the regular retrieval process
+                logger.info("Performing general context retrieval")
                 retrieved_data = self.retrieval_engine.retrieve(question, analysis, user_id)
                 context = self.context_formatter.format(retrieved_data, analysis)
                 prompt = self.prompt_builder.build_prompt(question, context, analysis)
             
-            # 3. Generate answer with Llama 3.3 70B Versatile
+            # 3. Generate answer
+            logger.info("Generating answer")
             answer = self.llama_client.generate_answer(prompt, temperature)
             
             # 4. Post-process the answer if needed
             answer = self._post_process_answer(answer, analysis)
             
             return answer
-            
+                
         except Exception as e:
             logger.error(f"Error answering question: {e}")
             logger.error(traceback.format_exc())

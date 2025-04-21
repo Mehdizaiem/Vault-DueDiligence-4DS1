@@ -706,6 +706,106 @@ def create_forecast_schema(client):
         except Exception as e:
             logger.error(f"Failed to create Forecast collection: {e}")
             raise
+def create_user_qa_history_schema(client):
+    """
+    Create the UserQAHistory collection to store user questions and AI answers.
+    """
+    try:
+        # Check if collection already exists
+        collection = client.collections.get("UserQAHistory")
+        logger.info("UserQAHistory collection already exists")
+        return collection
+    except Exception:
+        logger.info("Creating UserQAHistory collection")
+        
+        try:
+            # Create the collection
+            collection = client.collections.create(
+                name="UserQAHistory",
+                description="Collection for storing user questions and AI answers",
+                vectorizer_config=Configure.Vectorizer.text2vec_transformers(),  # Use embedding for question similarity
+                vector_index_config=Configure.VectorIndex.hnsw(
+                    distance_metric=Configure.VectorIndex.Distance.cosine
+                ),
+                properties=[
+                    # Basic Q&A properties
+                    {
+                        "name": "user_id",
+                        "data_type": DataType.TEXT,
+                        "description": "ID of the user who asked the question"
+                    },
+                    {
+                        "name": "question",
+                        "data_type": DataType.TEXT,
+                        "description": "The user's question"
+                    },
+                    {
+                        "name": "answer",
+                        "data_type": DataType.TEXT,
+                        "description": "The AI's answer"
+                    },
+                    {
+                        "name": "timestamp",
+                        "data_type": DataType.DATE,
+                        "description": "When the Q&A occurred"
+                    },
+                    # Reference to documents used
+                    {
+                        "name": "document_ids",
+                        "data_type": DataType.TEXT_ARRAY,
+                        "description": "IDs of documents referenced in the answer"
+                    },
+                    # Query analysis
+                    {
+                        "name": "primary_category",
+                        "data_type": DataType.TEXT,
+                        "description": "Primary category of the question from analysis"
+                    },
+                    {
+                        "name": "secondary_categories",
+                        "data_type": DataType.TEXT_ARRAY,
+                        "description": "Secondary categories of the question"
+                    },
+                    {
+                        "name": "crypto_entities",
+                        "data_type": DataType.TEXT_ARRAY,
+                        "description": "Cryptocurrency entities mentioned in the question"
+                    },
+                    {
+                        "name": "intent",
+                        "data_type": DataType.TEXT,
+                        "description": "Detected intent of the question"
+                    },
+                    # Session tracking
+                    {
+                        "name": "session_id",
+                        "data_type": DataType.TEXT,
+                        "description": "Session ID for grouping related Q&A"
+                    },
+                    # Feedback and metrics
+                    {
+                        "name": "user_feedback",
+                        "data_type": DataType.TEXT,
+                        "description": "Optional user feedback on the answer"
+                    },
+                    {
+                        "name": "feedback_rating",
+                        "data_type": DataType.NUMBER,
+                        "description": "Optional numerical rating from user (1-5)"
+                    },
+                    {
+                        "name": "duration_ms",
+                        "data_type": DataType.NUMBER,
+                        "description": "Time taken to generate the answer in milliseconds"
+                    }
+                ]
+            )
+            
+            logger.info("Successfully created UserQAHistory collection")
+            return collection
+        except Exception as e:
+            logger.error(f"Failed to create UserQAHistory collection: {e}")
+            raise
 
 def setup_all_schemas(client):
     """Setup all required schemas"""
@@ -716,7 +816,8 @@ def setup_all_schemas(client):
         create_crypto_time_series_schema(client)
         create_onchain_analytics_schema(client)
         create_user_documents_schema(client)
-        create_forecast_schema(client)  # Added forecast schema
+        create_forecast_schema(client)
+        create_user_qa_history_schema(client)  # Added forecast schema
         logger.info("✅ All collections created successfully")
         return True
     except Exception as e:

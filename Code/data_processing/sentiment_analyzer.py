@@ -90,7 +90,7 @@ def format_date_rfc3339(date_value):
 class CryptoSentimentAnalyzer:
     def __init__(self):
         logger.info("Initializing FinBERT sentiment pipeline...")
-        model_path = os.path.join(project_root, "models", "multi_model_test", "finbert_tone")
+        model_path = os.path.join(project_root, "models", "finbert_tone")
         if not os.path.exists(model_path):
             raise FileNotFoundError(f"Model path not found: {model_path}")
 

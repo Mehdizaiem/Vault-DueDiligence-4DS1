@@ -18,7 +18,9 @@ load_dotenv()
 
 # Constants
 MPNET_MODEL_NAME = "sentence-transformers/all-mpnet-base-v2"
-FINBERT_MODEL_NAME = "yiyanghkust/finbert-tone"
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+FINBERT_MODEL_NAME = os.path.join(project_root, "models", "finbert-tone")
+
 MPNET_DIMENSION = 768
 FINBERT_DIMENSION = 768
 
@@ -35,9 +37,10 @@ def initialize_models():
         logger.info(f"Loading all-MPNet model: {MPNET_MODEL_NAME}")
         mpnet_model = SentenceTransformer(MPNET_MODEL_NAME)
         
-        logger.info(f"Loading FinBERT model: {FINBERT_MODEL_NAME}")
+        logger.info(f"Loading FinBERT model from: {FINBERT_MODEL_NAME}")
         finbert_tokenizer = AutoTokenizer.from_pretrained(FINBERT_MODEL_NAME)
         finbert_model = AutoModel.from_pretrained(FINBERT_MODEL_NAME)
+
         
         logger.info("All embedding models loaded successfully")
         return True

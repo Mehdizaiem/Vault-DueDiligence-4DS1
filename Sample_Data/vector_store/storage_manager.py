@@ -831,84 +831,6 @@ class StorageManager:
             logger.error(f"Error comparing forecasts: {e}")
             return {"error": str(e)}
     
-    def run_and_store_chronos_forecast(self, symbol: str, days_ahead: int = 14, 
-                                    model_name: str = "amazon/chronos-t5-small",
-                                    use_gpu: bool = True) -> Dict[str, Any]:
-        """
-        Run a Chronos forecast and store the results in Weaviate.
-        
-        Args:
-            symbol: Cryptocurrency symbol
-            days_ahead: Number of days to forecast
-            model_name: Name of the Chronos model to use
-            use_gpu: Whether to use GPU for inference
-            
-        Returns:
-            Dict with forecast results and storage status
-        """
-        try:
-            # Import the ChronosForecaster class
-            from models.chronos.chronos_crypto_forecaster import ChronosForecaster, prepare_crypto_data
-            
-            # Load cryptocurrency data
-            data = prepare_crypto_data(symbol)
-            
-            if data is None or len(data) == 0:
-                return {"error": f"Failed to load data for {symbol}"}
-            
-            # Initialize forecaster
-            forecaster = ChronosForecaster(
-                model_name=model_name,
-                use_gpu=use_gpu
-            )
-            
-            # Generate forecast
-            forecast_results = forecaster.forecast(
-                data,
-                prediction_length=days_ahead,
-                num_samples=100,
-                quantile_levels=[0.1, 0.5, 0.9]
-            )
-            
-            # Plot forecast
-            plot_path = forecaster.plot_forecast(
-                data,
-                forecast_results,
-                symbol
-            )
-            
-            # Generate insights
-            insights = forecaster.generate_market_insights(
-                data,
-                forecast_results,
-                symbol
-            )
-            
-            # Store in Weaviate
-            storage_success = self.store_chronos_forecast(
-                forecast_results=forecast_results,
-                market_insights=insights,
-                symbol=symbol,
-                model_name=model_name,
-                days_ahead=days_ahead,
-                plot_path=plot_path
-            )
-            
-            # Return combined results
-            return {
-                "symbol": symbol,
-                "forecast_timestamp": datetime.now().isoformat(),
-                "insights": insights,
-                "storage_success": storage_success,
-                "plot_path": plot_path
-            }
-            
-        except Exception as e:
-            logger.error(f"Error in run_and_store_chronos_forecast: {e}")
-            import traceback
-            logger.error(traceback.format_exc())
-            return {"error": str(e)}
-    
     def get_sentiment_stats(self, asset: Optional[str] = None, days: int = 7) -> Dict:
         """
         Get sentiment statistics for crypto news
@@ -1011,6 +933,81 @@ class StorageManager:
         except Exception as e:
             logger.error(f"Error getting sentiment stats: {e}")
             return {"error": str(e)}
+    
+    def store_forecast(self, forecast_data: Dict[str, Any]) -> bool:
+        """
+        Store a forecast in the Forecast collection.
+        
+        Args:
+            forecast_data (Dict): Dictionary containing forecast data with the following keys:
+                - symbol: Cryptocurrency symbol
+                - forecast_timestamp: When the forecast was generated
+                - model_name: Name of the model used
+                - model_type: Type of forecasting model
+                - days_ahead: Number of days in forecast horizon
+                - current_price: Current price at time of forecast
+                - forecast_dates: Array of forecast dates
+                - forecast_values: Array of forecasted price values
+                - lower_bounds: Array of lower confidence bounds
+                - upper_bounds: Array of upper confidence bounds
+                - final_forecast: Final forecasted price
+                - change_pct: Forecasted percentage change
+                - trend: Overall trend description
+                - probability_increase: Probability of price increase
+                - average_uncertainty: Average uncertainty
+                - insight: Text description of forecast insights
+                - plot_path: Path to forecast plot image
+                
+        Returns:
+            bool: Success status
+        """
+        if not self.connect():
+            logger.error("Failed to connect to Weaviate")
+            return False
+            
+        try:
+            # Get the collection
+            collection = self.client.collections.get("Forecast")
+            
+            # Prepare properties
+            properties = {
+                "symbol": forecast_data.get("symbol"),
+                "forecast_timestamp": forecast_data.get("forecast_timestamp", datetime.now().isoformat()),
+                "model_name": forecast_data.get("model_name", "unknown"),
+                "model_type": forecast_data.get("model_type", "unknown"),
+                "days_ahead": forecast_data.get("days_ahead", 0),
+                "current_price": forecast_data.get("current_price", 0.0),
+                "forecast_dates": forecast_data.get("forecast_dates", []),
+                "forecast_values": forecast_data.get("forecast_values", []),
+                "lower_bounds": forecast_data.get("lower_bounds", []),
+                "upper_bounds": forecast_data.get("upper_bounds", []),
+                "final_forecast": forecast_data.get("final_forecast", 0.0),
+                "change_pct": forecast_data.get("change_pct", 0.0),
+                "trend": forecast_data.get("trend", "unknown"),
+                "probability_increase": forecast_data.get("probability_increase", 0.0),
+                "average_uncertainty": forecast_data.get("average_uncertainty", 0.0),
+                "insight": forecast_data.get("insight", ""),
+                "plot_path": forecast_data.get("plot_path", "")
+            }
+            
+            # Handle plot image if provided
+            if "plot_path" in forecast_data and forecast_data["plot_path"]:
+                try:
+                    with open(forecast_data["plot_path"], "rb") as f:
+                        plot_image = base64.b64encode(f.read()).decode('utf-8')
+                        properties["plot_image"] = plot_image
+                except Exception as e:
+                    logger.warning(f"Failed to encode plot image: {e}")
+            
+            # Store the forecast
+            collection.data.insert(properties=properties)
+            
+            logger.info(f"Successfully stored forecast for {forecast_data.get('symbol')}")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Error storing forecast: {e}")
+            return False
 
 # Example usage
 if __name__ == "__main__":

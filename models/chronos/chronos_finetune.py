@@ -27,6 +27,7 @@ from tqdm import tqdm
 import copy
 import requests
 import time
+from typing import Dict, Any
 
 # Configure logging
 logging.basicConfig(
@@ -1041,7 +1042,7 @@ def fine_tune_simplified(original_model, train_loader, epochs=10, device="cpu"):
 
 def prepare_forecast_results(finetuned_model, data, val_data, prediction_length, symbol):
     """
-    Prepare forecast results in the format expected by store_chronos_forecast.
+    Prepare forecast results in the format expected by store_forecast.
     
     Args:
         finetuned_model: Fine-tuned Chronos model
@@ -1081,15 +1082,6 @@ def prepare_forecast_results(finetuned_model, data, val_data, prediction_length,
         if isinstance(normalized_values, torch.Tensor):
             return normalized_values.cpu().numpy() * price_std + price_mean
         return normalized_values * price_std + price_mean
-    
-    # Prepare forecast results
-    forecast_results = {
-        'dates': forecast_dates,
-        'samples': [unnormalize(samples.cpu().numpy())],
-        'quantiles': [unnormalize(quantiles.cpu().numpy())],
-        'quantile_levels': [0.1, 0.5, 0.9],
-        'mean': [unnormalize(mean.cpu().numpy())]
-    }
     
     # Get current price and forecasted final price
     current_price = data['price'].iloc[-1]
@@ -1150,192 +1142,67 @@ def prepare_forecast_results(finetuned_model, data, val_data, prediction_length,
     else:
         insight += f" The forecast shows relatively low uncertainty (±{avg_uncertainty:.1f}% on average)."
     
-    # Prepare market insights
-    market_insights = {
-        "symbol": f"{base_symbol}/{quote_currency}",
-        "base_currency": base_symbol,
-        "quote_currency": quote_currency,
+    # Prepare forecast data for storage
+    forecast_data = {
+        "symbol": format_symbol_for_storage(symbol),
+        "forecast_timestamp": datetime.now().isoformat(),
+        "model_name": "chronos-finetuned",
+        "model_type": "chronos",
+        "days_ahead": prediction_length,
         "current_price": float(current_price),
+        "forecast_dates": [d.isoformat() for d in forecast_dates],
+        "forecast_values": unnormalize(median_forecast).tolist(),
+        "lower_bounds": unnormalize(quantiles[0, :, low_idx].cpu().numpy()).tolist(),
+        "upper_bounds": unnormalize(quantiles[0, :, high_idx].cpu().numpy()).tolist(),
         "final_forecast": float(final_forecast),
         "change_pct": float(change_pct),
         "trend": trend,
         "probability_increase": float(prob_increase),
         "average_uncertainty": float(avg_uncertainty),
-        "insight": insight,
-        "generated_at": datetime.now().isoformat()
+        "insight": insight
     }
     
-    return forecast_results, market_insights
+    return forecast_data
 
-def run_finetuning(args):
+def store_forecast_results(forecast_data: Dict[str, Any], plot_path: str = None) -> bool:
     """
-    Run the complete fine-tuning process.
+    Store forecast results using the StorageManager.
     
     Args:
-        args: Command line arguments
+        forecast_data (Dict): Forecast data prepared by prepare_forecast_results
+        plot_path (str): Path to the forecast plot image
         
     Returns:
-        int: Exit code (0 for success, 1 for error)
+        bool: Success status
     """
-    # Check Chronos availability
-    if not check_chronos_availability():
-        logger.error("Chronos package is required but could not be installed")
-        return 1
-    
-    # Check GPU availability and get device
-    device = check_cuda_availability()
-    
-    # Load combined data from CSV and API
-    data = load_combined_data(args.symbol, lookback_days=args.lookback, api_days=365)
-    
-    if data is None:
-        logger.error(f"Failed to load data for {args.symbol}")
-        return 1
-    
-    logger.info(f"Preparing datasets for {args.symbol}")
-    
-    # Prepare datasets
-    train_loader, test_loader, val_data = prepare_datasets(
-        data, 
-        context_length=args.context_length,
-        prediction_length=args.days_ahead
-    )
-    
-    if train_loader is None:
-        logger.error("Failed to prepare datasets")
-        return 1
+    if not STORAGE_AVAILABLE:
+        logger.warning("StorageManager not available - forecast not stored")
+        return False
         
-    # Load pretrained model
     try:
-        from chronos import BaseChronosPipeline
-        
-        # Determine torch dtype
-        if device == "cuda" and torch.cuda.is_available():
-            torch_dtype = torch.bfloat16
-        else:
-            torch_dtype = torch.float32
-        
-        logger.info(f"Loading Chronos model: {args.model}")
-        model = BaseChronosPipeline.from_pretrained(
-            args.model,
-            device_map="auto" if device == "cuda" else "cpu",
-            torch_dtype=torch_dtype
-        )
-        
-        # Evaluate original model
-        logger.info("Evaluating original model")
-        
-        # Apply weight freezing with simplified approach
-        freeze_percentage = args.freeze_percentage / 100.0
-        logger.info(f"Freezing {args.freeze_percentage}% of model weights")
-        frozen_model = simple_freeze_weights(model, freeze_percentage=freeze_percentage)
-        
-        # Fine-tune the model
-        logger.info(f"Fine-tuning model for {args.epochs} epochs")
-        fine_tuned_model = fine_tune_simplified(
-            frozen_model,
-            train_loader,
-            epochs=args.epochs,
-            device=device
-        )
-        
-        # Evaluate models
-        logger.info("Evaluating original and fine-tuned models")
-        evaluation_results = evaluate_model(
-            model,
-            fine_tuned_model,
-            val_data,
-            data,
-            args.days_ahead
-        )
-        
-        # Create comparison plot
-        logger.info("Creating comparison plot")
-        plot_path = create_comparison_plot(
-            data, 
-            evaluation_results, 
-            args.days_ahead
-        )
-        
-        # Store the forecast results in Weaviate
-        if STORAGE_AVAILABLE:
-            logger.info("Preparing forecast data for storage")
-            # Format symbol for database storage
-            storage_symbol = format_symbol_for_storage(args.symbol)
+        # Add plot path if provided
+        if plot_path:
+            forecast_data["plot_path"] = plot_path
             
-            # Prepare forecast results and market insights
-            forecast_results, market_insights = prepare_forecast_results(
-                fine_tuned_model,
-                data,
-                val_data,
-                args.days_ahead,
-                args.symbol
-            )
-            
-            try:
-                # Store in database using StorageManager
-                storage_manager = StorageManager()
-                logger.info(f"Storing forecast for {storage_symbol} in Weaviate")
-                
-                storage_success = storage_manager.store_chronos_forecast(
-                    forecast_results=forecast_results,
-                    market_insights=market_insights,
-                    symbol=storage_symbol,
-                    model_name=f"{args.model}-finetuned",
-                    days_ahead=args.days_ahead,
-                    plot_path=plot_path
-                )
-                
-                if storage_success:
-                    logger.info("Forecast successfully stored in Weaviate!")
-                else:
-                    logger.warning("Failed to store forecast in Weaviate")
-                    
-                # Close connection
-                storage_manager.close()
-                
-            except Exception as e:
-                logger.error(f"Error storing forecast in Weaviate: {e}")
+        # Initialize storage manager
+        storage_manager = StorageManager()
+        
+        # Store the forecast
+        success = storage_manager.store_forecast(forecast_data)
+        
+        # Close connection
+        storage_manager.close()
+        
+        if success:
+            logger.info(f"Successfully stored forecast for {forecast_data['symbol']}")
         else:
-            logger.warning("Storage functionality not available - forecast not stored in database")
-        
-        # Print results
-        print("\n===== FINE-TUNING RESULTS =====")
-        print(f"Symbol: {args.symbol}")
-        print(f"Model: {args.model}")
-        print(f"Epochs: {args.epochs}")
-        print(f"Frozen weights: {args.freeze_percentage}%")
-        print(f"API data: Latest {365} days")
-        print(f"CSV data: Additional historical data up to {args.lookback} days total")
-        
-        # Print metrics if available
-        if 'original_mae' in evaluation_results and 'finetuned_mae' in evaluation_results:
-            print("\nError Metrics:")
-            print(f"  Original Model MAE: {evaluation_results['original_mae']:.4f}")
-            print(f"  Fine-tuned Model MAE: {evaluation_results['finetuned_mae']:.4f}")
-            print(f"  MAE Improvement: {evaluation_results['mae_improvement']:.2f}%")
-            print()
-            print(f"  Original Model RMSE: {evaluation_results['original_rmse']:.4f}")
-            print(f"  Fine-tuned Model RMSE: {evaluation_results['finetuned_rmse']:.4f}")
-            print(f"  RMSE Improvement: {evaluation_results['rmse_improvement']:.2f}%")
-        
-        print(f"\nComparison plot: {plot_path}")
-        
-        # Print storage status
-        if STORAGE_AVAILABLE:
-            print(f"Forecast {'successfully stored' if storage_success else 'not stored'} in Weaviate database")
-        else:
-            print("Storage functionality not available - forecast not stored in database")
+            logger.error(f"Failed to store forecast for {forecast_data['symbol']}")
             
-        print("================================\n")
-        
-        return 0
+        return success
         
     except Exception as e:
-        logger.error(f"Error in fine-tuning process: {e}")
-        import traceback
-        logger.error(traceback.format_exc())
-        return 1
+        logger.error(f"Error storing forecast: {e}")
+        return False
 
 def main():
     """Entry point for the script."""
@@ -1378,7 +1245,141 @@ def main():
         logger.info("Storage has been disabled via --no-store flag")
     
     try:
-        return run_finetuning(args)
+        # Check Chronos availability
+        if not check_chronos_availability():
+            logger.error("Chronos package is required but could not be installed")
+            return 1
+        
+        # Check GPU availability and get device
+        device = check_cuda_availability()
+        
+        # Load combined data from CSV and API
+        data = load_combined_data(args.symbol, lookback_days=args.lookback, api_days=365)
+        
+        if data is None:
+            logger.error(f"Failed to load data for {args.symbol}")
+            return 1
+        
+        logger.info(f"Preparing datasets for {args.symbol}")
+        
+        # Prepare datasets
+        train_loader, test_loader, val_data = prepare_datasets(
+            data, 
+            context_length=args.context_length,
+            prediction_length=args.days_ahead
+        )
+        
+        if train_loader is None:
+            logger.error("Failed to prepare datasets")
+            return 1
+            
+        # Load pretrained model
+        try:
+            from chronos import BaseChronosPipeline
+            
+            # Determine torch dtype
+            if device == "cuda" and torch.cuda.is_available():
+                torch_dtype = torch.bfloat16
+            else:
+                torch_dtype = torch.float32
+            
+            logger.info(f"Loading Chronos model: {args.model}")
+            model = BaseChronosPipeline.from_pretrained(
+                args.model,
+                device_map="auto" if device == "cuda" else "cpu",
+                torch_dtype=torch_dtype
+            )
+            
+            # Evaluate original model
+            logger.info("Evaluating original model")
+            
+            # Apply weight freezing with simplified approach
+            freeze_percentage = args.freeze_percentage / 100.0
+            logger.info(f"Freezing {args.freeze_percentage}% of model weights")
+            frozen_model = simple_freeze_weights(model, freeze_percentage=freeze_percentage)
+            
+            # Fine-tune the model
+            logger.info(f"Fine-tuning model for {args.epochs} epochs")
+            fine_tuned_model = fine_tune_simplified(
+                frozen_model,
+                train_loader,
+                epochs=args.epochs,
+                device=device
+            )
+            
+            # Evaluate models
+            logger.info("Evaluating original and fine-tuned models")
+            evaluation_results = evaluate_model(
+                model,
+                fine_tuned_model,
+                val_data,
+                data,
+                args.days_ahead
+            )
+            
+            # Create comparison plot
+            logger.info("Creating comparison plot")
+            plot_path = create_comparison_plot(
+                data, 
+                evaluation_results, 
+                args.days_ahead
+            )
+            
+            # Prepare forecast data
+            forecast_data = prepare_forecast_results(
+                fine_tuned_model,
+                data,
+                val_data,
+                args.days_ahead,
+                args.symbol
+            )
+            
+            # Store the forecast if storage is available
+            if STORAGE_AVAILABLE:
+                logger.info("Storing forecast in Weaviate")
+                storage_success = store_forecast_results(forecast_data, plot_path)
+            else:
+                logger.warning("Storage functionality not available - forecast not stored")
+                storage_success = False
+            
+            # Print results
+            print("\n===== FINE-TUNING RESULTS =====")
+            print(f"Symbol: {args.symbol}")
+            print(f"Model: {args.model}")
+            print(f"Epochs: {args.epochs}")
+            print(f"Frozen weights: {args.freeze_percentage}%")
+            print(f"API data: Latest {365} days")
+            print(f"CSV data: Additional historical data up to {args.lookback} days total")
+            
+            # Print metrics if available
+            if 'original_mae' in evaluation_results and 'finetuned_mae' in evaluation_results:
+                print("\nError Metrics:")
+                print(f"  Original Model MAE: {evaluation_results['original_mae']:.4f}")
+                print(f"  Fine-tuned Model MAE: {evaluation_results['finetuned_mae']:.4f}")
+                print(f"  MAE Improvement: {evaluation_results['mae_improvement']:.2f}%")
+                print()
+                print(f"  Original Model RMSE: {evaluation_results['original_rmse']:.4f}")
+                print(f"  Fine-tuned Model RMSE: {evaluation_results['finetuned_rmse']:.4f}")
+                print(f"  RMSE Improvement: {evaluation_results['rmse_improvement']:.2f}%")
+            
+            print(f"\nComparison plot: {plot_path}")
+            
+            # Print storage status
+            if STORAGE_AVAILABLE:
+                print(f"Forecast {'successfully stored' if storage_success else 'not stored'} in Weaviate database")
+            else:
+                print("Storage functionality not available - forecast not stored in database")
+                
+            print("================================\n")
+            
+            return 0
+            
+        except Exception as e:
+            logger.error(f"Error in fine-tuning process: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
+            return 1
+            
     except Exception as e:
         logger.error(f"Unhandled exception: {e}")
         import traceback

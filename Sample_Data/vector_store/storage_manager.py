@@ -2,10 +2,12 @@
 import os
 import sys
 import logging
+import traceback
 from typing import Dict, List, Any, Optional, Union
 from datetime import datetime, timedelta
 import json
 import base64
+import uuid
 import weaviate
 from weaviate.classes.query import Sort, Filter
 
@@ -130,7 +132,88 @@ class StorageManager:
         except Exception as e:
             logger.error(f"Error storing due diligence document: {e}")
             return False
+    def store_qa_interaction(self, question: str, answer: str, user_id: str, 
+                         analysis: Dict = None, document_ids: List[str] = None, 
+                         session_id: str = None, feedback: Dict = None,
+                         duration_ms: int = None):
+        """
+        Store a Q&A interaction in the UserQAHistory collection.
+        
+        Args:
+            question (str): The user's question
+            answer (str): The AI's answer
+            user_id (str): ID of the user who asked the question
+            analysis (Dict, optional): Query analysis results
+            document_ids (List[str], optional): IDs of documents referenced
+            session_id (str, optional): Session ID for grouping related Q&A
+            feedback (Dict, optional): User feedback information
+            duration_ms (int, optional): Time taken to generate the answer
             
+        Returns:
+            bool: Success status
+        """
+        if not self.connect():
+            logger.error("Failed to connect to Weaviate")
+            return False
+            
+        try:
+            # Get collection
+            collection = self.client.collections.get("UserQAHistory")
+            
+            # Generate timestamp
+            timestamp = datetime.now().isoformat()
+            
+            # Prepare properties
+            properties = {
+                "user_id": user_id,
+                "question": question,
+                "answer": answer,
+                "timestamp": timestamp,
+                "session_id": session_id or str(uuid.uuid4())
+            }
+            
+            # Add document IDs if provided
+            if document_ids:
+                properties["document_ids"] = document_ids
+            
+            # Add analysis data if provided
+            if analysis:
+                if "primary_category" in analysis:
+                    properties["primary_category"] = analysis.get("primary_category")
+                
+                if "secondary_categories" in analysis:
+                    properties["secondary_categories"] = analysis.get("secondary_categories")
+                
+                if "crypto_entities" in analysis:
+                    properties["crypto_entities"] = analysis.get("crypto_entities")
+                
+                if "intent" in analysis:
+                    properties["intent"] = analysis.get("intent")
+            
+            # Add feedback if provided
+            if feedback:
+                if "rating" in feedback:
+                    properties["feedback_rating"] = float(feedback.get("rating", 0))
+                
+                if "comment" in feedback:
+                    properties["user_feedback"] = feedback.get("comment")
+            
+            # Add processing duration if provided
+            if duration_ms is not None:
+                properties["duration_ms"] = duration_ms
+            
+            # Generate embedding from the question for similarity search
+            question_embedding = generate_mpnet_embedding(question)
+            
+            # Store the interaction
+            collection.data.insert(properties=properties, vector=question_embedding)
+            
+            logger.info(f"Stored Q&A interaction for user {user_id}: {question[:50]}...")
+            return True
+        except Exception as e:
+            logger.error(f"Error storing Q&A interaction: {e}")
+            logger.error(traceback.format_exc())
+            return False        
     def store_user_document(self, document: Dict, user_id: str) -> bool:
         """
         Store a user document in the UserDocuments collection

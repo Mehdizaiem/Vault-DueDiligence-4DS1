@@ -43,7 +43,20 @@ def load_env_from_local():
                 key, value = line.split('=', 1)
                 os.environ[key] = value
     else:
-        logger.warning(".env.local file not found. Make sure to set GROQ_API_KEY environment variable.")
+        # Try parent directories
+        for parent_path in Path('.').resolve().parents:
+            env_path = parent_path / '.env.local'
+            if env_path.exists():
+                with open(env_path) as f:
+                    for line in f:
+                        line = line.strip()
+                        if not line or line.startswith('#') or '=' not in line:
+                            continue
+                        key, value = line.split('=', 1)
+                        os.environ[key] = value
+                break
+        else:
+            logger.warning(".env.local file not found. Make sure to set GROQ_API_KEY environment variable.")
 
 # Load environment variables
 load_env_from_local()

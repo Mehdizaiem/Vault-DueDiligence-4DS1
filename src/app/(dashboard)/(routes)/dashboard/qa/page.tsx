@@ -171,6 +171,7 @@ export default function QAPage() {
   };
   
   const handleFeedback = (messageId: string, rating: 'positive' | 'negative') => {
+    // First update the local state for immediate visual feedback
     setFeedback(prev => ({
       ...prev,
       [messageId]: {
@@ -179,6 +180,9 @@ export default function QAPage() {
         comment: ''
       }
     }));
+    
+    // Then submit the feedback to be stored in the QA history
+    submitFeedback(messageId, rating);
   };
   
   const startNewConversation = () => {
@@ -236,7 +240,55 @@ export default function QAPage() {
       console.error('Error deleting conversation:', error);
     }
   };
+  // Function to submit feedback
+const submitFeedback = async (messageId: string, rating: 'positive' | 'negative', comment?: string) => {
+  try {
+    // Find the message
+    const message = messages.find(m => m.id === messageId);
+    if (!message || message.role !== 'assistant') return;
+    
+    // Find the corresponding user question
+    const questionIndex = messages.findIndex(m => m.id === messageId);
+    if (questionIndex <= 0) return; // Make sure there's a question before this answer
+    
+    const userQuestion = messages[questionIndex - 1];
+    if (userQuestion.role !== 'user') return;
+    
+    // Store feedback in QA history
+    const response = await fetch('/api/qa/history', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        question: userQuestion.content,
+        answer: message.content,
+        sessionId: conversationId,
+        feedback: {
+          rating: rating === 'positive' ? 5 : 1, // Convert to numerical rating
+          comment
+        }
+      }),
+    });
 
+    if (!response.ok) {
+      console.error('Failed to store feedback:', await response.text());
+    }
+    
+    // Update local feedback state
+    setFeedback(prev => ({
+      ...prev,
+      [messageId]: {
+        messageId,
+        rating,
+        comment
+      }
+    }));
+    
+  } catch (error) {
+    console.error('Error submitting feedback:', error);
+  }
+};
   // Function to format the message content with Markdown
   const formatMessage = (content: string) => {
     return (

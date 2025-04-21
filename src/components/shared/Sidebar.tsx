@@ -6,7 +6,10 @@ import {
   LayoutDashboard, 
   FileText, 
   HelpCircle, 
-  AlertTriangle 
+  AlertTriangle,
+  TrendingUp, // New icon for Crypto Forecast
+  BarChart4, // New icon for Analytics
+  Newspaper // New icon for News
 } from "lucide-react";
 
 const routes = [
@@ -33,6 +36,24 @@ const routes = [
     icon: AlertTriangle,
     color: "text-orange-500",
     href: '/dashboard/risk',
+  },
+  {
+    label: 'Crypto Forecast',
+    icon: TrendingUp,
+    color: "text-green-500",
+    href: '/dashboard/forecast',
+  },
+  {
+    label: 'Analytics', 
+    icon: BarChart4,
+    color: "text-indigo-500",
+    href: '/dashboard/analytics',
+  },
+  {
+    label: 'News',
+    icon: Newspaper,
+    color: "text-yellow-500",
+    href: '/dashboard/news',
   },
 ];
 

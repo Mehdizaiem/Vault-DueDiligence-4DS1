@@ -1,4 +1,175 @@
 id,source,title,url,content,date,authors,image_url,scraped_at
+<<<<<<< HEAD
+=======
+336f1a9190355d9501c4f6d214e7eeed,Cointelegraph,Ramping up the Bitcoin mining game in 2025 — Interview with Uminers,https://cointelegraph.com/news/ramping-up-the-bitcoin-mining-game-in-2025-interview-with-uminers," Uminers CEO Batyr Khydyrov discusses how the company is helping reshape the future of Bitcoin mining with sustainable infrastructure, global partnerships, and a bold zero-interest financing model. 
+The rise of institutional participation and mainstream interest in Bitcoin (BTC) has triggered conversations around energy efficiency, regulatory frameworks and the economic viability of BTC mining.
+Uminers, a global crypto mining equipment provider, has recently made the headlines by announcing a strategic partnership with Ledger and teasing a zero-interest Bitcoin mining loan program.
+In this interview, Uminers founder and CEO Batyr Khydyrov explains the role of Bitcoin mining within a broader Web3 context while sharing Uminers’ core values and what sets the company apart.
+Cointelegraph: What is the broader significance of Bitcoin mining in today’s Web3 economy?
+Batyr Khydyrov: It is safe to say that Bitcoin mining is the backbone of the entire crypto ecosystem. It secures the Bitcoin network through a decentralized mechanism, ensuring trustless transactions and protecting the network against attacks.
+In the broader Web3 economy, mining also embodies the shift from traditional finance to digital, global and permissionless infrastructure. As we see more institutional and mainstream adoption of crypto assets, the reliability, scalability and sustainability of mining operations become even more crucial to support this evolving economic landscape.
+CT: Many mining companies tout values like transparency and sustainability. How does Uminers put these into practice in ways that tangibly benefit your clients or the broader mining ecosystem?
+BH: At Uminers, we don’t just talk about values like transparency, security, innovation, accessibility, and sustainability — we build them into every layer of our operations. We’re transparent in our pricing and operations, especially with our upcoming zero-interest financing model where costs and collateral are clearly defined.
+Since digital assets are an integral part of our operations, security is also paramount to us. That’s why we partner with top-tier custodians like Ledger.
+Our focus on innovation manifests itself in advanced cooling technologies and AI optimizations that drive efficiency. Accessibility underpins our global approach — offering turnkey services to new and experienced miners alike in both established and emerging markets. Lastly, sustainability ensures our facilities are energy-efficient and scalable for the long haul.
+CT: Why did Uminers choose Ethiopia as the location for its flagship data center, and what advantages does this location offer?
+BH: We picked Ethiopia because this African country provides a rare combination of low-cost, reliable power and significant expansion potential. Our data center currently offers 100 MW of capacity, and we plan to ramp it up to 175 MW before the year’s end.
+Our Ethiopia facility is equipped with advanced water-cooling systems, among the most state of the art on the market. These units support both standard Hydro miners like the Bitmain S19 Hydro and S21 Hydro, as well as the manufacturer’s latest innovations such as the S21e XP 3U. This setup allows for greater hardware density and operational efficiency. Combined with electricity priced at just $0.055/kWh, it makes our site one of the most cost-effective and performance-optimized mining environments globally.
+CT: Some critics say custody partnerships are becoming industry-standard. What makes the Ledger partnership unique, and how does it address concerns specific to your clients’ needs?
+BH: Ledger Enterprise is an industry leader in digital asset security, and its self-custody platform adds an institutional-grade layer of protection to our offerings. By integrating Ledger, we ensure that the Bitcoin collateral for our financing model remains secure and verifiable at all times.
+This partnership aims to enhance our clients’ confidence in storing their BTC and reflect our commitment to robust, reliable solutions for miners everywhere.
+CT: Zero-interest financing sounds attractive but could carry hidden risks. What safeguards are in place for borrowers, and how do you address concerns around default or collateral volatility?
+BH: We offer 0% interest financing for 10 months, backed by BTC collateral securely stored via Ledger. This allows clients to acquire high-performance mining rigs without liquidating Bitcoin holdings — a key differentiator in volatile markets. Compared to bank loans, our program requires no fiat credit checks, offers instant approval, and keeps upside exposure to BTC.
+Clients can keep their BTC, secured by Ledger’s self-custody platform, and still acquire the latest hardware. We aim to support long-term growth with this model: miners aren’t compelled to sell assets in a potentially unfavorable market, and they can scale operations at a pace that suits their strategic goals.
+With over 15,000 financed units and a $100 million credit pool, clients can access next-gen hardware without upfront fiat costs. The 1,000 BTC collateral base ensures stability and confidence in the financing structure. For a client running 100 S21s, this could mean generating over 2.5 PH/s of hash power without having to touch their long-term BTC holdings.
+CT: You've hit several notable milestones, but rapid growth often comes with growing pains. What internal challenges or missteps have you learned from along the way?
+BH: Absolutely. Uminers is extremely proud of what we’ve achieved since our founding in 2017.
+We sell over 60,000 mining devices annually.
+Our revenue surpassed $500 million in 2024.
+We were named “Best Mining Company” at the 2024 Blockchain Life Awards.
+We’ve also laid out plans to expand to 500 MW across Africa and an additional 50 MW in the Middle East.
+I see each of these milestones as a reflection of our commitment to the core values I previously explained.
+CT: The mining space is highly competitive. Where do you think Uminers has a clear edge — and where do you still need to catch up with competitors?
+BH: Our unique advantages revolve around three main pillars: innovative financing, strong partnerships, and turnkey solutions. First, we offer a unique zero-interest loan program that allows miners to hold their BTC while expanding operations.
+Unlike public mining giants like Hive or Bitdeer, who focus on proprietary farms, Uminers delivers turnkey infrastructure solutions for clients. Our combination of competitive hardware pricing via our Bitmain SVIP status, immersion-cooled hosting, and zero-interest BTC loans means you get the same-grade performance — without the CapEx burden or centralization risks.
+The security aspect of our solutions received a boost via Ledger’s platform. I believe this combination of cost-efficiency, security and operational simplicity differentiates us from other service providers.
+CT: You mentioned transparency as a core value for Uminers — how do you maintain it?
+BH: We maintain open communication about financing terms, hosting fees, and operational metrics. Clients know exactly where their collateral is held and how their hardware is performing. Our partnership with Ledger adds a layer of verifiable security, allowing clients to independently confirm the safety of their assets. By being clear on costs, risks and rewards, we aim to establish long-term trust with every customer.
+CT: Uminers has been expanding globally, from Africa to the Middle East, North America, and Asia. What drives this global expansion strategy?
+BH: Our mission is to ‘Make Mining Easy’ for everyone, everywhere. Different regions offer unique advantages. Some have abundant, low-cost energy, while others have regulatory clarity or a strong blockchain community.
+By establishing facilities on multiple continents, we provide our clients with diverse hosting options that fit their operational, regulatory, and budgetary needs. This global footprint also strengthens our supply chains, from hardware logistics to local customer support, ensuring we can serve miners effectively around the world.
+CT: What role do you see Uminers playing in the future of the global mining ecosystem?
+BH: We aim to be both a financier and an infrastructure leader. By offering zero-interest financing, we empower miners to scale responsibly, while also focusing on cutting-edge, large-capacity data centers in emerging markets. We ensure that security and trust remain central to our ecosystem through strategic partnerships.
+We’re not just selling machines — we’re building the rails for the next phase of global crypto infrastructure. Mining shouldn’t be a luxury for tech elites. Our goal is to make Bitcoin production accessible in regions where people need financial sovereignty the most — from East Africa to Central Asia. Uminers is pioneering this frontier, not following the pack.
+Find out more about Uminers
+Disclaimer. Cointelegraph does not endorse any content or product on this page. While we aim at providing you with all important information that we could obtain in this sponsored article, readers should do their own research before taking any actions related to the company and carry full responsibility for their decisions, nor can this article be considered as investment advice.
+",2025-04-21 22:06:33.232913,[],,2025-04-21T22:06:33.232913
+e7105bcc5c3a6619b2b12e1c8e60a8cb,Cointelegraph,"Price analysis 4/21: SPX, DXY, BTC, ETH, XRP, BNB, SOL, DOGE, ADA, LINK",https://cointelegraph.com/news/price-analysis-4-21-spx-dxy-btc-eth-xrp-bnb-sol-doge-ada-link," Bitcoin’s strong up move increases the likelihood of a rally to $95,000, signaling that the bottom may be in. 
+The US Dollar Index (DXY) plunged below the 98 level on April 21, falling to a three-year low. That catapulted gold to a new all-time high, and Bitcoin (BTC) also showed strength, rising above $88,000. 
+BitMEX co-founder and Maelstrom chief investment officer Arthur Hayes believes it may be the “last chance” to buy Bitcoin below $100,000. Hayes expects the Federal Reserve to announce US Treasury buybacks, which will act as a “Bazooka” for Bitcoin’s price trajectory.
+The whales seem ready for the move higher, as they have been accumulating in March and April. According to Glassnode data, the number of wallets holding more than 1,000 Bitcoin increased from 2,037 in late February to 2,107 on April 15.
+Could Bitcoin bulls sustain the higher levels, triggering a rally toward $100,000? Will the altcoins follow? Let’s analyze the charts to find out.
+The S&P 500 Index (SPX) recovery hit a wall at the 20-day exponential moving average (5,399) on April 14.
+The 5,119 level is the critical support to watch out for on the downside. If this level gets taken out, the index could plummet to 4,950. The bulls are expected to vigorously defend the zone between 4,950 and 4,835.
+Instead, if the price rebounds off 5,119, it signals that the bulls are trying to form a higher low. The index could then oscillate between 5,119 and 5,500 for a while. Buyers will have to drive the price above 5,500 to signal that the correction may be over.
+The US Dollar Index resumed its downtrend on April 21, indicating that the bears remain in charge.
+The index could collapse to 97.50, which could act as strong support. The oversold level on the relative strength index (RSI) signals a possible relief rally in the near term. Sellers are expected to aggressively defend the zone between 99 and 100.27 on any recovery attempt. If the price turns down from the overhead zone, the index risks a fall to 95.
+The first sign of strength will be a break and close above the 100.27 resistance. That indicates solid buying at lower levels. A short-term trend change is likely if buyers propel the price above the 20-day EMA (101.64).
+Bitcoin made a decisive move higher after days of narrow-range trading, and the price has reached a critical resistance at the 200-day SMA ($88,238). 
+The moving averages are about to complete a bullish crossover, and the RSI has risen into positive territory, indicating an advantage to buyers. If the 200-day SMA is scaled, it suggests that the BTC/USDT pair may have bottomed out in the near term. The pair could rally to $95,000 and subsequently to the psychologically vital level of $100,000.
+The 20-day EMA ($84,176) is likely to act as strong support during any pullback. A break and close below the 20-day EMA signals that the bears are back in the game. The pair may then tumble to $78,500.
+Ether (ETH) remains in a downtrend, but the bulls are trying to start a relief rally by pushing the price above the 20-day EMA ($1,659).
+The recovery is expected to face selling in the zone between $1,754 and the 50-day SMA ($1,846). If the price turns down from the overhead zone, it heightens the risk of a break below $1,368.
+Contrarily, a break and close above the 50-day SMA clears the path for a rally to the breakdown level of $2,111. Sellers are expected to defend the level with all their might because a break above it suggests that the ETH/USDT pair may have bottomed out. The pair may then rise to $2,600.
+XRP (XRP) has risen above the 20-day EMA ($2.09), indicating that the bearish momentum has weakened.
+There is resistance at the 50-day SMA ($2.21), but if the level is crossed, the XRP/USDT pair could march toward the resistance line. Sellers are expected to fiercely defend the resistance line because a rally above it signals a potential trend change.
+The $2 level is the crucial support on the downside. A break and close below $2 indicates that the bears remain in command. The pair may then tumble to $1.72 and eventually to $1.61.
+BNB (BNB) broke out of the downtrend line on April 21, indicating that the bulls are trying to seize control.
+A close above the downtrend line opens the doors for a rally to $645. Sellers will try to halt the up move at $645, but if the bulls do not give up much ground, the BNB/USDT pair may rise to $680.
+Time is running out for the bears. If they want to make a comeback, they will have to quickly pull the price below $566. Such a move indicates that the markets have rejected the breakout above the downtrend line. The pair could then spend some more time inside the triangle.
+Solana (SOL) has been gradually climbing toward the $148 to $153 overhead resistance zone, indicating that the bears are losing their grip.
+The moving averages are on the verge of completing a bullish crossover, and the RSI is in the positive zone, indicating that the path of least resistance is to the upside. The SOL/USDT pair could rally to $180 if buyers pierce the overhead zone.
+Related: Bitcoin longs cut $106M — Are Bitfinex BTC whales turning bearish above $86K?
+On the contrary, if the price turns down sharply from the overhead zone, it suggests that the bears are selling on rallies. That could keep the pair range-bound between $153 and $120 for some time.
+Dogecoin (DOGE) has been clinging to the 20-day EMA ($0.16), indicating that the selling pressure is reducing.
+The flattening 20-day EMA and the RSI near the midpoint suggest a balance between supply and demand. A break and close above the 50-day SMA ($0.17) tilts the advantage in favor of the bulls. The DOGE/USDT pair could then rally to $0.21.
+The $0.14 level remains the key support to watch out for on the downside. Sellers will have to yank the price below $0.14 to signal the resumption of the downtrend. The pair could drop to $0.13 and later to $0.10.
+The bulls are trying to maintain Cardano (ADA) above the 20-day EMA ($0.63), signaling a comeback.
+The ADA/USDT pair could rise to the 50-day SMA ($0.69), which is a crucial near-term resistance to watch out for. If buyers kick the price above the 50-day SMA, it suggests that the corrective phase may be over. The pair could climb to $0.83 and thereafter to $1.03.
+If the price turns down from the 50-day SMA, the bulls will try to halt the pullback at the 20-day EMA. If that happens, it increases the possibility of a rise above the 50-day SMA. The advantage will tilt in favor of the bears on a break below $0.58. 
+Chainlink (LINK) closed above the 20-day EMA ($12.90) on April 19 and has reached the 50-day SMA ($13.63).
+Sellers will try to defend the 50-day SMA, but if the bulls overcome the barrier, the LINK/USDT pair could pick up momentum and rally toward the resistance line of the descending channel pattern. The $16 level may act as a hurdle, but it is likely to be crossed.
+The first support on the downside is the 20-day EMA and then $11.68. A break and close below $11.68 suggests that bears remain in control. The pair may then slump to the support line, where buyers are expected to step in.
+This article does not contain investment advice or recommendations. Every investment and trading move involves risk, and readers should conduct their own research when making a decision.
+
+",2025-04-21 22:06:37.117261,[],,2025-04-21T22:06:37.117261
+9b60816f918a5cb03697b76badd4a55d,Cointelegraph,Bitcoin price tops $88.5K as BTC doubles down on stocks decoupling,https://cointelegraph.com/news/bitcoin-price-taps-85-5-k-btc-doubles-down-stocks-decoupling," Bitcoin is increasingly abandoning its stocks correlation to copy gold’s upside, while the dollar dives and trade war fears continue to grip markets worldwide. 
+Bitcoin (BTC) doubled down on its divergence from stocks at the April 21 Wall Street open as US trade war tensions escalated. 
+Data from Cointelegraph Markets Pro and TradingView showed BTC/USD matching month-to-date highs above $88,000.
+Bitcoin continued higher after the weekly close to catch up with gold as the latter set fresh all-time highs of $3,430 per ounce.
+By contrast, stock markets came under renewed selling pressure, with the S&P 500 and Nasdaq Composite Index both down over 2% at the time of writing.
+Newfound BTC price strength thus appeared to end lockstep trading with equities as part of reactions to trade-war headlines.
+These included warnings about the deterioration of relations with the US from both China and Japan, while US President Donald Trump renewed existing attacks on Federal Reserve Chair Jerome Powell over interest rates.
+“Technology stocks have gotten crushed again over the last week. Nvidia, NVDA, is down over -15% since last Monday while multiple other Mag 7 stocks are down 10%+,” trading resource The Kobeissi Letter wrote in part of a reaction thread on X. 
+Kobeissi also referenced downside pressure on the US Dollar Index (DXY), which traded at its lowest levels since March 2022.
+“While the USD, DXY, falls to a new 52-week low below 99, Bitcoin and Gold are surging,” it summarized. 
+Continuing, trading firm QCP Capital struck an optimistic tone.
+Related: US dollar goes ‘no-bid’ — 5 things to know in Bitcoin this week
+Bitcoin, it argued in its latest bulletin to Telegram channel subscribers, seemed to be sharing some of gold’s limelight as a hedge against macroeconomic uncertainty after months of failure.
+“With equities finishing last week in the red and extending an April drawdown, the narrative of BTC as a safe haven or inflation hedge is once again gaining traction. Should this dynamic hold, it could provide a fresh tailwind for institutional BTC allocation,” it wrote.
+QCP even suggested that recent outflows from the US spot Bitcoin exchange-traded funds (ETFs) may soon recover.
+“Indeed, we’re already seeing early signs of institutional confidence returning. Spot BTC ETF flows turned positive last week with net inflows of $13.4 million, a stark contrast to the previous week’s $708 million in outflows,” the bulletin noted. 
+This article does not contain investment advice or recommendations. Every investment and trading move involves risk, and readers should conduct their own research when making a decision.
+
+",2025-04-21 22:06:42.140697,[],,2025-04-21T22:06:42.140697
+c547a8748fefca24f3b7a6ebfb6b5901,Cointelegraph,Unlocking the potential of dormant Bitcoin in DeFi,https://cointelegraph.com/news/dormant-bitcoin-in-de-fi," Reactivating idle BTC in DeFi through restaking can unlock liquidity, enhance stability, and turn Bitcoin into a productive asset without compromising its role as a store of value. 
+Opinion by: Amitej Gajjala, co-founder and CEO of KernelDAO
+Bitcoin is the principal asset of the cryptocurrency world and even one of the world’s top 10 most valuable assets, recognized for its role as a store of value. Yet a huge percentage of the Bitcoin (BTC) supply remains dormant for years, meaning the crypto market only works with a fraction of the circulating supply each year. 
+This idle Bitcoin has an enormous amount of untapped financial potential.
+Bitcoin’s principal narratives are “store of value” and “never sell.” Today’s decentralized finance (DeFi) tools, however, enable yield gain by holding Bitcoin and taking advantage of dormant Bitcoin, which just sits in investors’ wallets and does nothing. 
+Dormant Bitcoin has not been used for long periods, usually one or more years. According to Glassnode, as of early 2025, the active supply that has not moved in more than one year is approximately 62%.
+This Bitcoin is held in wallets that show no activity on the blockchain and remain inactive for various reasons. These could be intentional long-term holding strategies or even permanent loss as a result of negligence or the death of their users. 
+Let’s put aside the rest of the reasons and focus on long-term Bitcoin holding strategies. The existence of this group implies that they could enter the market at any time, producing significant volatility in the price of Bitcoin. Why aren’t we using that Bitcoin in DeFi right now? 
+If large quantities of dormant Bitcoin were to reactivate immediately, it could significantly affect the cryptocurrency market, creating a noticeable event. These movements could dramatically affect Bitcoin's price in a negative way due to potential selling pressure and influence the market with a significant increase in active circulating supply.
+Recent: Stablecoin presence key to blockchain legitimacy, says ZachXBT
+If the reactivated Bitcoin is, however, reintegrated into productive DeFi ecosystems rather than sold en masse, it could provide liquidity without destabilizing the market. With that amount of active liquidity, Bitcoin would not only be a “store of value” but also a productive asset with utility and application.
+Let’s look at the announcement of the creation of a Bitcoin strategic reserve in the United States. One of the key points of this reserve is that it will follow budget-neutral strategies without selling the estimated 198,000 BTC held by the government. Those conditions are perfect for putting this Bitcoin into restaking and using it in DeFi to obtain rewards. Just picture all the gains the US could make by using most of its Bitcoin reserves in that way, without selling.
+Integrating dormant Bitcoin into DeFi platforms offers interesting Bitcoin and decentralized finance opportunities. Bitcoin would encourage transactions and fees on the network to support miners. The total value locked (TVL) in DeFi will be tremendous compared to all the liquidity Bitcoin will add to the DeFi market.
+Advances like wrapped tokens and crosschain bridges have enabled Bitcoin holders to engage in flash loans, lending, staking, restaking and yield farming on DeFi platforms. The current levels are, however, insufficient and will not be the only way to take advantage of this enormous liquidity injection. 
+As of March 10, Bitcoin’s TVL in DeFi stood at over $5 billion, according to DefiLlama data. This represents only 6% of the TVL of all the current blockchains on the market, with Ethereum the king at 52.56% with $48 billion. If Bitcoin became the new king of TVL in DeFi, it would only need to use some of the dormant Bitcoin mentioned above.
+In this scenario, Bitcoin will provide more stability to DeFi, as its holders, including institutional and long-term investors, are not prone to selling during market downturns. In addition, activating even a small fraction of currently idle Bitcoin could unlock billions of dollars of liquidity for decentralized finance applications.
+Today, restaking is emerging as an innovative, engaging way to integrate Bitcoin into DeFi while maintaining its appeal as a conservative, secure investment vehicle. Restaking enables holders to stake their assets in decentralized protocols and earn passive income while contributing to the economic security of the network.
+This mechanism offers several benefits, including passive income with minimal risk and economic security, by supporting the development of new products. It parallels traditional finance by offering predictable returns while preserving capital, which appeals more to conventional investors.
+Restaking aligns with the conservative mindset typical among many Bitcoin holders, allowing them to participate in innovations within the DeFi space. Restaking is desirable for every Bitcoiner to obtain yield with their reserves.
+Dormant Bitcoin is a vast, untapped reservoir within the Web3 ecosystem. By integrating Bitcoin into DeFi platforms today, individual investors and the broader ecosystem will significantly benefit from the increased stability, liquidity and growth opportunities.
+Opinion by: Amitej Gajjala, co-founder and CEO of KernelDAO. 
+",2025-04-21 22:06:46.383532,[],,2025-04-21T22:06:46.383532
+02e86c1d9a2bfa791972acf5870142a5,Cointelegraph,Bitcoiner PlanB slams ETH: ‘Centralized & premined’ shitcoin,https://cointelegraph.com/news/bitcoin-stock-to-flow-model-creator-plan-b-attacks-eth-centralized-premined-shitcoin," PlanB reignited his criticism of Ethereum, calling it centralized and premined, while highlighting its rollback history and diminished decentralization. 
+Pseudonymous Bitcoin stock-to-flow (S2F) model creator PlanB attacked Ethereum and mocked the project’s co-founder, Vitalik Buterin.
+PlanB mockingly reposted a June 2022 X post by Buterin in which the Ethereum co-founder said S2F “is really not looking good now.” PlanB responded with a new posting stating, “Ethereum is really not looking good now.”
+In his response to Buterin’s criticism from years ago, PlanB claimed Ethereum and the network’s coin, Ether (ETH), are centralized and premined, pointing to its shift to proof-of-stake (PoS) and changes in its issuance rate. He said that those features “are harmful and deserve all the mockery they get,” echoing Buterin’s old comment about S2F.
+Related: Bitcoin analyst PlanB transfers Bitcoin to ETFs to avoid 'hassle with keys'
+In a separate X post, PlanB explained that an Ethereum full node requires nine terabytes of disk space, meaning he “can not run it” on his hardware. The kind of node in question is probably an Ethereum archival node, which, according to Etherscan data, requires over 21.8 terabytes (TB) with the Geth client.
+An Ethereum full node running the Geth client that prunes older states with the default settings requires 1.28 TB, according to Etherscan data. The Bitcoin (BTC) and Ethereum communities have long debated what constitutes a full node.
+This type of pruned node cannot access the full historical data or generate Merkle proofs for old blocks, which limits its research and bug-finding applications. Still, such nodes can engage in full trustless block and transaction validation.
+Bitcoin’s full nodes require under 700 gigabytes (0.7 terabytes), according to Statista data, and also require much less computing power. This means that users can run Bitcoin full nodes much more easily, leading to a higher node count and higher network decentralization.
+Not everyone views the criticism as founded. Jeremiah O’Connor, chief technology officer and co-founder at crypto cybersecurity firm Trugard, told Cointelegraph:
+O’Connor explained that Ethereum and Bitcoin serve two different purposes. He said that “Ethereum nodes are bigger and more complex” since Ether “isn’t just digital gold — it’s a full-on global computer.”
+He conceded that users relying on centralized data providers like Infura is a problem. Still, he claimed that every ecosystem engages in centralization tradeoffs and that Ethereum developers are working to address the issue, and “it’s evolving fast.”
+“Calling ETH a “shitcoin” because it’s not Bitcoin is like calling smartphones a scam because they aren’t landlines,“ he said.
+He added that the two are different tools with differing purposes. He views Bitcoin as a “rock-solid value storage” and Ethereum as “where the builders are,” and said that “both matter” and “complement each other.”
+Related: Can the Ethereum blockchain roll back transactions? Understanding the limits and risks
+PlanB also questioned Buterin’s influence on Ethereum’s development, calling him a “single point of failure.” However, Ethereum Foundation co-executive director Tomasz Stańczak recently announced that Buterin is stepping back from day-to-day operations to focus on research.
+PlanB also raised an issue with Ethereum rolling back transactions following the 2016 DAO hack:
+Bybit CEO Ben Zhou suggested an Ethereum rollback following the exchange’s $1.4 billion hack. Still, many in the community argued that a rollback happening now, with Ethereum being a more mature network, would be next to impossible.
+Bitcoin itself had a comparable incident in its early history as well. On Aug. 15, 2010, an exploit resulted in a transaction that minted 184 BTC on the network in block 74638.
+Satoshi Nakamoto (still involved in development at the time) and other core developers released an update that rolled back the network to block 74637 and patched the vulnerability. In other words, Bitcoin saw its own blockchain rollback in its early days.
+Other points raised by PlanB include Ethereum switching to PoS, which he claims has consequences for the price. He suggested that changes to issuance and governance undermine Ethereum’s value proposition compared to Bitcoin’s fixed and predictable supply.
+Magazine: Crypto ‘more taboo than OnlyFans,’ says Violetta Zironi, who sold song for 1 BTC
+",2025-04-21 22:06:52.572638,[],,2025-04-21T22:06:52.572638
+c9a5e107a9bd5fa67bf5dc27f759a227,Cointelegraph,Bitcoin longs cut $106M — Are Bitfinex BTC whales turning bearish above $86K?,https://cointelegraph.com/news/bitcoin-longs-106m-bitfinex-btc-whales-bearish-86k," Bitfinex margin traders show high-risk tolerance, and a decrease in their longs doesn’t necessarily mean BTC’s price will immediately pull back. 
+Despite Bitcoin’s (BTC) price reaching its highest level in over three weeks, traders on Bitfinex reduced their leveraged long (bullish) positions on margin contracts by more than $100 million between April 17 and April 19. 
+This reduction has led to speculation that Bitcoin whales may be anticipating a price correction or, at the very least, are not confident in further short-term gains. Let’s look closer at whether this could be the case. 
+Bitcoin surged above $86,000 on April 21 after US President Donald Trump openly discussed the possibility of replacing Federal Reserve Chair Jerome Powell. Trump criticized Powell for not acting swiftly enough to ease monetary policy. 
+Additionally, investors are increasingly risk-off due to concerns about a recession as the global trade war escalates, particularly given the ongoing uncertainty in US-China relations.
+The rationale behind this profit-taking in margin markets is especially noteworthy, as Bitcoin’s price has remained below $90,000 since early March, prompting some investors to question the likelihood of a sustainable decoupling from traditional markets. 
+The S&P 500 index futures are trading 1.1% below their closing price on April 17, and rising political tensions in the US are further eroding investor sentiment.
+Bitcoin margin longs on Bitfinex stood flat at 80,400 BTC between April 10 and April 17, indicating strong confidence from bullish traders as this level neared a seven-month high. However, even as BTC’s price reclaimed the $83,000 level, these traders chose to reduce their leveraged bullish positions by 1,250 BTC, equivalent to $106 million.
+Historically, Bitfinex traders are known for rapidly opening or closing substantial Bitcoin margin positions, indicating that whales and large arbitrage desks are typically behind these movements. 
+Nevertheless, it is not accurate to suggest that Bitfinex whales have shifted to a bearish stance, considering their margin longs currently total 79,136 BTC, valued at $6.86 billion, while margin shorts amount to just 326 BTC.
+Related: Bitcoin whales absorb 300% of newly mined BTC supply — Is $100K next?
+The significant difference between bullish and bearish positions can be attributed to the platform’s notably low 2% annual interest rate. In comparison, traders utilizing two-month BTC futures currently pay a 5.7% annualized premium. 
+This disparity creates opportunities for arbitrage, as one can open Bitcoin longs on the margin market and simultaneously sell the equivalent position on BTC futures to capture the difference.
+Furthermore, Bitcoin’s price does not always correlate directly with changes in leveraged positions on Bitfinex. For instance, in the two weeks ending March 10, whales increased their margin longs by 13,454 BTC, yet Bitcoin’s price declined from $95,930 to $67,076 during the same period. 
+Similarly, margin longs decreased by 11,047 BTC in the two weeks ending Dec. 16, 2024, while Bitcoin’s price rose from $96,200 to $106,400.
+However, these sophisticated investors have demonstrated strong market timing over the longer term. For example, Bitcoin’s price eventually dropped below $58,000 on Dec. 23, 2024, after margin-long positions had already been reduced by 26% in the preceding 30 days. 
+This pattern suggests that these traders are generally highly profitable but also display a significantly higher risk tolerance and patience compared to the average investor.
+Ultimately, a $106-million reduction in BTC margin longs is not sufficient evidence to claim that professional traders are turning bearish.
+As Cointelegraph reported, onchain data suggests Bitcoin whales have grown in number throughout March and April despite the price slump, suggesting accumulation.
+This article is for general information purposes and is not intended to be and should not be taken as legal or investment advice. The views, thoughts, and opinions expressed here are the author’s alone and do not necessarily reflect or represent the views and opinions of Cointelegraph.
+
+",2025-04-21 22:06:56.492323,[],,2025-04-21T22:06:56.492323
+>>>>>>> 4c279eea710d7a2e1e2a24d2f54aad4c730370ae
 c43f72eb84509cddc953e82486627eca,Cointelegraph,Here’s what happened in crypto today,https://cointelegraph.com/news/what-happened-in-crypto-today," Need to know what happened in crypto today? Here is the latest news on daily trends and events impacting Bitcoin price, blockchain, DeFi, NFTs, Web3 and crypto regulation. 
 Today in crypto, the Chicago Mercantile Exchange (CME) Group announced the launch of Solana futures contracts in March. Meanwhile, global trade concerns continue pressuring investor sentiment, risking a potential Bitcoin correction below the key $75,000 support level. In addition, the US Securities and Exchange Commission has released a statement saying it does not view memecoins as securities.
 The Chicago Mercantile Exchange (CME) Group, a globally recognized derivatives exchange, announced it will launch Solana (SOL) futures contracts on March 17, pending a review by United States financial regulators.
@@ -19,6 +190,7 @@ Source: David Sacks
 “As such, persons who participate in the offer and sale of meme coins do not need to register their transactions with the Commission,” the SEC said.
 It added that memecoin buyers and holders wouldn’t be protected by US securities laws but said the fraudulent offer and sale of memecoins “may be subject to enforcement action or prosecution by other federal or state agencies.”
 ",1740780816989,[],,2025-02-28T22:13:36.989672
+<<<<<<< HEAD
 c52e2493c3e837f979287c565196d3b1,Cointelegraph,Over 13K institutions exposed to Strategy as Saylor hints at BTC buy,https://cointelegraph.com/news/13-000-institutions-exposure-strategy-saylor-hints-btc-buy," According to data from SaylorTracker, Strategy is up over 25% on its Bitcoin investment, amounting to over $9 billion in unrealized gains. 
 Strategy co-founder Michael Saylor hinted at an impending Bitcoin (BTC) purchase by Strategy and said that more than 13,000 institutions now have direct exposure to the company.
 The company's most recent acquisition of 3,459 BTC, valued at over $285 million at the time of purchase, on April 14, brought Strategy's total holdings to 531,644 BTC, valued at over $44.9 billion.
@@ -197,3 +369,91 @@ The correction was caused by Bitcoin’s 24/7 trading availability, which made i
 “On a weekend, there’s not much volume. So you have a worse risk of rapid sort of flash crashes or flash dips that get filled in again,” he said.
 Magazine: Bitcoin ATH sooner than expected? XRP may drop 40%, and more: Hodler’s Digest, March 23 – 29
 ",2025-04-21 00:13:51.608948,[],,2025-04-21T00:13:51.608948
+=======
+5e321a94f14a10320bde2e19225ea7b7,Cointelegraph,"Michael Saylor’s Strategy bagged 6,556 Bitcoin for $555.8M last week",https://cointelegraph.com/news/michael-saylor-strategy-buy-6556-bitcoin-555-8-million," Michael Saylor’s Strategy has acquired 6,556 Bitcoin for $555.8 million, bringing total holdings to 538,200 BTC, per the company's latest SEC filing. 
+Michael Saylor’s Strategy, one of the world’s largest publicly listed corporate Bitcoin holders, added another major purchase to its growing portfolio as the cryptocurrency trades near $85,000.
+Strategy acquired 6,556 Bitcoin for $555.8 million from April 14–20, at an average price of $84,785 per coin, the firm announced in its latest Form 8-K filing with the United States Securities and Exchange Commission.
+The latest purchase accounts for 1.2% of Strategy’s total Bitcoin holdings of 538,200 BTC as of April 20, acquired for the aggregate amount of $36.5 billion at an average price of $67,766 per BTC.
+The latest Bitcoin purchase was funded using proceeds from the Common ATM and STRK ATM stock offerings, including the sale of 1,755,000 Strategy shares for $547.7 million and 91,213 shares of Series A preferred stock sold for $7.8 million.
+The latest purchase follows Strategy’s 3,459 BTC acquisition reported on April 14, which was the first announced purchase by the firm after March 31.
+Prior to that, Strategy did not report a Bitcoin buy between March 31 and April 6, breaking its usual cadence as Bitcoin fell below $87,000.
+Strategy has acquired 91,800 Bitcoin so far in 2025, accounting for 17% of its total BTC holdings.
+The new announcement came shortly after Saylor highlighted growing institutional exposure to Strategy, with at least 13 institutional investors holding MSTR shares directly.
+Citing public data as of the first quarter of 2025, Saylor also mentioned that 814,000 retail accounts have direct exposure to MSTR, with another 55 million beneficiaries having indirect exposure through mutual funds, pensions, insurance portfolios and exchange-traded funds.
+Related: Metaplanet tops $400M Bitcoin holdings with new $28M purchase
+MSTR shares have seen a massive rise since 2024, peaking above $420 amid optimism over Donald Trump’s presidential win in November 2025. At the time of writing, MSTR is trading at $314, up around 4% year-to-date, according to TradingView.
+On the other hand, the Bitcoin price is seeing a significant drop YTD, down more than 6% and trading at $86,936 at the time of writing, according to data from CoinGecko.
+Magazine: Your AI ‘digital twin’ can take meetings and comfort your loved ones
+
+",2025-04-21 22:07:01.049686,[],,2025-04-21T22:07:01.049686
+11a396b8908ea6089384612dda37fcc5,Cointelegraph,Bitcoin rally above $100K may follow US Treasury buybacks — Arthur Hayes,https://cointelegraph.com/news/bitcoin-rally-may-follow-us-treasury-buybacks," Incoming US Treasury buybacks and a weakening US dollar may bolster Bitcoin’s appeal as a hedge against turbulence in the traditional financial system. 
+Investors seeking Bitcoin exposure may be running out of time to purchase below a six-figure price, as US Treasury buybacks may signal the next leg up for the world’s first cryptocurrency.
+This might be the “last chance” to buy Bitcoin (BTC) below the $100,000 mark, according to Arthur Hayes, co-founder of BitMEX and chief investment officer of Maelstrom.
+“Seriously fam, this might be the last chance you have to buy $BTC post, hinting at incoming “treasury buy backs” as the “Bazooka” for Bitcoin’s price trajectory.
+Treasury buybacks refer to the US Treasury Department repurchasing its outstanding bonds from the open market to increase liquidity, manage federal debt or stabilize interest rates.
+These operations can inject liquidity into the financial system, often benefiting risk assets like Bitcoin.
+Related: Bitcoin up 33% since 2024 halving as institutions disrupt cycle
+Other analysts predicted that the growth of the fiat money supply will be Bitcoin’s main catalyst in 2025.
+The growing money supply may push Bitcoin’s price above $132,000 before the end of the year, according to Jamie Coutts, chief crypto analyst at Real Vision.
+However, global trade war concerns may limit investor appetite until the US and China reach a trade agreement.
+Related: Metaplanet tops $400M Bitcoin holdings with new $28M purchase
+Bitcoin briefly rose above $87,700 for the first time in nearly three weeks, since US President Donald Trump announced reciprocal import tariffs on April 2.
+“Looks like Bitcoin is pumping on continued Dollar weakness,” wrote André Dragosch, the European head of research at Bitwise, adding that the US Dollar Index “just touched the lowest level since March 2022.”
+The weakening US dollar may reinforce Bitcoin’s appeal as a safe-haven asset, Ryan Lee, chief analyst at Bitget Research, told Cointelegraph, adding:
+Despite the recent correction, Japanese and UK-based investment firms are investing hundreds of millions into Bitcoin, signaling continued institutional adoption that may accelerate Bitcoin’s four-year cycle.
+This article does not contain investment advice or recommendations. Every investment and trading move involves risk, and readers should conduct their own research when making a decision.
+Magazine: SCB tips $500K BTC, SEC delays Ether ETF options, and more: Hodler’s Digest, Feb. 23 – March 1
+",2025-04-21 22:07:04.338962,[],,2025-04-21T22:07:04.338962
+b081f1d8ba0dd39d863754cb523d0c21,Cointelegraph,US dollar goes 'no-bid' — 5 things to know in Bitcoin this week,https://cointelegraph.com/news/us-dollar-no-bid-5-things-bitcoin-this-week," Bitcoin seeks a change of trend as the US trade war fuels gold records but punishes stocks and the dollar. What's next for BTC price action? 
+Bitcoin (BTC) is eyeing new April highs as macro instability suddenly delivers a tailwind for BTC price performance.
+Bitcoin is on the way up, nearing $88,000, but few market participants are willing to trust the strength of snap price moves.
+A new macro week dawns in the shadow of the US trade war, with Federal Reserve speakers lining up to take to the stage.
+Gold is shattering all-time highs again, but this time Bitcoin is starting to react.
+US dollar weakness exhibits historic traits as three-year lows spark bullish predictions for Bitcoin and commodities.
+The newest BTC hodlers are already profiting from the latest move, but speculators are waiting for a reclaimation of $91,000.
+Bitcoin is starting the week off right with a 3% rise on the back of fresh macroeconomic turmoil amid the US-China trade war.
+BTC/USD reached $87,705 after the April 20 weekly close, data from Cointelegraph Markets Pro and TradingView shows, its highest in nearly three weeks.
+Reacting, however, traders have been cautious, highlighting the unreliable nature of volatile moves that begin during non-TradFi trading hours on weekends.
+“Nice breakout, but it’s on low volume,” trading resource Stockmoney Lizards wrote in part of a response on X. 
+Never like to trust a Sunday pump - lots of false breakouts here by the looks of it. Lets see what next week brings pic.twitter.com/cVE1j1Gh63
+Fellow trading account IncomeSharks shared similar views, saying that BTC price strength must continue in the face of weak equities.
+“Nice to see the downtrend breakout but the timing is important,” it said.
+Crypto trader, analyst and entrepreneur Michaël van de Poppe continued the lukewarm reaction to the upside on both Bitcoin and gold, predicting that they “probably will give it back.”
+“Needs to get above $88,804 to break the series of lower highs and lower lows,” trader, analyst and podcast host Scott Melker, known as the “Wolf of All Streets,” added. 
+The coming days will see the Federal Reserve take the spotlight as senior officials comment on the current macroeconomic landscape.
+A total of eight Federal Reserve presidents will shed fresh light on what is an increasingly contentious status quo for the US, with the Fed at odds with demands from President Donald Trump.
+Last week, Trump even called for Fed Chair Jerome Powell to be fired, a move that sparked concerns over US economic stability.
+Powell has repeatedly come out hawkish on financial policy, hinting at being in no rush to lower interest rates as Trump’s trade war fuels inflation concerns.
+The latest data from CME Group’s FedWatch Tool reflects this, with traders seeing a rate cut likely only at the Fed’s June meeting.
+With little by way of new macro data due for release, however, markets will continue to focus on the trade war itself, along with the volatility it often creates.
+The start of the week has been no exception so far; China issuing warnings over collaboration with the US to isolate it immediately sent stock futures tumbling while gold soared to new all-time highs.
+Bitcoin, in a break with recent tradition, managed to copy gold’s optimism instead of following equities lower.
+“Gold has hit its 55th all-time high in 12 months and Bitcoin is officially joining the run, now above $87,000,” trading resource The Kobeissi Letter responded in part of an X post on the topic. 
+“The narrative in both Gold and Bitcoin is aligning for the first time in years: Gold and Bitcoin are telling us that a weaker US Dollar and more uncertainty are on the way.”
+Gold remains the standout bullish story for 2025.
+Amid the uncertainty wrought by the trade war and its potential long-term impact on inflation and global assets, XAU/USD has exploded nearly 30% year-to-date.
+The pair is currently circling a record $3,400 per ounce, and while some have warned that a “blow-off top” is due, momentum refuses to slow down.
+Kobeissi suggested that Trump’s latest trade-war post on social media, in the form of a “non-tariff cheating” sheet, helped reignite gold’s relentless march higher.
+“President Trump’s ‘non-tariff cheating’ list is arguably one of the best things to happen to gold all year,” it argued.
+Kobeissi revealed that gold had, in fact, outperformed the S&P 500 since the COVID-19 cross-market crash in March 2020.
+For Bitcoin, however, change appears to be afoot. As Cointelegraph reported, BTC/USD has finally begun to mimic gold’s reaction to macro uncertainty after spending months in a downtrend.
+As that downtrend is slowly left behind, talk is turning to historical precedent. In the past, Bitcoin breakouts have lagged gold by around three months.
+“After futures opened it didn’t take long for $BTC and $GOLD to move up quickly as equities moved down,” trader Daan Crypto Trades told X followers. 
+Adding to the mix is fresh US dollar weakness, something that hedge fund creator Andreas Steno Larsen described as a “good early sign for Bitcoin.”
+“We ain’t seen nothing yet, if this continues (and if Powell is laid off),” he argued on X alongside a chart of BTC versus USD returns. 
+The US Dollar Index (DXY), which tracks greenback strength against a basket of major US trading partner currencies, was down another 1.3% on April 21 at the time of writing. This, in turn, brought the year-to-date downside to nearly 10%.
+Now at its lowest levels since March 2022, DXY is being heralded as the powder keg to spark a giant bull run in both Bitcoin and commodities.
+“The US Dollar has gone ‘no bid,’ teetering on a historic 14-yr uptrend breakdown from 2011,” trading resource Rock Bottom Entries told X followers. 
+Bitcoin traditionally outperforms to the upside during periods of rapid DXY suppression, an inverse correlation that has been lacking in recent times.
+“Contrary to what you hear on social media, Bitcoin has been in lockstep with DXY for a couple of years,” analyst Joe Dean thus commented on the phenomenon. 
+Short-term BTC price moves are already making a tangible difference to certain Bitcoin investor cohorts.
+Related: Bitcoin prepares for launch from $85K, BNB, HYPE, TAO and RNDR could follow
+New research from onchain analytics platform CryptoQuant reveals that even a tap of $87,000 has placed the most recent set of buyers in the black, with an average 3.7% profit.
+“This is a short-term bullish signal, showing renewed confidence and reduced panic risk among the newest market entrants,” CryptoQuant contributor Crazzyblockk wrote in one of its “Quicktake” blog posts.
+The move comes in contrast to the large short-term holder (STH) cohort, comprised of buyers up to six months old, which has an aggregate cost basis of $91,000.
+As Cointelegraph reported, STH cost bases can act as both support and resistance for extended periods as speculative hodlers react to sudden price swings.
+“Until BTC closes above the $91K threshold, Short-Term Holders remain in loss. This may sustain latent sell pressure, especially if price momentum weakens — reinforcing the importance of a decisive breakout above STH realized price to neutralize this overhang,” CryptoQuant added.
+This article does not contain investment advice or recommendations. Every investment and trading move involves risk, and readers should conduct their own research when making a decision.
+
+",2025-04-21 22:07:08.495122,[],,2025-04-21T22:07:08.495122
+>>>>>>> 4c279eea710d7a2e1e2a24d2f54aad4c730370ae

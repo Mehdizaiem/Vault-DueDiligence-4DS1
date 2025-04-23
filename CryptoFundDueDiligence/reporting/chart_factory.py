@@ -30,7 +30,7 @@ class ChartFactory:
     with consistent styling, appropriate chart types, and financial formatting.
     """
     
-    def __init__(self):
+    def __init__(self,):
         """Initialize the chart factory with design elements."""
         self.design = DesignElements()
         

@@ -12,6 +12,7 @@ from typing import Dict, List, Any, Optional, Union
 from datetime import datetime
 import uuid
 
+
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -157,65 +158,76 @@ class DueDiligenceCoordinator:
     def _process_analysis_results(self, analysis_results: Dict[str, Any]) -> Dict[str, Any]:
         """
         Process and enrich the document analysis results.
-        
+
         Args:
             analysis_results: Results from document analysis
-            
+
         Returns:
             Enriched due diligence data
         """
-        # Extract key information
-        fund_info = analysis_results.get("fund_info", {})
+        # Extract key information using a renamed local variable
+        local_fund_info = analysis_results.get("fund_info", {})
         wallet_data = analysis_results.get("wallet_data", [])
         portfolio_data = analysis_results.get("portfolio_data", {})
-        
+
         # Get crypto entities mentioned (from fund name, portfolio, etc.)
-        crypto_entities = self._extract_crypto_entities(fund_info, portfolio_data)
-        
+        # Use the renamed variable here
+        crypto_entities = self._extract_crypto_entities(local_fund_info, portfolio_data)
+
         # Get wallet addresses
         wallet_addresses = [wallet.get("address") for wallet in wallet_data]
-        
+
         # Enrich with market data if crypto entities are found
         market_analysis = {}
         if crypto_entities:
             logger.info(f"Enriching with market data for: {', '.join(crypto_entities)}")
             market_analysis = self.market_analyzer.analyze_market_data(crypto_entities)
-        
+
         # Enrich with on-chain data if wallet addresses are found
         onchain_analysis = {}
         if wallet_addresses:
             logger.info(f"Enriching with on-chain data for {len(wallet_addresses)} wallets")
             onchain_analysis = self.onchain_analyzer.analyze_wallets(wallet_addresses)
-        
+
         # Perform risk assessment
-        risk_assessment = self.risk_analyzer.assess_risk(
-            fund_info=fund_info,
-            wallet_data=wallet_data,
-            portfolio_data=portfolio_data,
-            market_analysis=market_analysis,
-            onchain_analysis=onchain_analysis
+        # Use the renamed variable when creating the dictionary for risk analysis,
+        # but keep the key name "fund_info" if RiskAnalyzer expects it.
+        fund_data_for_risk = {
+            "fund_info": local_fund_info,
+            "portfolio_data": portfolio_data,
+            "compliance_data": analysis_results.get("compliance_data", {}),
+            "team_data": analysis_results.get("team_data", {})
+        }
+        risk_assessment = self.risk_analyzer.analyze_fund_risks(
+            fund_data=fund_data_for_risk,
+            wallet_analysis=onchain_analysis,
+            market_analysis=market_analysis
         )
-        
-        # Perform compliance analysis
-        compliance_analysis = self.compliance_analyzer.analyze_compliance(
-            fund_info=fund_info,
-            document_analysis=analysis_results,
-            risk_assessment=risk_assessment
+
+        # Debug print using the renamed variable
+        print(f"DEBUG: local_fund_info before compliance call: {local_fund_info}")
+
+        # Perform compliance analysis using the renamed variable
+        logger.info("Starting compliance analysis")
+        compliance_analysis_result = self.compliance_analyzer.analyze_compliance(
+        fund_data=analysis_results # Pass the whole analysis result dict
         )
-        
+        logger.info("Compliance analysis complete")
+
         # Combine all data into a comprehensive due diligence dataset
+        # Use the renamed variable here for the value, but keep the key "fund_info"
         due_diligence_data = {
-            "fund_info": fund_info,
+            "fund_info": local_fund_info,
             "wallet_data": wallet_data,
             "portfolio_data": portfolio_data,
             "market_analysis": market_analysis,
             "onchain_analysis": onchain_analysis,
             "risk_assessment": risk_assessment,
-            "compliance_analysis": compliance_analysis,
+            "compliance_analysis": compliance_analysis_result,
             "team_data": analysis_results.get("team_data", {}),
             "analysis_confidence": analysis_results.get("analysis_confidence", 0)
         }
-        
+
         return due_diligence_data
     
     def _extract_crypto_entities(self, fund_info: Dict[str, Any], portfolio_data: Dict[str, float]) -> List[str]:

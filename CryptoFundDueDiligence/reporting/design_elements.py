@@ -94,7 +94,13 @@ class DesignElements:
         self.RISK_GAUGE_SIZE = 3.0   # Size for risk gauge charts
         self.RISK_GAUGE_LEFT = 3.0   # Left position for risk gauge
         self.RISK_GAUGE_TOP = 2.5    # Top position for risk gauge
-    
+
+        self.POSITIVE = self.RISK_LOW # Example: Use light green for positive
+        self.NEGATIVE = self.RISK_HIGH 
+        self.ACCENT_1 = (255, 153, 0) 
+        
+    TEXT_LIGHT = (255, 255, 255)  # White
+    TEXT_DARK = (0, 0, 0)        # Black    
     def get_risk_scale_color(self, value: float, invert: bool = False) -> Tuple[int, int, int]:
         """
         Get color on a risk scale based on value (0-100).

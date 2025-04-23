@@ -27,6 +27,7 @@ project_root = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(project_root)
 
 # Import from your existing code
+from QAppt.ppt_generator import QAPresentationGenerator
 from Sample_Data.vector_store.storage_manager import StorageManager
 # Reuse agentic_rag.py functions
 from agentic_rag import CryptoDueDiligenceSystem
@@ -1921,7 +1922,12 @@ class EnhancedCryptoQA:
         
         # Initialize the system
         self.initialize()
-    
+        
+        # Initialize conversation tracking
+        self.conversation_history = []
+        self.discussed_topics = set()
+        self.topic_summaries = {}
+
     def initialize(self):
         """Initialize components and connections."""
         try:
@@ -1945,6 +1951,23 @@ class EnhancedCryptoQA:
             logger.error(traceback.format_exc())
             return False
     
+    def _track_conversation(self, question: str, answer: str, analysis: Dict):
+        """Track conversation and extract topics"""
+        # Store Q&A pair
+        self.conversation_history.append({
+            "question": question,
+            "answer": answer,
+            "timestamp": datetime.now(),
+            "topics": analysis.get("crypto_entities", []),
+            "category": analysis.get("primary_category", "general")
+        })
+        
+        # Track topics
+        if analysis.get("crypto_entities"):
+            self.discussed_topics.update(analysis["crypto_entities"])
+        if analysis.get("primary_category"):
+            self.discussed_topics.add(analysis["primary_category"])
+
     def answer_question(self, question: str, document_id: Optional[str] = None, temperature: float = 0.7) -> str:
         """
         Answer a user question using advanced RAG techniques with Llama 3.3 70B Versatile.
@@ -1980,12 +2003,53 @@ class EnhancedCryptoQA:
             # 6. Post-process the answer if needed
             answer = self._post_process_answer(answer, analysis)
             
+            # Track the conversation
+            self._track_conversation(question, answer, analysis)
+            
+            # Check if this is a report generation request
+            if "generate report" in question.lower():
+                return self._generate_conversation_report()
+            
             return answer
             
         except Exception as e:
             logger.error(f"Error answering question: {e}")
             logger.error(traceback.format_exc())
             return f"I'm sorry, I encountered an error while processing your question: {str(e)}"
+    
+    def _generate_conversation_report(self) -> str:
+        """Generate a report based on conversation history"""
+        try:
+            generator = QAPresentationGenerator()
+            
+            # Organize conversation by topics
+            topic_discussions = self._organize_conversation_by_topics()
+            
+            # Generate the report
+            report_path = generator.generate_comprehensive_report(
+                topics=list(self.discussed_topics),
+                topic_discussions=topic_discussions,
+                conversation_history=self.conversation_history
+            )
+            
+            return f"Generated comprehensive report about discussed topics: {report_path}"
+        except Exception as e:
+            logger.error(f"Error generating conversation report: {e}")
+            return f"Error generating report: {str(e)}"
+
+    def _organize_conversation_by_topics(self) -> Dict:
+        """Organize conversation history by topics"""
+        topic_discussions = {}
+        
+        for entry in self.conversation_history:
+            # Group by main topics
+            topics = entry["topics"] + [entry["category"]]
+            for topic in topics:
+                if topic not in topic_discussions:
+                    topic_discussions[topic] = []
+                topic_discussions[topic].append(entry)
+        
+        return topic_discussions
     
     def _post_process_answer(self, answer: str, analysis: Dict) -> str:
         """
@@ -2031,6 +2095,276 @@ class EnhancedCryptoQA:
             self.storage.close()
         if hasattr(self.due_diligence_system, 'storage') and self.due_diligence_system.storage:
             self.due_diligence_system.storage.close()
+
+    def generate_report_from_qa(self, conversation_history: List[Dict]) -> str:
+        """Generate a comprehensive report based on conversation history with enhanced visuals and insights"""
+        try:
+            # Extract topics from conversation
+            topics = self.topic_extractor.extract_topics(conversation_history)
+            
+            # Create title slide with more professional title
+            title = "Cryptocurrency Market Intelligence Report"
+            subtitle = "Advanced Analysis of Discussion Topics"
+            self.create_title_slide(title, subtitle)
+
+            # Add executive summary slide
+            self._add_executive_summary(topics, conversation_history)
+
+            # Add topics overview slide with better visualization
+            self._add_topics_overview(topics)
+
+            # Generate slides for each main topic with enhanced visuals
+            for topic in topics['main_topics']:
+                self._add_topic_analysis_slides(topic, conversation_history)
+
+            # Add technical analysis section if present
+            if topics['technical_topics']:
+                self._add_technical_analysis_slides(topics['technical_topics'])
+
+            # Add market analysis section if present
+            if topics['market_topics']:
+                self._add_market_analysis_slides(topics['market_topics'])
+                
+            # Add entities analysis if present
+            if topics['entities']:
+                self._add_entities_analysis(topics['entities'])
+                
+            # Add trends and outlook section
+            self._add_trends_and_outlook(topics)
+                
+            # Add conclusion slide
+            self._add_conclusion_slide(topics)
+
+            # Save the presentation with better naming
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            output_file = os.path.join(
+                self.output_dir,
+                f"crypto_intelligence_report_{timestamp}.pptx"
+            )
+            self.prs.save(output_file)
+            return output_file
+
+        except Exception as e:
+            logger.error(f"Error generating report: {e}")
+            logger.error(traceback.format_exc())
+            return None
+            
+    def _add_executive_summary(self, topics: Dict[str, List[str]], conversation_history: List[Dict]):
+        """Add an executive summary slide"""
+        self.add_section_slide("Executive Summary")
+        
+        # Create summary points
+        summary_points = [
+            f"This report analyzes {len(topics['main_topics'])} key cryptocurrency topics: {', '.join(topics['main_topics'][:3])}" + 
+            ("..." if len(topics['main_topics']) > 3 else ""),
+            f"Technical aspects covered: {', '.join(topics['technical_topics'][:3])}" + 
+            ("..." if len(topics['technical_topics']) > 3 else ""),
+            f"Market factors analyzed: {', '.join(topics['market_topics'][:3])}" + 
+            ("..." if len(topics['market_topics']) > 3 else ""),
+            f"Based on Q&A discussion with {len(conversation_history)} conversation entries"
+        ]
+        
+        self.add_content_slide("Key Report Highlights", summary_points)
+
+    def _add_topics_overview(self, topics: Dict[str, List[str]]):
+        """Add an enhanced topics overview slide with visualization"""
+        self.add_section_slide("Topics Analysis")
+        
+        # Create data for visualization
+        categories = ["Main Topics", "Technical Topics", "Market Topics", "Entities"]
+        counts = [len(topics['main_topics']), len(topics['technical_topics']), 
+                len(topics['market_topics']), len(topics['entities'])]
+        
+        # Add visualization
+        vis_data = {
+            "x": categories,
+            "y": counts,
+            "type": "bar",
+            "title": "Topics Distribution"
+        }
+        self.add_visualization_slide("Topics Distribution", vis_data, chart_type='bar')
+        
+        # Add content slide with topics
+        topics_content = [
+            f"Main Topics: {', '.join(topics['main_topics'])}",
+            f"Technical Areas: {', '.join(topics['technical_topics'])}",
+            f"Market Analysis: {', '.join(topics['market_topics'])}",
+            f"Related Entities: {', '.join(topics['entities'])}"
+        ]
+        self.add_content_slide("Topics Overview", topics_content)
+
+    def _add_entities_analysis(self, entities: List[str]):
+        """Add analysis of entities mentioned in conversation"""
+        self.add_section_slide("Entity Analysis")
+        
+        # For each entity, fetch related information
+        for entity in entities[:3]:  # Limit to top 3 entities
+            # Fetch entity data
+            entity_data = self._fetch_entity_data(entity)
+            if entity_data:
+                self.add_content_slide(f"{entity} Analysis", entity_data)
+        
+        # Add relationships visualization if possible
+        relationship_data = self._fetch_entity_relationships(entities)
+        if relationship_data:
+            self.add_visualization_slide("Entity Relationships", relationship_data)
+
+    def _fetch_entity_data(self, entity: str) -> List[str]:
+        """Fetch data about a specific entity from Weaviate"""
+        try:
+            # Try different collections based on entity type
+            collections = ["CryptoProjects", "CryptoExchanges", "CryptoCompanies"]
+            
+            for collection_name in collections:
+                try:
+                    collection = self.weaviate_client.collections.get(collection_name)
+                    
+                    response = collection.query.hybrid(
+                        query=entity,
+                        limit=1
+                    )
+                    
+                    if response and response.objects:
+                        # Extract entity information
+                        properties = response.objects[0].properties
+                        
+                        # Format entity data points
+                        data_points = []
+                        for key, value in properties.items():
+                            if key not in ["id", "_id", "vector"]:
+                                data_points.append(f"{key.replace('_', ' ').title()}: {value}")
+                        
+                        return data_points
+                except:
+                    continue
+                    
+            # If no specific data found, create generic insights
+            return [
+                f"{entity} was mentioned in the conversation",
+                f"Additional information about {entity} can be researched",
+                f"{entity} appears to be relevant to the discussed topics"
+            ]
+        except Exception as e:
+            logger.error(f"Error fetching entity data: {e}")
+            return [f"Information about {entity} not available"]
+
+    def _fetch_entity_relationships(self, entities: List[str]) -> Dict:
+        """Create a visualization of relationships between entities"""
+        # This would normally fetch real data, but we'll create a placeholder
+        connections = []
+        
+        # Create placeholder relationship strengths
+        for i in range(min(len(entities), 5)):
+            for j in range(i+1, min(len(entities), 5)):
+                strength = i * 10 + j * 5  # Dummy value
+                connections.append(strength)
+        
+        # Format for visualization
+        return {
+            "labels": entities[:5],
+            "values": connections,
+            "type": "network",
+            "title": "Entity Relationships"
+        }
+
+    def _add_trends_and_outlook(self, topics: Dict[str, List[str]]):
+        """Add trends and outlook section"""
+        self.add_section_slide("Trends & Outlook")
+        
+        # Fetch trend data
+        trend_data = self._fetch_market_trends()
+        if trend_data:
+            self.add_visualization_slide("Market Trends", trend_data)
+        
+        # Fetch outlook predictions
+        outlook_points = self._fetch_market_outlook()
+        if outlook_points:
+            self.add_content_slide("Market Outlook", outlook_points)
+
+    def _fetch_market_trends(self) -> Dict:
+        """Fetch market trend data for visualization"""
+        try:
+            # Get collection
+            collection = self.weaviate_client.collections.get("MarketTrends")
+            
+            # Query trend data
+            response = collection.query.fetch_objects(
+                limit=10,
+                order_by=[{"path": ["timestamp"], "order": "asc"}]
+            )
+            
+            if response and response.objects:
+                # Extract trend data
+                timestamps = []
+                sentiment_values = []
+                
+                for obj in response.objects:
+                    timestamps.append(obj.properties.get("timestamp", ""))
+                    sentiment_values.append(float(obj.properties.get("sentiment_index", 0)))
+                
+                # Format for visualization
+                return {
+                    "x": timestamps,
+                    "y": sentiment_values,
+                    "type": "line",
+                    "title": "Market Sentiment Trend"
+                }
+                
+            # If no data available, create placeholder
+            return {
+                "x": ["Jan", "Feb", "Mar", "Apr", "May"],
+                "y": [65, 70, 82, 78, 85],
+                "type": "line", 
+                "title": "Market Sentiment Trend"
+            }
+        except Exception as e:
+            logger.error(f"Error fetching market trends: {e}")
+            return None
+
+    def _fetch_market_outlook(self) -> List[str]:
+        """Fetch market outlook predictions"""
+        try:
+            # Get collection
+            collection = self.weaviate_client.collections.get("MarketOutlook")
+            
+            # Query outlook data
+            response = collection.query.fetch_objects(
+                limit=1,
+                order_by=[{"path": ["timestamp"], "order": "desc"}]
+            )
+            
+            if response and response.objects:
+                # Extract outlook points
+                outlook = response.objects[0].properties.get("predictions", "").split("\n")
+                return [point.strip() for point in outlook if point.strip()]
+                
+            # If no data available, create generic outlook
+            return [
+                "Increasing institutional adoption of digital assets",
+                "Growth in DeFi and Web3 integration with traditional finance",
+                "Regulatory developments will continue to shape market dynamics",
+                "Layer-2 scaling solutions gaining more traction",
+                "Cross-chain interoperability becoming increasingly important"
+            ]
+        except Exception as e:
+            logger.error(f"Error fetching market outlook: {e}")
+            return ["Market outlook data not available"]
+
+    def _add_conclusion_slide(self, topics: Dict[str, List[str]]):
+        """Add conclusion slide"""
+        self.add_section_slide("Conclusion")
+        
+        # Create conclusion points
+        conclusion_points = [
+            f"Analysis covered {len(topics['main_topics'])} main cryptocurrency topics",
+            "Key insights were drawn from conversation and market data",
+            "Technical foundations were examined alongside market performance",
+            "For further details, please refer to the specific topic sections",
+            "Additional analysis available upon request"
+        ]
+        
+        self.add_content_slide("Key Takeaways", conclusion_points)
+
 def check_market_data_availability(client):
     """Utility function to check what market data is available"""
     try:
@@ -2048,6 +2382,7 @@ def check_market_data_availability(client):
         
     except Exception as e:
         print(f"Error checking market data: {e}")
+
 # Example usage
 if __name__ == "__main__":
     import argparse

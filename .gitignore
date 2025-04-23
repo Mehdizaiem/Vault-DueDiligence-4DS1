@@ -67,3 +67,7 @@ risk_visualizations/
 venv/
 .qodo
 Code/document_processing/output/processed_documents.json
+Sample_Data/vector_store/__pycache__
+Sample_Data/data_ingestion/news_cache
+Code/data_acquisition/blockchain_collectors/__pycache__
+Code/__pycache__

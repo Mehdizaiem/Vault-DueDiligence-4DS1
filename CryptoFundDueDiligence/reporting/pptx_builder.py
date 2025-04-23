@@ -18,7 +18,7 @@ from pptx.enum.shapes import MSO_SHAPE
 from pptx.enum.dml import MSO_THEME_COLOR
 from pptx.dml.color import RGBColor
 from pptx.text.text import _Paragraph  # For type hinting
-
+from pptx.dml.color import RGBColor 
 # Assuming these exist in the specified locations
 from reporting.chart_factory import ChartFactory
 from reporting.design_elements import DesignElements
@@ -51,7 +51,7 @@ class PresentationBuilder:
                            Otherwise, a default presentation is created.
         """
         self.design = DesignElements()
-        self.chart_factory = ChartFactory(self.design) # Pass design elements if needed by chart factory
+        self.chart_factory = ChartFactory() # Pass design elements if needed by chart factory
 
         # Initialize presentation
         try:
@@ -167,7 +167,15 @@ class PresentationBuilder:
                 run.size = font_size
             if font_color is not None:
                 try:
-                    run.color.rgb = RGBColor.from_string(font_color)
+                    if isinstance(font_color, str):
+                        run.color.rgb = RGBColor.from_string(font_color)
+                    elif isinstance(font_color, tuple) and len(font_color) == 3:
+                        run.color.rgb = RGBColor(*font_color)
+                    else:
+                        logger.warning(f"Invalid font color format: {font_color}. Skipping color.")
+                    # --- End of replacement ---
+                except ValueError:
+                    logger.warning(f"Invalid RGB color string/tuple: {font_color}. Skipping color.")
                 except ValueError:
                      logger.warning(f"Invalid RGB color string: {font_color}. Skipping color.")
             if bold is not None:
@@ -219,7 +227,14 @@ class PresentationBuilder:
         )
         rect.fill.solid()
         try:
-            rect.fill.fore_color.rgb = RGBColor.from_string(color_hex)
+            if isinstance(color_hex, str):
+                rect.fill.fore_color.rgb = RGBColor.from_string(color_hex)
+            elif isinstance(color_hex, tuple) and len(color_hex) == 3:
+                rect.fill.fore_color.rgb = RGBColor(*color_hex) # Use tuple unpacking
+            else:
+                logger.warning(f"Invalid risk color format: {color_hex}, using default.")
+                rect.fill.fore_color.rgb = RGBColor(128, 128, 128) # Default grey
+
         except ValueError:
             logger.warning(f"Invalid risk color {color_hex}, using default.")
             rect.fill.fore_color.rgb = RGBColor.from_string(self.design.TEXT_DARK) # Fallback
@@ -388,7 +403,12 @@ class PresentationBuilder:
                 background = slide.background
                 fill = background.fill
                 fill.solid()
-                fill.fore_color.rgb = RGBColor.from_string(background_color)
+                if isinstance(background_color, str): # If it happens to be a hex string
+                    fill.fore_color.rgb = RGBColor.from_string(background_color)
+                elif isinstance(background_color, tuple) and len(background_color) == 3: # If it's an RGB tuple
+                    fill.fore_color.rgb = RGBColor(*background_color)
+                else:
+                    logger.warning(f"Invalid background color format: {background_color}. Using default.")
             except ValueError:
                 logger.warning(f"Invalid background color {background_color}. Using default.")
             except Exception as e:
@@ -420,8 +440,27 @@ class PresentationBuilder:
                 font_color=title_color,
                 alignment=PP_ALIGN.CENTER
             )
-        except (AttributeError, IndexError):
-             logger.warning("Subtitle placeholder not found or invalid index on layout 0. Subtitle not set.")
+        except (KeyError, AttributeError, IndexError):
+            logger.warning("Subtitle placeholder (index 1) not found on layout 0. Adding textbox.")
+            # Define position/size for manual textbox (adjust as needed)
+            sub_left = Inches(1.5)
+            sub_top = Inches(2.5) # Position below the typical title area
+            sub_width = self.slide_width - Inches(3.0)
+            sub_height = Inches(1.0)
+            try:
+                subtitle_box = slide.shapes.add_textbox(
+                    sub_left, sub_top, sub_width, sub_height
+                )
+                subtitle_box.text = subtitle
+                self._style_text_frame(
+                    subtitle_box.text_frame,
+                    font_size=Pt(28),
+                    font_color=title_color,
+                    alignment=PP_ALIGN.CENTER,
+                    vertical_anchor=MSO_ANCHOR.TOP # Anchor text to top of box
+                )
+            except Exception as e_add:
+                logger.error(f"Error adding subtitle textbox: {e_add}", exc_info=True)
 
 
         # Add date if provided
@@ -686,7 +725,7 @@ class PresentationBuilder:
                     # Header style
                     if is_header:
                         cell.fill.solid()
-                        cell.fill.fore_color.rgb = RGBColor.from_string(self.design.TABLE_HEADER)
+                        cell.fill.fore_color.rgb = RGBColor(*self.design.TABLE_HEADER_BG)
                         self._style_text_frame(
                             tf,
                             font_size=Pt(12),
@@ -1555,7 +1594,7 @@ class PresentationBuilder:
                 self.chart_factory.create_radar_chart(
                     slide, chart_left, chart_top, chart_width, chart_height,
                     radar_labels, radar_values,
-                    chart_title="Risk Factor Exposure"
+                    title="Risk Factor Exposure"
                 )
             except Exception as e:
                  logger.error(f"Error creating radar chart: {e}", exc_info=True)
@@ -2010,44 +2049,58 @@ class PresentationBuilder:
         try:
             title_shape = slide.shapes.title
             title_shape.text = title
+            # Use the corrected _style_text_frame which handles tuples for color
             self._style_text_frame(title_shape.text_frame, font_size=Pt(40), font_color=self.design.TEXT_DARK, bold=True)
         except AttributeError:
             logger.warning("Title placeholder not found on text slide layout.")
 
 
         # Add content text box (use main content placeholder if available, else add textbox)
+        tf = None # Initialize tf to None
         try:
             # Try accessing the main content placeholder (often index 1)
             content_placeholder = slide.placeholders[1]
             tf = content_placeholder.text_frame
             tf.clear() # Clear any default text
-        except (AttributeError, IndexError):
-            logger.info("Content placeholder not found or invalid index, adding new textbox.")
+            logger.info("Using content placeholder (index 1) for text slide.")
+        except (KeyError, AttributeError, IndexError): # Catch potential errors if placeholder[1] doesn't exist or isn't usable
+            logger.warning("Content placeholder (index 1) not found or invalid index on layout 1. Adding new textbox.")
+            # Define position for manual textbox
             text_left = Inches(0.5)
             text_top = Inches(1.5)
             text_width = Inches(12.33)
             text_height = Inches(5.5) # Allow ample space
-            text_box = slide.shapes.add_textbox(text_left, text_top, text_width, text_height)
-            tf = text_box.text_frame
-            tf.clear()
+            try:
+                text_box = slide.shapes.add_textbox(text_left, text_top, text_width, text_height)
+                tf = text_box.text_frame
+                tf.clear()
+            except Exception as e_add:
+                 logger.error(f"Error adding content textbox to text slide: {e_add}", exc_info=True)
+                 # If adding fails, we can't proceed with adding text
+                 return
+
+        # Ensure we have a text frame to work with before proceeding
+        if tf is None:
+             logger.error("Failed to obtain a text frame for the text slide content.")
+             return
 
         tf.word_wrap = True
         tf.vertical_anchor = MSO_ANCHOR.TOP
-        #tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT # Let it grow
+        # Optional: Let it grow if needed, but be careful with overflow
+        # tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
 
         # Add content text, handling newlines
         lines = content.split('\n')
-        first_line = True
         for line in lines:
             p = tf.add_paragraph()
-            # Removed 'if first_line: p = tf.paragraphs[0]' because tf.clear() makes this unreliable
-            # Always add a new paragraph for simplicity after clearing.
-            p.text = line if line.strip() else " " # Use space for empty lines to maintain spacing
+            # Use a non-breaking space for visually empty lines if desired,
+            # otherwise just empty string might collapse. Using " " works too.
+            p.text = line if line.strip() else " "
             p.font.size = Pt(text_size)
-            p.font.color.rgb = RGBColor.from_string(self.design.TEXT_DARK)
+            # Use the corrected _style_text_frame logic indirectly by passing tuple
+            p.font.color.rgb = RGBColor(*self.design.TEXT_DARK) # Assuming TEXT_DARK is tuple
             p.space_after = Pt(6) # Spacing between paragraphs
             p.level = 0 # Ensure no unintended indentation
-            # first_line = False # Not needed anymore
 
     def add_conclusion_slide(self, title: str, fund_name: str, risk_level: str,
                            risk_score: float, compliance_level: str, compliance_score: float,

@@ -74,3 +74,14 @@ uploads/
 Code/document_processing/output/entity_relationships.gexf
 Sample_Data/data_ingestion/news_cache
 Sample_Data/data_ingestion/processed/crypto_news.csv
+
+*.pyc
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+*.tiff
+*.ico
+*.webp
+*.svg

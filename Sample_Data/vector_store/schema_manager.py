@@ -806,6 +806,79 @@ def create_user_qa_history_schema(client):
         except Exception as e:
             logger.error(f"Failed to create UserQAHistory collection: {e}")
             raise
+def create_risk_profiles_schema(client):
+    """
+    Create the RiskProfiles collection to store calculated risk scores.
+    """
+    collection_name = "RiskProfiles"
+    try:
+        # Check if collection already exists
+        collection = client.collections.get(collection_name)
+        logger.info(f"{collection_name} collection already exists")
+        return collection
+    except Exception:
+        logger.info(f"Creating {collection_name} collection")
+
+        try:
+            # Create the collection (no vectorizer needed for storing results)
+            collection = client.collections.create(
+                name=collection_name,
+                description="Stores calculated risk profiles for cryptocurrencies",
+                vectorizer_config=Configure.Vectorizer.none(), # No embeddings needed here
+                properties=[
+                    {
+                        "name": "symbol",
+                        "dataType": [DataType.TEXT], # Changed for v4 syntax
+                        "description": "Cryptocurrency symbol (e.g., BTC, ETHUSDT)"
+                    },
+                    {
+                        "name": "risk_score",
+                        "dataType": [DataType.NUMBER],
+                        "description": "Calculated risk score (0-100, -1 if error)"
+                    },
+                    {
+                        "name": "risk_category",
+                        "dataType": [DataType.TEXT],
+                        "description": "Risk category (Very Low, Low, Moderate, High, Very High, Undetermined, Error)"
+                    },
+                    {
+                        "name": "analysis_timestamp",
+                        "dataType": [DataType.DATE],
+                        "description": "Timestamp when the risk analysis was performed"
+                    },
+                    {
+                        "name": "analysis_period_days",
+                        "dataType": [DataType.INT],
+                        "description": "Number of days used for the analysis period"
+                    },
+                    {
+                        "name": "market_data_points",
+                        "dataType": [DataType.INT],
+                        "description": "Number of market data points used in the analysis"
+                    },
+                    {
+                        "name": "sentiment_data_points",
+                        "dataType": [DataType.INT],
+                        "description": "Number of sentiment articles used in the analysis"
+                    },
+                    {
+                        "name": "risk_factors",
+                        "dataType": [DataType.TEXT_ARRAY],
+                        "description": "List of identified risk factors contributing to the score"
+                    },
+                    {
+                         "name": "calculation_error",
+                         "dataType": [DataType.TEXT],
+                         "description": "Error message if risk calculation failed"
+                    }
+                ]
+            )
+
+            logger.info(f"Successfully created {collection_name} collection")
+            return collection
+        except Exception as e:
+            logger.error(f"Failed to create {collection_name} collection: {e}", exc_info=True)
+            raise
 
 def setup_all_schemas(client):
     """Setup all required schemas"""
@@ -817,7 +890,8 @@ def setup_all_schemas(client):
         create_onchain_analytics_schema(client)
         create_user_documents_schema(client)
         create_forecast_schema(client)
-        create_user_qa_history_schema(client)  # Added forecast schema
+        create_user_qa_history_schema(client)
+        create_risk_profiles_schema(client)
         logger.info("✅ All collections created successfully")
         return True
     except Exception as e:

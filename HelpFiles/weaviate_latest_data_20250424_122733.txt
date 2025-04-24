@@ -1,0 +1,751 @@
+Weaviate Latest Data Export - 2025-04-24T12:27:34.655073
+============================================================
+
+--- Collection: CryptoDueDiligenceDocuments ---
+
+Item 1:
+  UUID: 03c34d95-15ed-4e4c-8282-309d7a6ff3db
+  content: 
+  document_type: legal_case
+  title: usa_v._kumbhani.pdf
+  source: usa_v._kumbhani.pdf
+  keywords: []
+--------------------
+Item 2:
+  UUID: 045b6445-c784-4271-b5ad-373b9ca55756
+  content: 
+  document_type: regulation
+  title: Compliance considerations for the crypto industry.pdf
+  source: Compliance considerations for the crypto industry.pdf
+  keywords: []
+--------------------
+Item 3:
+  UUID: 06e18f74-262b-4435-8be7-a63b7e6d7307
+  title: bitcoin-com-legal-user-agreement.pdf
+  content: 
+  document_type: agreement
+  source: bitcoin-com-legal-user-agreement.pdf
+  keywords: []
+--------------------
+Item 4:
+  UUID: 0ea71a5e-0278-4ac4-9f0c-f2c7c24e45d1
+  content: 
+  document_type: financial_analysis
+  title: FATF-AR-2023-2024.pdf.coredownload.pdf
+  source: FATF-AR-2023-2024.pdf.coredownload.pdf
+  keywords: []
+--------------------
+Item 5:
+  UUID: 0f748e35-66cf-4743-8d82-2aa8be768d84
+  title: SAFT Template by Legal Nodes (2).docx
+  content: 
+  document_type: whitepaper
+  source: SAFT Template by Legal Nodes (2).docx
+  keywords: []
+--------------------
+Item 6:
+  UUID: 107a431e-3c95-4c83-bc6f-fb6765bf6087
+  document_type: legal_case
+  title: comp-pr2024-166-pham.pdf
+  content: 
+  source: comp-pr2024-166-pham.pdf
+  keywords: []
+--------------------
+Item 7:
+  UUID: 117fc34c-ce77-4495-952b-dc28658d08e0
+  document_type: legal_case
+  title: united_states_v._pullara.pdf
+  content: 
+  source: united_states_v._pullara.pdf
+  keywords: []
+--------------------
+Item 8:
+  UUID: 131d1254-5aff-40e4-9c1f-10c2a64f2660
+  content: 
+  document_type: legal_case
+  title: terry_lankford_employee_carol_lankford_widow.pdf
+  source: terry_lankford_employee_carol_lankford_widow.pdf
+  keywords: []
+--------------------
+Item 9:
+  UUID: 1382d425-12e9-43c1-a639-8033f1927643
+  document_type: regulation
+  title: IOSCOPD747.pdf
+  content: 
+  source: IOSCOPD747.pdf
+  keywords: []
+--------------------
+Item 10:
+  UUID: 14b59777-d5b1-4a61-a94b-709979f98758
+  document_type: regulation
+  title: Cryptocurrencies_legal_regulation.pdf
+  content: 
+  source: Cryptocurrencies_legal_regulation.pdf
+  keywords: []
+--------------------
+
+--- Collection: CryptoNewsSentiment ---
+
+Item 1:
+  UUID: f21701e1-f4e1-432e-8354-0e071c6f48aa
+  sentiment_score: 0.5549491118872538
+  content:  A spike in spot Bitcoin ETF inflows has analysts calling for a $200,000 Bitcoin price by the end of 2025. Which altcoins could follow? 
+Key points:
+B...
+  date: 2025-04-24T11:25:12.071596
+  source: Cointelegraph
+  url: https://cointelegraph.com/news/price-predictions-4-23-btc-eth-xrp-bnb-sol-doge-ada-link-avax-sui
+  image_url: 
+  authors: []
+  title: Price predictions 4/23: BTC, ETH, XRP, BNB, SOL, DOGE, ADA, LINK, AVAX, SUI
+  sentiment_label: NEUTRAL
+  related_assets: ['bitcoin', 'ethereum', 'solana', 'binance', 'cardano', 'ripple', 'dogecoin', 'avalanche', 'tron', 'litecoin', 'chainlink', 'uniswap', 'stablecoin']
+  analyzed_at: 2025-04-24T11:25:28.752906
+--------------------
+Item 2:
+  UUID: 62d02d47-27e0-47f9-8679-36c245fa3921
+  sentiment_score: 0.9715590813502786
+  content:  Bitcoin’s rally toward $95,000 put multiple investor cohorts back in profit, but there is still a substantial sell-side risk near BTC’s range high. 
+...
+  date: 2025-04-24T11:25:08.590188
+  authors: []
+  sentiment_label: POSITIVE
+  image_url: 
+  source: Cointelegraph
+  title: Bitcoin holders back in profit as new capital enters the market — Is $100K BTC price next?
+  url: https://cointelegraph.com/news/bitcoin-holders-back-in-profit-as-new-capital-enters-the-market-is-100k-btc-price-next
+  related_assets: ['bitcoin', 'solana', 'tron']
+  analyzed_at: 2025-04-24T11:25:28.060703
+--------------------
+Item 3:
+  UUID: 9c14dd79-447c-4dd9-8929-fdc0af80ad16
+  sentiment_score: 0.5001586988655617
+  content:  US spot Bitcoin ETFs clocked nearly $1 billion in inflows on April 22 despite turbulent markets. 
+Traders are embracing diametrically opposed exchang...
+  date: 2025-04-24T11:25:05.241595
+  authors: []
+  sentiment_label: NEUTRAL
+  image_url: 
+  source: Cointelegraph
+  title: Traders pour into leveraged ETFs, gold in bid to weather volatility — Bloomberg
+  url: https://cointelegraph.com/news/traders-into-leveraged-etfs-gold-volatility-bloomberg
+  related_assets: ['bitcoin', 'ethereum', 'binance', 'stablecoin']
+  analyzed_at: 2025-04-24T11:25:27.370701
+--------------------
+Item 4:
+  UUID: 91367995-1b63-47bb-8a81-22d93c5e0f9a
+  sentiment_score: 0.5000017187924186
+  content:  John D’Agostino, head of strategy at Coinbase Institutional, compared BTC to gold and said many traders view it as an inflationary hedge. 
+Sovereign ...
+  date: 2025-04-24T11:25:01.741974
+  authors: []
+  url: https://cointelegraph.com/news/sovereign-wealth-funds-piling-btc-retail-exits-coinbase-exec
+  image_url: 
+  source: Cointelegraph
+  title: Sovereign wealth funds piling into BTC as retail exits — Coinbase exec
+  sentiment_label: NEUTRAL
+  related_assets: ['bitcoin', 'uniswap']
+  analyzed_at: 2025-04-24T11:25:26.708703
+--------------------
+Item 5:
+  UUID: f6277e75-200c-42cc-b015-780f2a6a540b
+  sentiment_score: 0.5005470519480468
+  content:  Twenty One Capital has grand plans to dethrone Michael Saylor’s Strategy as the leading Bitcoin treasury firm, receiving investment support from indu...
+  date: 2025-04-24T11:24:58.265167
+  source: Cointelegraph
+  url: https://cointelegraph.com/news/twenty-one-capital-bitcoin-firm-compete-michael-saylor-strategy
+  image_url: 
+  authors: []
+  title: Strike’s Mallers to head firm seeking superior Bitcoin play to MSTR
+  sentiment_label: NEUTRAL
+  related_assets: ['bitcoin', 'ethereum', 'uniswap', 'stablecoin']
+  analyzed_at: 2025-04-24T11:25:26.102302
+--------------------
+Item 6:
+  UUID: 026ab72a-94a6-42fc-8f01-8a7d5c68fc62
+  sentiment_score: 0.47335783649032237
+  content:  The Los Angeles Police Department said it seized $2.7 million worth of Bitcoin mining rigs allegedly stolen at the city’s airport from a shipment bou...
+  date: 2025-04-24T11:24:54.477797
+  authors: []
+  sentiment_label: NEUTRAL
+  image_url: 
+  url: https://cointelegraph.com/news/lapd-recovers-bitcoin-miners-stolen-lax-airport-heist
+  title: LAPD recovers $2.7M worth of Bitcoin miners stolen in airport heist
+  source: Cointelegraph
+  related_assets: ['bitcoin', 'uniswap']
+  analyzed_at: 2025-04-24T11:25:25.319011
+--------------------
+Item 7:
+  UUID: bc0a0699-c9ab-423c-aef7-e77c1bd200d8
+  sentiment_score: 0.9976024242168933
+  content:  Bitcoin is up 7.68% over the past 30 days, while the S&P 500 and the Nasdaq are down 6.79% and 8.14% respectively. 
+Bitcoin has shown resilience comp...
+  date: 2025-04-24T11:24:50.838753
+  source: Cointelegraph
+  sentiment_label: POSITIVE
+  image_url: 
+  authors: []
+  title: Bitcoin is the ‘cleanest shirt in the dirty laundry’ — Bitfinex
+  url: https://cointelegraph.com/news/bitcoin-strength-us-stocks-equities-uncertainty-bitfinex-crypto-analysts
+  related_assets: ['bitcoin', 'ethereum', 'tron']
+  analyzed_at: 2025-04-24T11:25:24.612011
+--------------------
+Item 8:
+  UUID: bb1cd799-e509-42a3-93a7-04853e2373b7
+  sentiment_score: 0.49999925279087165
+  content:  Russia’s central bank announced a proposal in March to allow a limited number of Russian investors with a certain amount of assets to buy and sell cr...
+  date: 2025-04-24T11:24:47.085082
+  source: Cointelegraph
+  sentiment_label: NEUTRAL
+  image_url: 
+  authors: []
+  title: Russia’s central bank, finance ministry to launch crypto exchange
+  url: https://cointelegraph.com/news/russian-ministry-finance-central-bank-launch-crypto-exchange
+  related_assets: ['bitcoin', 'ethereum', 'chainlink', 'stablecoin']
+  analyzed_at: 2025-04-24T11:25:23.956832
+--------------------
+Item 9:
+  UUID: 6a0a54e7-0fc5-47a1-aa7c-9a257ae404f2
+  sentiment_score: 0.5023697611163698
+  content:  ETF analyst Eric Balchunas said he is “pretty sure this is how I voted,” amid the spot Bitcoin ETF posting a “massive” inflow day not seen since late...
+  date: 2025-04-24T11:24:43.316194
+  authors: []
+  url: https://cointelegraph.com/news/blackrock-ishare-bitcoin-etf-wins-best-etf-massive-inflow-day-crypto
+  image_url: 
+  source: Cointelegraph
+  title: BlackRock Bitcoin fund wins best new ETF on $643M inflow day
+  sentiment_label: NEUTRAL
+  related_assets: ['bitcoin', 'stablecoin']
+  analyzed_at: 2025-04-24T11:25:23.212248
+--------------------
+Item 10:
+  UUID: b00cd278-b49e-4aa9-8bf4-cdb0f57379c6
+  sentiment_score: 0.4981856429367326
+  content:  Bitcoin exchanges are not seeing a rush to sell in 2025, data shows — in fact, users appear to behave like the bull market is just beginning. 
+Key po...
+  date: 2025-04-24T11:24:39.881178
+  authors: []
+  sentiment_label: NEUTRAL
+  image_url: 
+  source: Cointelegraph
+  title: Bitcoin exchange outflows mimic 2023 as whales buy retail 'panic'
+  url: https://cointelegraph.com/news/bitcoin-exchange-outflows-mimic-2023-whales-buy-retail-btc
+  related_assets: ['bitcoin']
+  analyzed_at: 2025-04-24T11:25:22.522286
+--------------------
+
+--- Collection: CryptoTimeSeries ---
+
+Item 1:
+  UUID: 0993d7b5-4f10-42ad-9ac7-caf4fa705838
+  volume: 9270000.0
+  low: 21.46
+  symbol: AVAXUSD
+  close: 21.97
+  high: 22.55
+  open: 21.73
+  interval: 1d
+  timestamp: 2025-03-06T00:00:00
+  exchange: Avax
+--------------------
+Item 2:
+  UUID: 2a38e179-0530-4935-b528-beafd9e64947
+  volume: 6390000.0
+  low: 596.8
+  symbol: BNBUSD
+  interval: 1d
+  high: 612.3
+  open: 598.1
+  close: 602.7
+  timestamp: 2025-03-06T00:00:00
+  exchange: Bnb
+--------------------
+Item 3:
+  UUID: 2c11eaac-f89d-49a8-bdbd-df7fb5b1bd7a
+  volume: 84390000.0
+  low: 1.8994
+  symbol: PIUSD
+  close: 1.9319
+  high: 1.979
+  open: 1.9336
+  interval: 1d
+  timestamp: 2025-03-06T00:00:00
+  exchange: Usd okx historical data.csv
+--------------------
+Item 4:
+  UUID: 2cc2d6b6-fb0c-49fe-9508-775d08368a77
+  volume: 133140.0
+  low: 4.457
+  symbol: PDOTNUSD
+  interval: 1d
+  high: 4.66
+  open: 4.526
+  close: 4.55
+  timestamp: 2025-03-06T00:00:00
+  exchange: Kraken
+--------------------
+Item 5:
+  UUID: 5ed2809a-5fc5-4d87-b4a6-6ea4267d8394
+  volume: 1590000.0
+  low: 20.47
+  symbol: ETCUSD
+  interval: 1d
+  high: 21.39
+  open: 20.47
+  close: 20.68
+  timestamp: 2025-03-06T00:00:00
+  exchange: Binance
+--------------------
+Item 6:
+  UUID: 613ebf11-cd0c-4453-a163-49a9c5746178
+  volume: 1280000000.0
+  low: 0.20236
+  symbol: DOGEUSD
+  close: 0.20981
+  high: 0.21997
+  open: 0.20451
+  interval: 1d
+  timestamp: 2025-03-06T00:00:00
+  exchange: Binance
+--------------------
+Item 7:
+  UUID: 6d3640b8-34aa-409c-ad50-3372e148d47c
+  volume: 618680000.0
+  low: 0.935
+  symbol: ADAUSD
+  interval: 1d
+  high: 0.9876
+  open: 0.9742
+  close: 0.9466
+  timestamp: 2025-03-06T00:00:00
+  exchange: Binance
+--------------------
+Item 8:
+  UUID: 7cbbb530-baa2-4db8-b772-4b9580e85587
+  volume: 72700000.0
+  low: 2.5892
+  symbol: SUIUSD
+  close: 2.6865
+  high: 2.7262
+  open: 2.6332
+  interval: 1d
+  timestamp: 2025-03-06T00:00:00
+  exchange: Binance
+--------------------
+Item 9:
+  UUID: 8e4af738-d55b-4028-8c47-9242bde53220
+  volume: 706930.0
+  low: 2235.28
+  symbol: ETHUSD
+  close: 2292.2
+  high: 2319.8
+  open: 2241.12
+  interval: 1d
+  timestamp: 2025-03-06T00:00:00
+  exchange: Binance
+--------------------
+Item 10:
+  UUID: 98a5dabe-b2e3-4f60-913e-8aa68960207f
+  volume: 36740000.0
+  low: 2.4719
+  symbol: XRPUSD
+  interval: 1d
+  high: 2.5539
+  open: 2.4993
+  close: 2.538
+  timestamp: 2025-03-06T00:00:00
+  exchange: Xrp
+--------------------
+
+--- Collection: MarketMetrics ---
+
+Item 1:
+  UUID: 6751b281-5bd4-4fcb-89e5-a7235d83f00a
+  market_cap: 0.0
+  volume_24h: 2283251423.0337396
+  symbol: BTCUSDT
+  price: 92563.64
+  source: binance
+  price_change_24h: -1.098
+  timestamp: 2025-04-24T11:24:27.408710
+--------------------
+Item 2:
+  UUID: 7b01b240-eaec-4d36-9d8f-a08a67f2970a
+  market_cap: 0.0
+  volume_24h: 91770749.99664
+  symbol: ADAUSDT
+  price: 0.6864
+  source: binance
+  price_change_24h: -1.943
+  timestamp: 2025-04-24T11:24:27.408710
+--------------------
+Item 3:
+  UUID: 7d740717-b1b0-4a23-b0db-14966acf3052
+  market_cap: 0.0
+  source: binance
+  symbol: SOLUSDT
+  price: 147.07
+  volume_24h: 613455639.96794
+  price_change_24h: -3.173
+  timestamp: 2025-04-24T11:24:27.408710
+--------------------
+Item 4:
+  UUID: d4efe07c-f555-407b-88f8-4aa8efe0b72a
+  market_cap: 0.0
+  source: binance
+  symbol: BNBUSDT
+  price: 596.53
+  volume_24h: 163480269.98303
+  price_change_24h: -2.341
+  timestamp: 2025-04-24T11:24:27.408710
+--------------------
+Item 5:
+  UUID: fb456096-9bdc-4bc2-9b53-d7cc4d690694
+  market_cap: 0.0
+  source: binance
+  symbol: ETHUSDT
+  price: 1745.34
+  volume_24h: 1171306567.030902
+  price_change_24h: -2.887
+  timestamp: 2025-04-24T11:24:27.408710
+--------------------
+Item 6:
+  UUID: 122c2301-8999-43b1-b175-29faa804d967
+  market_cap: 0.0
+  source: binance
+  symbol: BNBUSDT
+  price: 592.26
+  volume_24h: 131356688.58366
+  price_change_24h: -0.375
+  timestamp: 2025-04-04T11:42:43.013080
+--------------------
+Item 7:
+  UUID: abee21a0-a7d5-49f8-be04-ca4f41ded5f0
+  market_cap: 0.0
+  volume_24h: 70411980.51576
+  symbol: ADAUSDT
+  price: 0.6472
+  source: binance
+  price_change_24h: 1.062
+  timestamp: 2025-04-04T11:42:43.013080
+--------------------
+Item 8:
+  UUID: d4ad3134-cfd4-41b0-9409-4a120dd6fc2f
+  market_cap: 0.0
+  volume_24h: 2404884942.0474257
+  symbol: BTCUSDT
+  price: 82985.84
+  source: binance
+  price_change_24h: -0.211
+  timestamp: 2025-04-04T11:42:43.013080
+--------------------
+Item 9:
+  UUID: e2f540c2-6ef7-4e01-b6b1-6a1d7caa3d21
+  market_cap: 0.0
+  source: binance
+  symbol: SOLUSDT
+  price: 116.07
+  volume_24h: 555231970.5416399
+  price_change_24h: 0.52
+  timestamp: 2025-04-04T11:42:43.013080
+--------------------
+Item 10:
+  UUID: e330ee73-55c0-4924-be1b-c11ea2795dfe
+  market_cap: 0.0
+  source: binance
+  symbol: ETHUSDT
+  price: 1793.52
+  volume_24h: 898334070.990768
+  price_change_24h: 0.118
+  timestamp: 2025-04-04T11:42:43.013080
+--------------------
+
+--- Collection: OnChainAnalytics ---
+
+Item 1:
+  UUID: ac2b160f-2272-405f-a6f8-286bdee63b9e
+  risk_score: 70.0
+  tokens: ['USDT', 'USDC', 'ENA', 'LINK']
+  first_activity: 2025-04-24T11:30:11
+  balance: 294146.79057925404
+  contract_interactions: 5.0
+  total_received: 13.613119709916992
+  unique_interactions: 19.0
+  risk_level: High
+  risk_factors: ['Recently created wallet']
+  active_days: 0.0
+  transaction_count: 20.0
+  analysis_timestamp: 2025-04-24T11:31:44.217647
+  entity_type: wallet
+  last_activity: 2025-04-24T11:31:23
+  total_sent: 8.2966102
+  address: 0x28C6c06298d514Db089934071355E5743bf21d60
+  token_transaction_count: 20.0
+  blockchain: ethereum
+--------------------
+Item 2:
+  UUID: 91f07b2f-f857-4144-a9a9-8b36784bfc73
+  balance: 60575561.22882884
+  contract_interactions: 0.0
+  first_activity: 2025-04-24T02:16:11
+  tokens: ['WLFI', 'TESLA AI', 'F3B', 'SMAR_Dividend_Tracker', 'SMAR', 'IVANKA', 'KA', 'WFCA', 'JOK', 'GBB']
+  risk_score: 65.0
+  total_received: 640.0
+  unique_interactions: 6.0
+  active_days: 0.0
+  risk_factors: ['Recently created wallet', 'No interaction with smart contracts']
+  last_activity: 2025-04-24T11:04:59
+  transaction_count: 20.0
+  entity_type: wallet
+  analysis_timestamp: 2025-04-24T11:30:49.176449
+  risk_level: High
+  total_sent: 0.0
+  address: 0x00000000219ab540356cBB839Cbe05303d7705Fa
+  token_transaction_count: 20.0
+  blockchain: ethereum
+--------------------
+Item 3:
+  UUID: 170d4925-7527-4a8d-b692-f26de2987f6e
+  contract_interactions: 0.0
+  tokens: ['ЕTH']
+  first_activity: 2025-04-24T10:50:23
+  risk_score: 65.0
+  balance: 39.29625117209787
+  total_received: 0.0
+  unique_interactions: 13.0
+  risk_level: High
+  risk_factors: ['Recently created wallet', 'No interaction with smart contracts']
+  last_activity: 2025-04-24T11:27:11
+  transaction_count: 20.0
+  analysis_timestamp: 2025-04-24T11:27:47.978579
+  entity_type: wallet
+  active_days: 0.0
+  total_sent: 0.2764116779106068
+  address: 0x396343362be2A4dA1cE0C1C210945346fb82Aa49
+  token_transaction_count: 20.0
+  blockchain: ethereum
+--------------------
+Item 4:
+  UUID: a829f68d-4f14-4301-82c9-c06fdb06adda
+  tokens: ['Cocoro', 'USDC', 'INSANE', 'AERO', 'Airdrop(s) to be claimed at https://t.ly/drops', 'DOP', 'SAND', 'Interesting', 'USDT', 'PEPEDOG', 'WBT']
+  risk_score: 75.0
+  first_activity: 2025-03-08T00:00:59
+  balance: 615220.1242794135
+  contract_interactions: 0.0
+  total_received: 7992.611160000001
+  unique_interactions: 2.0
+  risk_level: High
+  risk_factors: ['Recently created wallet', 'Limited interaction network', 'No interaction with smart contracts']
+  active_days: 2.0
+  transaction_count: 20.0
+  entity_type: wallet
+  last_activity: 2025-03-10T10:24:59
+  analysis_timestamp: 2025-03-10T14:31:34.185107
+  total_sent: 0.0
+  address: 0x742d35Cc6634C0532925a3b844Bc454e4438f44e
+  token_transaction_count: 20.0
+  blockchain: ethereum
+--------------------
+Item 5:
+  UUID: 3537cfc4-f7a7-4fe0-8fac-33ed30ff491f
+  risk_score: 70.0
+  tokens: ['USDT', 'GNO', 'USDC', 'MOVE', 'AXS', 'SHIB', 'GRT', 'LINK', 'CHZ', 'AAVE']
+  first_activity: 2025-03-09T19:53:11
+  balance: 206918.37540863873
+  contract_interactions: 14.0
+  total_received: 11.2658235234274
+  unique_interactions: 15.0
+  risk_level: High
+  last_activity: 2025-03-09T19:55:47
+  risk_factors: ['Recently created wallet']
+  transaction_count: 20.0
+  analysis_timestamp: 2025-03-09T19:56:26.054279
+  active_days: 0.0
+  entity_type: wallet
+  total_sent: 1.5067152900000003
+  address: 0x28c6c06298d514db089934071355e5743bf21d60
+  token_transaction_count: 20.0
+  blockchain: ethereum
+--------------------
+
+--- Collection: UserDocuments ---
+
+Item 1:
+  UUID: 6abfaf3b-9319-4085-b7a5-31b835c007e5
+  crypto_entities: ['Ethereum']
+  location_entities: ['US', 'United States', 'Singapore']
+  org_entities: ['ETH', 'MSB', 'CAIA', 'DefiLlama TVL', 'Diligence Automation', 'DAI', 'ETH Staking', 'Homestead\nSarah Matthews', 'Gwei\nNetwork Utilization', 'ETH S...
+  content: CRYPTO FUND DUE DILIGENCE REPORT
+Generated: April 21, 2025
+EXECUTIVE SUMMARY
+This document provides a comprehensive due diligence assessment of Ethere...
+  file_size: 154975.0
+  person_entities: ['Jayden Williams', 'Stablecoin', 'FinCEN', 'Alex Chen', 'ETH Multi-sig']
+  upload_date: 2025-04-23T23:17:12.067537
+  risk_factors: []
+  notes: for ID
+  file_type: pdf
+  date: April 21, 2025
+  sentence_count: 17.0
+  source: user_2sGz8wPpPqoRPS8m4jeY4v3xQo2_1745446575763_CryptoFundDueDiligenceReport.pdf
+  title: user_2sGz8wPpPqoRPS8m4jeY4v3xQo2_1745446575763_CryptoFundDueDiligenceReport.pdf
+  user_id: user_2sGz8wPpPqoRPS8m4jeY4v3xQo2
+  is_public: True
+  word_count: 748.0
+  document_type: financial_analysis
+  processing_status: completed
+--------------------
+Item 2:
+  UUID: 33816644-c8db-499a-a30a-bc4dd7b1f8e0
+  file_size: 2148.0
+  location_entities: []
+  org_entities: ['Trail of Bits', 'DILIGENCE', 'Ethereum', 'Polygon', 'Nebula\nCapital Partners', 'MIT', 'ZK', 'Stanford', 'CTO', 'Consensys', 'Nebula Capital Partner...
+  content: Crypto Fund Due Diligence Report
+CONFIDENTIAL: DUE DILIGENCE REPORT
+Nebula Capital Partners
+Ethereum Layer-2 Investment Opportunity Assessment
+Date: A...
+  crypto_entities: ['Ethereum']
+  person_entities: ['Certik', 'Coinbase']
+  upload_date: 2025-04-21T22:45:21.598791
+  risk_factors: []
+  notes: 
+  date: April 16, 2025
+  file_type: pdf
+  sentence_count: 12.0
+  source: user_2sGz8wPpPqoRPS8m4jeY4v3xQo2_1745271879856_DueDiligence_Test.pdf
+  document_type: financial_analysis
+  user_id: user_2sGz8wPpPqoRPS8m4jeY4v3xQo2
+  is_public: True
+  word_count: 189.0
+  title: user_2sGz8wPpPqoRPS8m4jeY4v3xQo2_1745271879856_DueDiligence_Test.pdf
+  processing_status: completed
+--------------------
+Item 3:
+  UUID: 95c47ccb-e6f3-45f8-85ca-f2bdeeaa3595
+  file_size: 2148.0
+  location_entities: []
+  org_entities: ['MIT', 'Stanford', 'Nebula Capital Partners\n', 'CTO', 'Consensys', 'DILIGENCE', 'Nebula\nCapital Partners', 'Trail of Bits', 'Ethereum', 'ZK', 'Poly...
+  crypto_entities: ['Ethereum']
+  content: Crypto Fund Due Diligence Report
+CONFIDENTIAL: DUE DILIGENCE REPORT
+Nebula Capital Partners
+Ethereum Layer-2 Investment Opportunity Assessment
+Date: A...
+  person_entities: ['Certik', 'Coinbase']
+  upload_date: 2025-04-21T11:35:28.989683
+  risk_factors: []
+  notes: tesing will delete later
+  date: April 16, 2025
+  file_type: pdf
+  sentence_count: 12.0
+  source: user_2sGz8wPpPqoRPS8m4jeY4v3xQo2_1745231691793_DueDiligence_Test.pdf
+  title: user_2sGz8wPpPqoRPS8m4jeY4v3xQo2_1745231691793_DueDiligence_Test.pdf
+  user_id: user_2sGz8wPpPqoRPS8m4jeY4v3xQo2
+  is_public: True
+  word_count: 189.0
+  document_type: financial_analysis
+  processing_status: completed
+--------------------
+Item 4:
+  UUID: 98291cca-1efb-4baa-8d3e-86407e3dd807
+  crypto_entities: ['Ethereum']
+  content: Crypto Fund Due Diligence Report
+CONFIDENTIAL: DUE DILIGENCE REPORT
+Nebula Capital Partners
+Ethereum Layer-2 Investment Opportunity Assessment
+Date: A...
+  org_entities: ['Ethereum', 'MIT', 'Stanford', 'CTO', 'DILIGENCE', 'Consensys', 'Trail of Bits', 'Nebula Capital Partners\n', 'ZK', 'Polygon', 'Nebula\nCapital Partn...
+  file_size: 2148.0
+  location_entities: []
+  person_entities: ['Certik', 'Coinbase']
+  upload_date: 2025-04-20T21:24:59.741989
+  risk_factors: []
+  notes: 
+  file_type: pdf
+  date: April 16, 2025
+  sentence_count: 12.0
+  source: user_2sGz8wPpPqoRPS8m4jeY4v3xQo2_1745180664651_DueDiligence_Test.pdf
+  document_type: financial_analysis
+  user_id: user_2sGz8wPpPqoRPS8m4jeY4v3xQo2
+  is_public: True
+  word_count: 189.0
+  title: user_2sGz8wPpPqoRPS8m4jeY4v3xQo2_1745180664651_DueDiligence_Test.pdf
+  processing_status: completed
+--------------------
+Item 5:
+  UUID: 91926764-e2e2-4cd7-9143-16f1f9df4e2f
+  crypto_entities: ['Ethereum', 'Solana']
+  location_entities: ['Ethereum', 'Cairo', 'Immunefi', 'L2s', 'ZK', 'Arbitrum', 'Cayman Islands**', 'blockchain', 'Optimistic Rollups']
+  org_entities: ['Consensys', 'Nebula Capital Partners', 'Key Weaknesses & Concerns Recap', 'Technical Risks & Mitigation \n', "Nebula Capital Partners'", 'SNARK', 'Z...
+  content: # CONFIDENTIAL: DUE DILIGENCE REPORT 
+ 
+## Nebula Capital Partners 
+## Ethereum Layer-2 Investment Opportunity Assessment: Astral Protocol (AST) 
+## D...
+  file_size: 25801.0
+  person_entities: ['Diligence', 'Ben Carter', 'Aris Thorne', 'Ethereum', 'Coinbase', 'Certik', 'Solana', 'Eleanor Vance', '2 Medium']
+  upload_date: 2025-04-20T21:10:37.472635
+  risk_factors: ['reentrancy']
+  notes: test
+  date: April 16, 2025
+  file_type: pdf
+  sentence_count: 470.0
+  source: user_2sGz8wPpPqoRPS8m4jeY4v3xQo2_1745179798332_DueDiligence.pdf
+  document_type: financial_analysis
+  user_id: user_2sGz8wPpPqoRPS8m4jeY4v3xQo2
+  is_public: True
+  word_count: 4843.0
+  title: user_2sGz8wPpPqoRPS8m4jeY4v3xQo2_1745179798332_DueDiligence.pdf
+  processing_status: completed
+--------------------
+
+--- Collection: UserQAHistory ---
+
+Item 1:
+  UUID: b6e8ba7a-cbf3-40dc-bdf8-3a7e872f8716
+  session_id: 5d2556e3-eb5b-4953-bd60-000c2f50392d
+  answer: Based on the provided document, the key findings are:
+
+1. **Technical Architecture**: Astral Protocol implements a robust ZK-rollup architecture wit...
+  document_ids: [UUID('33816644-c8db-499a-a30a-bc4dd7b1f8e0')]
+  duration_ms: 42187.0
+  user_id: user_2sGz8wPpPqoRPS8m4jeY4v3xQo2
+  timestamp: 2025-04-21T22:49:08.174839
+  question: can you tell me more key findings in the document ?
+--------------------
+Item 2:
+  UUID: 8befd979-f7a0-4ea5-bf68-56f61cdb8a55
+  session_id: 05593a4e-d971-44eb-aff7-41e2bc2d90c1
+  answer: Based on the provided context, the regulatory requirements for crypto funds are not explicitly stated in the documents. However, I can provide some ge...
+  document_ids: None
+  duration_ms: 49383.0
+  user_id: user_2sGz8wPpPqoRPS8m4jeY4v3xQo2
+  timestamp: 2025-04-21T22:45:00.871954
+  question: What are the regulatory requirements for crypto funds?
+--------------------
+
+--- Collection: Forecast ---
+
+Item 1:
+  UUID: a7b4bf65-5c37-4c67-8871-3e85b44bcf17
+  change_pct: -3.383384412150703
+  upper_bounds: [95026.4218646961, 95442.54628120313, 93685.66525632092]
+  average_uncertainty: 9.73595077940576
+  forecast_values: [90541.82436967525, 90541.82436967525, 89385.98494050468]
+  current_price: 92516.16235639085
+  trend: bearish
+  final_forecast: 89385.98494050468
+  forecast_dates: ['2025-04-25T10:35:10', '2025-04-26T10:35:10', '2025-04-27T10:35:10']
+  plot_path: plots/BTC_USD Bitfinex Historical Data_finetuned_comparison_20250424_114716.png
+  days_ahead: 3.0
+  symbol: BTCUSD
+  plot_image: iVBORw0KGgoAAAANSUhEUgAADOQAAAaeCAYAAABLJAHXAAAAOXRFWHRTb2Z0d2FyZQBNYXRwbG90bGliIHZlcnNpb24zLjkuMiwgaHR0cHM6Ly9tYXRwbG90bGliLm9yZy8hTgPZAAAACXBIWXMAAC...
+  lower_bounds: [87906.55491517764, 86981.89378840633, 82959.56030649383]
+  probability_increase: 100.0
+  model_name: chronos-finetuned
+  model_type: chronos
+  insight: Fine-tuned Chronos forecasts a bearish outlook for BTC/usd with a projected decrease of 3.38% over the next 3 days. There is a strong probability (100...
+  forecast_timestamp: 2025-04-24T11:47:20.624794
+--------------------
+

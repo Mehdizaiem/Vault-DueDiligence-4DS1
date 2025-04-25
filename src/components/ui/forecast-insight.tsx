@@ -1,56 +1,27 @@
-import { ForecastData } from '@/lib/forecast-manager';
-import { Calendar, ExternalLink, ShieldAlert, Info } from 'lucide-react';
+import { Calendar, ExternalLink, ShieldAlert } from 'lucide-react';
 
 interface ForecastInsightProps {
   currentPrice: number;
-  forecastData: ForecastData | null;
+  forecastData: {
+    trend: string;
+    change_pct: number;
+    probability_increase: number;
+    average_uncertainty: number;
+    model_name: string;
+    model_type: string;
+    days_ahead: number;
+    final_forecast: number;
+    forecast_timestamp: string;
+    insight: string;
+    lower_bounds?: number[];
+    upper_bounds?: number[];
+  } | null;
 }
 
 export default function ForecastInsight({ currentPrice, forecastData }: ForecastInsightProps) {
   if (!forecastData) {
-    return (
-      <div className="bg-gray-50 p-4 rounded-lg text-center">
-        <p className="text-gray-500">No forecast data available at this time.</p>
-      </div>
-    );
+    return null;
   }
-
-  // Generate insight text based on forecast data
-  const generateInsight = () => {
-    const predictedPrice = forecastData.predicted_price;
-    const changePercent = ((predictedPrice - currentPrice) / currentPrice) * 100;
-    const daysAhead = forecastData.days_ahead || 3;
-    
-    let trend;
-    if (changePercent > 5) trend = 'strongly bullish';
-    else if (changePercent > 1) trend = 'bullish';
-    else if (changePercent < -5) trend = 'strongly bearish';
-    else if (changePercent < -1) trend = 'bearish';
-    else trend = 'neutral';
-    
-    let insight = '';
-    
-    if (trend.includes('bullish')) {
-      insight = `The forecast indicates a ${trend} trend for BTC/USD, with a projected increase of ${changePercent.toFixed(2)}% over the next ${daysAhead} days.`;
-    } else if (trend.includes('bearish')) {
-      insight = `The forecast indicates a ${trend} trend for BTC/USD, with a projected decrease of ${Math.abs(changePercent).toFixed(2)}% over the next ${daysAhead} days.`;
-    } else {
-      insight = `The forecast indicates a ${trend} trend for BTC/USD, with minimal expected price movement (${changePercent.toFixed(2)}%) over the next ${daysAhead} days.`;
-    }
-    
-    // Add uncertainty information
-    if (forecastData.average_uncertainty) {
-      if (forecastData.average_uncertainty > 20) {
-        insight += ` The forecast shows high uncertainty (±${forecastData.average_uncertainty.toFixed(1)}%), suggesting caution in decision-making.`;
-      } else if (forecastData.average_uncertainty > 10) {
-        insight += ` The forecast shows moderate uncertainty (±${forecastData.average_uncertainty.toFixed(1)}%).`;
-      } else {
-        insight += ` The forecast shows relatively low uncertainty (±${forecastData.average_uncertainty.toFixed(1)}%).`;
-      }
-    }
-    
-    return insight;
-  };
 
   // Format date for display
   const formatDate = (dateStr: string) => {
@@ -59,7 +30,9 @@ export default function ForecastInsight({ currentPrice, forecastData }: Forecast
     return new Intl.DateTimeFormat('en-US', { 
       month: 'long', 
       day: 'numeric', 
-      year: 'numeric' 
+      year: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric'
     }).format(date);
   };
 
@@ -73,19 +46,43 @@ export default function ForecastInsight({ currentPrice, forecastData }: Forecast
     }).format(price);
   };
 
+  // Get confidence interval range
+  const getConfidenceRange = () => {
+    if (!forecastData.lower_bounds || !forecastData.upper_bounds) return null;
+    
+    const lastLower = forecastData.lower_bounds[forecastData.lower_bounds.length - 1];
+    const lastUpper = forecastData.upper_bounds[forecastData.upper_bounds.length - 1];
+    
+    return {
+      lower: lastLower,
+      upper: lastUpper
+    };
+  };
+
+  const confidenceRange = getConfidenceRange();
+
   return (
     <div className="space-y-4">
       <p className="text-gray-700">
-        {generateInsight()}
+        {forecastData.insight}
       </p>
       <div className="grid gap-6 md:grid-cols-3 mt-6 pt-6 border-t border-gray-100">
         <div className="flex items-start space-x-2">
           <Calendar className="h-4 w-4 text-gray-400 mt-0.5" />
           <div>
-            <h4 className="text-sm font-medium text-gray-500">Forecast Range</h4>
+            <h4 className="text-sm font-medium text-gray-500">Forecast Details</h4>
             <p className="text-sm font-medium mt-1">
-              {formatPrice(forecastData.confidence_interval_lower)} - {formatPrice(forecastData.confidence_interval_upper)}
+              {forecastData.days_ahead} days ahead
+              <br />
+              <span className="text-gray-500 text-xs">
+                Generated: {formatDate(forecastData.forecast_timestamp)}
+              </span>
             </p>
+            {confidenceRange && (
+              <p className="text-xs text-gray-500 mt-1">
+                Range: {formatPrice(confidenceRange.lower)} - {formatPrice(confidenceRange.upper)}
+              </p>
+            )}
           </div>
         </div>
         
@@ -94,8 +91,14 @@ export default function ForecastInsight({ currentPrice, forecastData }: Forecast
           <div>
             <h4 className="text-sm font-medium text-gray-500">Model</h4>
             <p className="text-sm font-medium mt-1">
-              {forecastData.model_name || 'Chronos'} 
-              {forecastData.model_type ? ` (${forecastData.model_type})` : ''}
+              {forecastData.model_name}
+              <br />
+              <span className="text-gray-500 text-xs">
+                Type: {forecastData.model_type}
+              </span>
+            </p>
+            <p className="text-xs text-gray-500 mt-1">
+              Probability of Increase: {forecastData.probability_increase.toFixed(1)}%
             </p>
           </div>
         </div>
@@ -105,7 +108,17 @@ export default function ForecastInsight({ currentPrice, forecastData }: Forecast
           <div>
             <h4 className="text-sm font-medium text-gray-500">Uncertainty</h4>
             <p className="text-sm font-medium mt-1">
-              ±{(forecastData.average_uncertainty || 0).toFixed(1)}%
+              ±{forecastData.average_uncertainty.toFixed(1)}%
+              <br />
+              <span className={`text-xs ${
+                forecastData.average_uncertainty > 20 ? 'text-red-500' :
+                forecastData.average_uncertainty > 10 ? 'text-yellow-500' :
+                'text-green-500'
+              }`}>
+                {forecastData.average_uncertainty > 20 ? 'High' :
+                 forecastData.average_uncertainty > 10 ? 'Moderate' :
+                 'Low'} Uncertainty
+              </span>
             </p>
           </div>
         </div>

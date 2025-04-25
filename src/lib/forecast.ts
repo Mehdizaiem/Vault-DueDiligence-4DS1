@@ -1,4 +1,5 @@
 interface ForecastData {
+  id: string;
   symbol: string;
   forecast_timestamp: string;
   model_name: string;
@@ -25,12 +26,12 @@ export async function getForecastData(symbol: string): Promise<ForecastData | nu
       throw new Error('Failed to fetch forecast data');
     }
 
-    const data = await response.json();
-    if (!data.success) {
-      throw new Error(data.error || 'Failed to fetch forecast data');
+    const result = await response.json();
+    if (!result.success) {
+      throw new Error(result.error || 'Failed to fetch forecast data');
     }
 
-    return data.data;
+    return result.data;
   } catch (error) {
     console.error('Error fetching forecast data:', error);
     return null;

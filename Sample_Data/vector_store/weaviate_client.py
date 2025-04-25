@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import weaviate
 from weaviate.classes.init import AdditionalConfig, Timeout
 import os
@@ -22,7 +25,7 @@ def get_weaviate_client():
         
     load_dotenv()
     
-    WEAVIATE_URL = os.getenv("WEAVIATE_URL", "http://localhost:8080")  # Updated port
+    WEAVIATE_URL = os.getenv("WEAVIATE_URL", "http://localhost:9090")  # Updated port to 9090
     WEAVIATE_GRPC_PORT = int(os.getenv("WEAVIATE_GRPC_PORT", "50051"))
     
     try:

@@ -1,4 +1,4 @@
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Area } from 'recharts';
 import { ChartData } from '@/lib/forecast-manager';
 
 interface ForecastChartProps {
@@ -45,6 +45,24 @@ export default function ForecastChart({ data, timeFrame }: ForecastChartProps) {
   };
 
   const filteredData = getFilteredData();
+
+  // Find the range for Y-axis
+  const yDomain = filteredData.reduce((acc, item) => {
+    const values = [
+      item.price,
+      item.predicted,
+      item.lower,
+      item.upper
+    ].filter(v => v !== undefined && v !== null) as number[];
+
+    return {
+      min: Math.min(acc.min, ...values),
+      max: Math.max(acc.max, ...values)
+    };
+  }, { min: Infinity, max: -Infinity });
+
+  // Add some padding to the Y-axis range
+  const yPadding = (yDomain.max - yDomain.min) * 0.1;
   
   return (
     <div className="h-[400px] w-full">
@@ -62,7 +80,7 @@ export default function ForecastChart({ data, timeFrame }: ForecastChartProps) {
           />
           <YAxis 
             tickFormatter={(value) => `$${Number(value).toLocaleString()}`}
-            domain={['auto', 'auto']}
+            domain={[yDomain.min - yPadding, yDomain.max + yPadding]}
             tick={{ fontSize: 12 }}
           />
           <Tooltip
@@ -74,7 +92,6 @@ export default function ForecastChart({ data, timeFrame }: ForecastChartProps) {
                 currency: 'USD'
               }).format(value);
               
-              // Rename the series in the tooltip
               const nameMap: {[key: string]: string} = {
                 'price': 'Historical Price',
                 'predicted': 'Forecast Price',
@@ -98,17 +115,37 @@ export default function ForecastChart({ data, timeFrame }: ForecastChartProps) {
             align="center"
             wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }}
             formatter={(value) => {
-              // Rename the series in the legend
               const nameMap: {[key: string]: string} = {
                 'price': 'Historical Price',
                 'predicted': 'Forecast Price',
-                'lower': 'Lower Bound',
-                'upper': 'Upper Bound'
+                'confidence': 'Confidence Interval'
               };
               return nameMap[value] || value;
             }}
           />
+          
+          {/* Confidence Interval Area */}
+          <Area
+            name="confidence"
+            type="monotone"
+            dataKey="upper"
+            stroke="none"
+            fill="#10B981"
+            fillOpacity={0.1}
+            activeDot={false}
+          />
+          <Area
+            type="monotone"
+            dataKey="lower"
+            stroke="none"
+            fill="#10B981"
+            fillOpacity={0.1}
+            activeDot={false}
+          />
+          
+          {/* Historical Price Line */}
           <Line 
+            name="price"
             type="monotone" 
             dataKey="price" 
             stroke="#4F46E5" 
@@ -116,8 +153,12 @@ export default function ForecastChart({ data, timeFrame }: ForecastChartProps) {
             dot={false}
             isAnimationActive={true}
             activeDot={{ r: 6, stroke: '#4F46E5', strokeWidth: 2, fill: 'white' }}
+            connectNulls={true}
           />
+          
+          {/* Forecast Line */}
           <Line 
+            name="predicted"
             type="monotone" 
             dataKey="predicted" 
             stroke="#10B981" 
@@ -126,26 +167,7 @@ export default function ForecastChart({ data, timeFrame }: ForecastChartProps) {
             dot={false}
             isAnimationActive={true}
             activeDot={{ r: 6, stroke: '#10B981', strokeWidth: 2, fill: 'white' }}
-          />
-          <Line 
-            type="monotone" 
-            dataKey="lower" 
-            stroke="#10B981" 
-            strokeWidth={1}
-            strokeDasharray="3 3"
-            dot={false}
-            opacity={0.5}
-            isAnimationActive={true}
-          />
-          <Line 
-            type="monotone" 
-            dataKey="upper" 
-            stroke="#10B981" 
-            strokeWidth={1}
-            strokeDasharray="3 3"
-            dot={false}
-            opacity={0.5}
-            isAnimationActive={true}
+            connectNulls={true}
           />
         </LineChart>
       </ResponsiveContainer>

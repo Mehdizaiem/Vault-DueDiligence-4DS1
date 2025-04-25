@@ -4,7 +4,7 @@ export default authMiddleware({
   // Routes that can be accessed while signed out
   publicRoutes: ["/sign-in", "/sign-up"],
   // Routes that can always be accessed, and have no authentication information
-  ignoredRoutes: ["/api/webhook"],
+  ignoredRoutes: ["/api/webhook", "/api/forecasts"],
   afterAuth(auth, req ) {
     // Handle users who aren't authenticated
     if (!auth.userId && !auth.isPublicRoute) {

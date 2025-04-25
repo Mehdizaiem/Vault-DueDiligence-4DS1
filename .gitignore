@@ -85,3 +85,6 @@ Sample_Data/data_ingestion/processed/crypto_news.csv
 *.ico
 *.webp
 *.svg
+models/finbert-tone/pytorch_model.bin
+package-lock.json
+package.json

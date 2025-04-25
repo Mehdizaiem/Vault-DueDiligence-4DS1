@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Card } from "@/components/ui/card";
 import { 
   TrendingUp, 
   TrendingDown,
@@ -10,18 +9,19 @@ import {
   BarChart, 
   RefreshCcw,
   Info,
-  LineChart
+  LineChart,
+  FileQuestion,
+  Terminal
 } from "lucide-react";
-import axios from 'axios';
+import { Card } from "@/components/ui/card";
 import { LineChart as RechartsLineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine, Area } from 'recharts';
 
 // Interface for cryptocurrency data
 interface CryptoData {
   symbol: string;
-  name: string;
-  currentPrice: number;
-  priceChange24h: number;
-  priceChangePercentage24h: number;
+  price: number;
+  price_change_24h?: number;
+  price_change_percentage_24h?: number;
 }
 
 // Interface for forecast data
@@ -29,6 +29,7 @@ interface ForecastData {
   symbol: string;
   forecast_timestamp: string;
   model_name: string;
+  model_type?: string;
   days_ahead: number;
   current_price: number;
   forecast_dates: string[];
@@ -102,96 +103,69 @@ export default function ForecastPage() {
     }
   ];
 
-  // Fetch current price data from API
-  const fetchPriceData = async () => {
+  // Fetch crypto data from API (prices, forecast, and historical data)
+  const fetchCryptoData = async () => {
+    setIsLoading(true);
+    setError(null);
+    
     try {
-      // Try to fetch from actual API first
-      try {
-        const response = await axios.get('/api/crypto/prices');
-        if (response.data && Array.isArray(response.data)) {
-          const formattedData = response.data.map((item: any) => ({
-            symbol: item.symbol.replace('USDT', '').replace('USD', ''),
-            name: availableCryptos.find(c => c.symbol === item.symbol.replace('USDT', '').replace('USD', ''))?.name || 'Unknown',
-            currentPrice: parseFloat(item.price),
-            priceChange24h: parseFloat(item.price_change_24h || 0),
-            priceChangePercentage24h: parseFloat(item.price_change_percentage_24h || 0)
-          }));
-          
-          setCryptoData(formattedData);
-          return;
-        }
-      } catch (apiError) {
-        console.warn("Could not fetch from real API, using fallback data", apiError);
+      const response = await fetch(`/api/forecasts?symbol=${selectedCrypto}&timeframe=${timeframe}`);
+      
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`);
       }
       
-      // Fallback to mock data if API fetch fails
-      const mockPrices = {
-        'BTC': { price: 67432.18, change: 7.52 },
-        'ETH': { price: 3421.50, change: 12.53 },
-        'SOL': { price: 143.25, change: 17.80 },
-        'ADA': { price: 0.57, change: 10.53 },
-        'DOT': { price: 7.85, change: 10.45 },
-        'XRP': { price: 0.64, change: -7.81 },
-      };
+      const data = await response.json();
       
-      // Add some randomness to prices and changes for realistic variation
-      const randomizedData = availableCryptos.map(crypto => {
-        const baseData = mockPrices[crypto.symbol as keyof typeof mockPrices];
-        const randomFactor = 0.98 + Math.random() * 0.04; // Between 0.98 and 1.02
-        const randomChangeDir = Math.random() > 0.7 ? -1 : 1;
-        
-        return {
-          symbol: crypto.symbol,
-          name: crypto.name,
-          currentPrice: baseData.price * randomFactor,
-          priceChange24h: baseData.price * (baseData.change / 100) * randomFactor,
-          priceChangePercentage24h: baseData.change * randomFactor * randomChangeDir
-        };
-      });
-      
-      setCryptoData(randomizedData);
-    } catch (err) {
-      console.error("Error fetching price data:", err);
-      setError("Failed to fetch current prices");
-    }
-  };
-
-  // Fetch forecast data from API
-  const fetchForecastData = async () => {
-    try {
-      // Try to fetch from actual API
-      const response = await axios.get(`/api/forecasts?symbol=${selectedCrypto}&timeframe=${timeframe}`);
-      
-      if (response.data && response.data.forecast) {
-        setForecastData(response.data.forecast);
-        createChartData(response.data.forecast, response.data.historicalData || []);
+      // Process prices
+      if (data.prices && Array.isArray(data.prices) && data.prices.length > 0) {
+        setCryptoData(data.prices);
       } else {
-        throw new Error("Invalid forecast data format");
+        // Set placeholder price data if none is available
+        const placeholderPrices = availableCryptos.map(crypto => ({
+          symbol: `${crypto.symbol}USD`,
+          price: crypto.symbol === 'BTC' ? 67500 : 
+                  crypto.symbol === 'ETH' ? 3450 : 
+                  crypto.symbol === 'SOL' ? 142 : 
+                  crypto.symbol === 'ADA' ? 0.57 : 
+                  crypto.symbol === 'DOT' ? 7.85 : 0.64,
+          price_change_percentage_24h: 0
+        }));
+        
+        setCryptoData(placeholderPrices);
+        console.warn("No price data available, using placeholder values");
       }
+      
+      // Process forecast data
+      if (data.forecast) {
+        setForecastData(data.forecast);
+        createChartData(data.forecast, data.historicalData || []);
+      } else {
+        setForecastData(null);
+        setChartData([]);
+        setError(data.error || "No forecast data available");
+      }
+      
     } catch (err) {
-      console.error("Error fetching forecast data:", err);
-      setError("Failed to fetch forecast data");
+      console.error("Error fetching crypto data:", err);
+      setError("Failed to load cryptocurrency data. Please try again later.");
+      // Keep any existing crypto price data to avoid completely empty UI
+    } finally {
+      setIsLoading(false);
     }
   };
 
   // Create chart data from historical and forecast data
   const createChartData = (forecast: ForecastData, historicalData: any[] = []) => {
     try {
-      // Use provided historical data if available
       if (historicalData.length > 0) {
-        console.log(`Processing ${historicalData.length} historical data points`);
-        
-        // Limit historical data based on timeframe if needed
-        const timeframeDays = timeframe === '7d' ? 7 : timeframe === '30d' ? 30 : 90;
-        const filteredHistorical = historicalData.length > timeframeDays 
-          ? historicalData.slice(-timeframeDays) 
-          : historicalData;
-        
-        const historical = filteredHistorical.map((point) => ({
+        // Process historical data
+        const historical = historicalData.map((point) => ({
           date: point.timestamp || point.date,
           price: point.price || point.close,
         }));
         
+        // Process forecast data
         const forecastPoints = forecast.forecast_dates.map((date, i) => ({
           date,
           forecast: forecast.forecast_values[i],
@@ -199,13 +173,30 @@ export default function ForecastPage() {
           upperBound: forecast.upper_bounds[i]
         }));
         
+        // Combine both datasets
         setChartData([...historical, ...forecastPoints]);
       } else {
-        setError("No historical data available");
+        // Create chart data with only forecast
+        const forecastPoints = forecast.forecast_dates.map((date, i) => ({
+          date,
+          forecast: forecast.forecast_values[i],
+          lowerBound: forecast.lower_bounds[i],
+          upperBound: forecast.upper_bounds[i]
+        }));
+        
+        // Add current price as the first point
+        const currentDate = new Date();
+        forecastPoints.unshift({
+          date: currentDate.toISOString(),
+          price: forecast.current_price
+        });
+        
+        setChartData(forecastPoints);
       }
     } catch (err) {
       console.error("Error creating chart data:", err);
-      setError("Failed to create chart data");
+      setChartData([]);
+      setError("Failed to process chart data");
     }
   };
 
@@ -222,29 +213,21 @@ export default function ForecastPage() {
 
   // Load data when component mounts or when selectedCrypto/timeframe changes
   useEffect(() => {
-    const loadData = async () => {
-      setIsLoading(true);
-      setError(null);
-      
-      try {
-        await fetchPriceData();
-        await fetchForecastData();
-      } catch (err) {
-        console.error("Error loading data:", err);
-        setError("Failed to load forecast data");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    loadData();
+    fetchCryptoData();
   }, [selectedCrypto, timeframe]);
 
   // Handle refresh button click
   const handleRefresh = () => {
-    setIsLoading(true);
-    fetchPriceData();
-    fetchForecastData();
+    fetchCryptoData();
+  };
+
+  // Find price data for a specific crypto
+  const findCryptoPrice = (symbol: string) => {
+    return cryptoData.find(data => 
+      data.symbol === `${symbol}USD` || 
+      data.symbol === `${symbol}USDT` ||
+      data.symbol.replace('USD', '').replace('USDT', '') === symbol
+    );
   };
 
   // Custom tooltip for chart
@@ -310,73 +293,82 @@ export default function ForecastPage() {
           </div>
         </div>
         
-        {/* Market Indicators */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
-          {getMarketIndicators().map((indicator) => (
-            <Card key={indicator.name} className="p-6">
-              <div className="flex justify-between items-start">
-                <div>
-                  <p className="text-sm text-gray-500">{indicator.name}</p>
-                  <h3 className="text-2xl font-bold mt-1">{indicator.value}</h3>
-                </div>
-                <div className={`rounded-full p-2 ${
-                  indicator.status === 'positive' ? 'bg-green-100' : 
-                  indicator.status === 'negative' ? 'bg-red-100' : 'bg-gray-100'
-                }`}>
-                  {indicator.status === 'positive' ? (
-                    <TrendingUp className="h-5 w-5 text-green-600" />
-                  ) : indicator.status === 'negative' ? (
-                    <TrendingDown className="h-5 w-5 text-red-600" />
-                  ) : (
-                    <AlertCircle className="h-5 w-5 text-gray-600" />
-                  )}
-                </div>
-              </div>
-            </Card>
-          ))}
-        </div>
-        
-        {/* Crypto Selector Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mt-6">
-          {availableCryptos.map((crypto) => (
-            <Card 
-              key={crypto.symbol}
-              className={`p-4 cursor-pointer transition-all hover:shadow-md ${
-                selectedCrypto === crypto.symbol ? 'border-2 border-blue-500 bg-blue-50' : ''
-              }`}
-              onClick={() => setSelectedCrypto(crypto.symbol)}
-            >
-              <div className="flex flex-col items-center justify-center">
-                <div className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center mb-2">
-                  <span className="font-bold text-sm">{crypto.symbol}</span>
-                </div>
-                <p className="text-sm font-medium">{crypto.name}</p>
-                
-                {cryptoData.find(data => data.symbol === crypto.symbol) && (
-                  <div className="mt-2 text-center">
-                    <p className="text-sm font-bold">
-                      {formatPrice(cryptoData.find(data => data.symbol === crypto.symbol)?.currentPrice || 0)}
-                    </p>
-                    <p className={`text-xs ${
-                      (cryptoData.find(data => data.symbol === crypto.symbol)?.priceChangePercentage24h || 0) >= 0 
-                        ? 'text-green-600' 
-                        : 'text-red-600'
-                    }`}>
-                      {(cryptoData.find(data => data.symbol === crypto.symbol)?.priceChangePercentage24h || 0) >= 0 ? '↑' : '↓'}
-                      {Math.abs(cryptoData.find(data => data.symbol === crypto.symbol)?.priceChangePercentage24h || 0).toFixed(2)}%
-                    </p>
-                  </div>
-                )}
-              </div>
-            </Card>
-          ))}
-        </div>
-        
+        {/* Error message if any */}
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg relative mt-6">
+          <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-lg relative mt-4">
             <span className="block sm:inline">{error}</span>
           </div>
         )}
+        
+        {/* Market Indicators - only show if forecast data is available */}
+        {forecastData && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
+            {getMarketIndicators().map((indicator) => (
+              <Card 
+                key={indicator.name} 
+                className="p-6"
+              >
+                <div className="flex justify-between items-start">
+                  <div>
+                    <p className="text-sm text-gray-500">{indicator.name}</p>
+                    <h3 className="text-2xl font-bold mt-1">{indicator.value}</h3>
+                  </div>
+                  <div className={`rounded-full p-2 ${
+                    indicator.status === 'positive' ? 'bg-green-100' : 
+                    indicator.status === 'negative' ? 'bg-red-100' : 'bg-gray-100'
+                  }`}>
+                    {indicator.status === 'positive' ? (
+                      <TrendingUp className="h-5 w-5 text-green-600" />
+                    ) : indicator.status === 'negative' ? (
+                      <TrendingDown className="h-5 w-5 text-red-600" />
+                    ) : (
+                      <AlertCircle className="h-5 w-5 text-gray-600" />
+                    )}
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        )}
+        
+        {/* Crypto Selector Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mt-6">
+          {availableCryptos.map((crypto) => {
+            const priceData = findCryptoPrice(crypto.symbol);
+            return (
+              <Card 
+                key={crypto.symbol} 
+                className={`p-4 cursor-pointer transition-all hover:shadow-md ${
+                  selectedCrypto === crypto.symbol ? 'border-2 border-blue-500 bg-blue-50' : ''
+                }`}
+                onClick={() => setSelectedCrypto(crypto.symbol)}
+              >
+                <div className="flex flex-col items-center justify-center">
+                  <div className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center mb-2">
+                    <span className="font-bold text-sm">{crypto.symbol}</span>
+                  </div>
+                  <p className="text-sm font-medium">{crypto.name}</p>
+                  
+                  {priceData && (
+                    <div className="mt-2 text-center">
+                      <p className="text-sm font-bold">
+                        {formatPrice(priceData.price)}
+                      </p>
+                      <p className={`text-xs ${
+                        (priceData.price_change_percentage_24h || 0) >= 0 
+                          ? 'text-green-600' 
+                          : 'text-red-600'
+                      }`}>
+                        {(priceData.price_change_percentage_24h || 0) >= 0 ? '↑' : '↓'}
+                        {Math.abs(priceData.price_change_percentage_24h || 0).toFixed(2)}%
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </Card>
+            );
+          })}
+        </div>
         
         {/* Price Chart */}
         <Card className="p-6 mt-6">
@@ -481,16 +473,30 @@ export default function ForecastPage() {
               </ResponsiveContainer>
             </div>
           ) : (
-            <div className="h-80 flex items-center justify-center bg-gray-50 rounded-lg">
-              <div className="text-center">
-                <LineChart size={48} className="mx-auto text-gray-300 mb-3" />
-                <p className="text-gray-500">No chart data available</p>
-              </div>
+            <div className="h-80 flex flex-col items-center justify-center bg-gray-50 rounded-lg p-6">
+              <FileQuestion size={64} className="text-gray-300 mb-4" />
+              <h4 className="text-lg font-medium text-gray-600 mb-2">No Forecast Data Available</h4>
+              <p className="text-gray-500 text-center mb-4">
+                {error || `We couldn't find forecast data for ${selectedCrypto}. This might be because:`}
+              </p>
+              {!error && (
+                <ul className="text-gray-500 text-sm list-disc pl-6 space-y-1">
+                  <li>The forecast hasn't been generated yet</li>
+                  <li>Historical data is missing for this cryptocurrency</li>
+                  <li>The forecast service is currently unavailable</li>
+                </ul>
+              )}
+              <button 
+                onClick={handleRefresh}
+                className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm hover:bg-indigo-700"
+              >
+                Retry
+              </button>
             </div>
           )}
         </Card>
         
-        {/* Forecast Insights */}
+        {/* Forecast Insights - only show if forecast data is available */}
         {forecastData && (
           <Card className="p-6 mt-6">
             <div className="flex flex-col md:flex-row gap-6">
@@ -585,6 +591,31 @@ export default function ForecastPage() {
                   </div>
                 </div>
               </div>
+            </div>
+          </Card>
+        )}
+        
+        {/* No forecast data available - show CTA to run forecasting */}
+        {!isLoading && !forecastData && (
+          <Card className="p-6 mt-6">
+            <div className="flex flex-col items-center text-center p-6">
+              <Terminal size={64} className="text-gray-300 mb-4" />
+              <h3 className="text-xl font-semibold mb-2">Generate Forecasts</h3>
+              <p className="text-gray-600 mb-6">
+                No forecast data is currently available for {selectedCrypto}. You can generate forecasts using the chronos_finetune.py script.
+              </p>
+              <div className="bg-gray-50 p-4 rounded-lg text-left w-full max-w-lg mb-6">
+                <p className="text-sm font-medium mb-2">How to generate forecasts:</p>
+                <div className="bg-black text-white p-3 rounded-lg overflow-auto">
+                  <pre className="text-xs">python models/chronos/chronos_finetune.py --symbol {selectedCrypto} --days-ahead 7</pre>
+                </div>
+                <p className="text-xs text-gray-500 mt-2">
+                  This will fine-tune the Chronos model for {selectedCrypto} and generate forecasts.
+                </p>
+              </div>
+              <p className="text-sm text-gray-500">
+                After running the script, refresh this page to see the forecast.
+              </p>
             </div>
           </Card>
         )}

@@ -150,7 +150,7 @@ class CryptoFundDueDiligence:
         logger.info(f"Generating {output_format} report for document: {document_id}")
 
         if output_format != "pptx":
-             logger.warning(f"Output format '{output_format}' not fully supported. Generating PPTX.")
+            logger.warning(f"Output format '{output_format}' not fully supported. Generating PPTX.")
 
         try:
             analysis_results = self.analyze_document(document_id)
@@ -162,13 +162,23 @@ class CryptoFundDueDiligence:
             output_dir = os.path.join(project_root, self.config.get("output_dir", "reports"))
             os.makedirs(output_dir, exist_ok=True)
 
+            # Get template path from config
+            template_path = None
+            if "report_templates" in self.config:
+                template_dir = os.path.join(project_root, self.config.get("report_templates"))
+                template_path = os.path.join(template_dir, "base_template.pptx")
+                if not os.path.exists(template_path):
+                    logger.warning(f"Template not found at {template_path}")
+                    template_path = None
+
             fund_name = analysis_results.get("fund_info", {}).get("fund_name", "UnknownFund")
             safe_fund_name = "".join(c if c.isalnum() else "_" for c in fund_name)[:50]
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             filename = f"{safe_fund_name}_DueDiligence_{timestamp}.pptx"
             filepath = os.path.join(output_dir, filename)
 
-            report_path = self.report_generator.generate_report(analysis_results, output_path=filepath)
+            report_generator = ReportGenerator(template_path=template_path)
+            report_path = report_generator.generate_report(analysis_results, output_path=filepath)
 
             logger.info(f"Report generation complete. Saved to: {report_path}")
             return {
@@ -178,12 +188,6 @@ class CryptoFundDueDiligence:
         except Exception as e:
             logger.error(f"Error generating report for document {document_id}: {e}", exc_info=True)
             return {"error": f"Error generating report: {str(e)}"}
-
-    def close(self):
-        logger.info("Closing CryptoFundDueDiligence system resources.")
-        if hasattr(self, 'coordinator') and hasattr(self.coordinator, 'close'):
-            self.coordinator.close()
-        logger.info("System resources closed.")
 
 # --- Main Execution Block ---
 def main():

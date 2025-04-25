@@ -25,8 +25,20 @@ class ReportGenerator:
     def __init__(self, template_path: Optional[str] = None):
         self.design = DesignElements()
         self.chart_factory = ChartFactory()
+        
+        # If template_path is not provided, try to find the default template
+        if not template_path:
+            project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            template_path = os.path.join(project_root, "reporting", "templates", "base_template.pptx")
+            if os.path.exists(template_path):
+                logger.info(f"Using default template from: {template_path}")
+            else:
+                logger.warning(f"Default template not found at {template_path}")
+                template_path = None
+        
         self.builder = PresentationBuilder(template_path)
-        self.narrative_generator = None
+        
+        # Initialize narrative generator (existing code)
         try:
             groq_client = GroqClient()
             if not groq_client.api_key: raise ValueError("Groq API Key missing.")
@@ -127,6 +139,30 @@ class ReportGenerator:
         """Prepares kwargs specifically for the target builder method."""
         # Extract analysis_results if present, but keep it for later use if needed
         analysis_results = kwargs.pop('analysis_results', None)
+        
+        if method_name == 'add_fund_overview_slide':
+            # Simply pass through the fund_info
+            return {"fund_info": kwargs.get("fund_info", {})}
+            
+        elif method_name == 'add_team_analysis_slide':
+            # Simply pass through the team_data
+            return {"team_data": kwargs.get("team_data", {})}
+            
+        elif method_name == 'add_portfolio_allocation_slide':
+            # Pass through portfolio_data and market_analysis
+            return {
+                "portfolio_data": kwargs.get("portfolio_data", {}),
+                "market_analysis": kwargs.get("market_analysis", {})
+            }
+            
+        elif method_name == 'add_wallet_security_analysis':
+            # Pass through wallet_analysis
+            return {"wallet_analysis": kwargs.get("wallet_analysis", {})}
+            
+        elif method_name == 'add_risk_assessment_slides':
+            # Prepare risk data for the new method
+            risk_assessment = kwargs.get("risk_assessment", {})
+            risk_narrative = kwargs.get("risk_narrative", "")
 
         if method_name == 'add_cover_slide':
             fund_info = kwargs.get("fund_info", {})
@@ -135,139 +171,141 @@ class ReportGenerator:
                 "subtitle": "Comprehensive Analysis & Risk Assessment",
                 "date": datetime.now().strftime("%B %d, %Y")
             }
+            
         elif method_name == 'add_executive_summary_slide':
-            # Extract required fields and directly pass RGB tuples for risk colors
-            risk_level = kwargs.get("risk_assessment", {}).get("risk_level", "Medium")
-            risk_color_tuple = self._get_risk_color(risk_level)
+            # Ensure we return a dictionary even when analysis_results is None
+            fund_info = kwargs.get("fund_info", {})
+            risk_assessment = kwargs.get("risk_assessment", {})
+            compliance_analysis = kwargs.get("compliance_analysis", {})
+            summary_text = kwargs.get("summary_text", "")
+            assessment_points = kwargs.get("assessment_points", {"strengths": [], "concerns": []})
             
-            comp_score = kwargs.get("compliance_analysis", {}).get("overall_compliance_score", 50)
-            comp_color_tuple = self.design.get_risk_scale_color(comp_score, invert=False)
-            
+            # Always return a dictionary with required parameters
             return {
                 "title": "Executive Summary",
-                "fund_name": kwargs.get("fund_info", {}).get("fund_name", "N/A"),
-                "aum": format_currency(kwargs.get("fund_info", {}).get("aum", 0), in_millions=True),
-                "strategy": summarize_text(kwargs.get("fund_info", {}).get("strategy", "N/A"), max_length=60),
-                "risk_score": kwargs.get("risk_assessment", {}).get("overall_risk_score", 50),
-                "risk_level": kwargs.get("risk_assessment", {}).get("risk_level", "Medium"),
-                "risk_color": risk_color_tuple,  # Pass tuple directly, let PresentationBuilder handle conversion
-                "compliance_score": kwargs.get("compliance_analysis", {}).get("overall_compliance_score", 50),
-                "compliance_level": kwargs.get("compliance_analysis", {}).get("compliance_level", "Medium"),
-                "compliance_color": comp_color_tuple,  # Pass tuple directly
-                "summary_text": kwargs.get("summary_text", ""),
-                "key_strengths": kwargs.get("assessment_points", {}).get("strengths", []),
-                "key_concerns": kwargs.get("assessment_points", {}).get("concerns", [])
+                "fund_name": fund_info.get("fund_name", "N/A"),
+                "aum": format_currency(fund_info.get("aum", 0), in_millions=True),
+                "strategy": summarize_text(fund_info.get("strategy", "N/A"), max_length=60),
+                "risk_score": risk_assessment.get("overall_risk_score", 50),
+                "risk_level": risk_assessment.get("risk_level", "Medium"),
+                "risk_color": self._get_risk_color(risk_assessment.get("risk_level", "Medium")),
+                "compliance_score": compliance_analysis.get("overall_compliance_score", 50),
+                "compliance_level": compliance_analysis.get("compliance_level", "Medium"),
+                "compliance_color": self._get_risk_color(compliance_analysis.get("compliance_level", "Medium")),
+                "summary_text": summary_text,
+                "key_strengths": assessment_points.get("strengths", []),
+                "key_concerns": assessment_points.get("concerns", [])
             }
         elif method_name == 'add_risk_assessment_slides':
-            risk_assessment = kwargs.get("risk_assessment", {})
-            risk_narrative = kwargs.get("risk_narrative", "")
-            if not risk_assessment or "error" in risk_assessment:
-                return {"title": "Risk Assessment", "content": "Risk assessment could not be generated."}
-                
-            components = risk_assessment.get("risk_components", {})
-            score = risk_assessment.get("overall_risk_score", 50)
-            level = risk_assessment.get("risk_level", "Medium")
-            factors = risk_assessment.get("risk_factors", [])
-            mitigations = risk_assessment.get("suggested_mitigations", [])
-            labels, values = [], []
-            
-            for rt, rd in components.items():
-                if isinstance(rd, dict):
-                    labels.append(" ".join(w.capitalize() for w in rt.split("_")))
-                    values.append(rd.get("score", 5.0))
+                risk_assessment = kwargs.get("risk_assessment", {})
+                risk_narrative = kwargs.get("risk_narrative", "")
+                if not risk_assessment or "error" in risk_assessment:
+                    return {"title": "Risk Assessment", "content": "Risk assessment could not be generated."}
                     
-            risk_color = self._get_risk_color(level)
-            risk_color_hex = self.design.rgb_to_hex(risk_color)  # Use the design object's method
-            
-            return {
-                "overview_data": {
-                    "title": "Risk Assessment Overview",
-                    "overall_risk_score": score,
-                    "risk_level": level,
-                    "risk_color": risk_color_hex,
-                    "radar_labels": labels,
-                    "radar_values": values,
-                    "risk_narrative": risk_narrative
-                },
-                "factors_data": {
-                    "title": "Key Identified Risk Factors",
-                    "risk_factors": [f"• {f.get('factor','?')}" for f in factors if isinstance(f, dict)][:8]
-                } if factors else None,
-                "mitigation_data": {
-                    "title": "Suggested Risk Mitigations",
-                    "content": "\n".join([f"• {m}" for m in mitigations[:8]]), 
-                    "text_size": 14
-                } if mitigations else None
-            }
-            
-        elif method_name == 'add_compliance_analysis_slides':
-            compliance_analysis = kwargs.get("compliance_analysis", {})
-            compliance_narrative = kwargs.get("compliance_narrative", "")
-            if not compliance_analysis or "error" in compliance_analysis:
-                return {"title": "Compliance Analysis", "content": "Compliance analysis could not be generated."}
+                components = risk_assessment.get("risk_components", {})
+                score = risk_assessment.get("overall_risk_score", 50)
+                level = risk_assessment.get("risk_level", "Medium")
+                factors = risk_assessment.get("risk_factors", [])
+                mitigations = risk_assessment.get("suggested_mitigations", [])
+                labels, values = [], []
                 
-            score = compliance_analysis.get("overall_compliance_score", 50)
-            level = compliance_analysis.get("compliance_level", "Medium")
-            juris = compliance_analysis.get("jurisdictions", [])
-            kyc = compliance_analysis.get("kyc_aml_assessment", {})
-            reg_status = compliance_analysis.get("regulatory_status", {})
-            gaps = compliance_analysis.get("compliance_gaps", [])
-            
-            reg_table_data = None
-            if reg_status:
-                reg_table_data = [["Jurisdiction", "Status", "Score"]]
-                for j, s in reg_status.items():
-                    if isinstance(s, dict):
-                        reg_table_data.append([
-                            j, 
-                            s.get("registration_status", "?"), 
-                            f"{s.get('compliance_score', 0):.1f}%"
-                        ])
-            
-            return {
-                "overview_data": {
-                    "title": "Compliance Overview", 
-                    "overall_score": score, 
-                    "compliance_level": level, 
-                    "jurisdictions": ", ".join(juris) if juris else "N/A", 
-                    "kyc_aml_coverage": kyc.get("coverage_score", 0), 
-                    "compliance_narrative": compliance_narrative
-                },
-                "reg_status_data": {
-                    "title": "Regulatory Status by Jurisdiction", 
-                    "table_data": reg_table_data
-                } if reg_table_data else None,
-                "gaps_data": {
-                    "title": "Identified Compliance Gaps", 
-                    "content": "\n".join([f"• {g}" for g in gaps[:8]]), 
-                    "text_size": 14
-                } if gaps else None
-            }
-            
+                for rt, rd in components.items():
+                    if isinstance(rd, dict):
+                        labels.append(" ".join(w.capitalize() for w in rt.split("_")))
+                        values.append(rd.get("score", 5.0))
+                        
+                risk_color = self._get_risk_color(level)
+                risk_color_hex = self.design.rgb_to_hex(risk_color)  # Use the design object's method
+                
+                return {
+                    "overview_data": {
+                        "title": "Risk Assessment Overview",
+                        "overall_risk_score": score,
+                        "risk_level": level,
+                        "risk_color": risk_color_hex,
+                        "radar_labels": labels,
+                        "radar_values": values,
+                        "risk_narrative": risk_narrative
+                    },
+                    "factors_data": {
+                        "title": "Key Identified Risk Factors",
+                        "risk_factors": [f"• {f.get('factor','?')}" for f in factors if isinstance(f, dict)][:8]
+                    } if factors else None,
+                    "mitigation_data": {
+                        "title": "Suggested Risk Mitigations",
+                        "content": "\n".join([f"• {m}" for m in mitigations[:8]]), 
+                        "text_size": 14
+                    } if mitigations else None
+                }
+                
+        elif method_name == 'add_compliance_analysis_slides':
+                compliance_analysis = kwargs.get("compliance_analysis", {})
+                compliance_narrative = kwargs.get("compliance_narrative", "")
+                if not compliance_analysis or "error" in compliance_analysis:
+                    return {"title": "Compliance Analysis", "content": "Compliance analysis could not be generated."}
+                    
+                score = compliance_analysis.get("overall_compliance_score", 50)
+                level = compliance_analysis.get("compliance_level", "Medium")
+                juris = compliance_analysis.get("jurisdictions", [])
+                kyc = compliance_analysis.get("kyc_aml_assessment", {})
+                reg_status = compliance_analysis.get("regulatory_status", {})
+                gaps = compliance_analysis.get("compliance_gaps", [])
+                
+                reg_table_data = None
+                if reg_status:
+                    reg_table_data = [["Jurisdiction", "Status", "Score"]]
+                    for j, s in reg_status.items():
+                        if isinstance(s, dict):
+                            reg_table_data.append([
+                                j, 
+                                s.get("registration_status", "?"), 
+                                f"{s.get('compliance_score', 0):.1f}%"
+                            ])
+                
+                return {
+                    "overview_data": {
+                        "title": "Compliance Overview", 
+                        "overall_score": score, 
+                        "compliance_level": level, 
+                        "jurisdictions": ", ".join(juris) if juris else "N/A", 
+                        "kyc_aml_coverage": kyc.get("coverage_score", 0), 
+                        "compliance_narrative": compliance_narrative
+                    },
+                    "reg_status_data": {
+                        "title": "Regulatory Status by Jurisdiction", 
+                        "table_data": reg_table_data
+                    } if reg_table_data else None,
+                    "gaps_data": {
+                        "title": "Identified Compliance Gaps", 
+                        "content": "\n".join([f"• {g}" for g in gaps[:8]]), 
+                        "text_size": 14
+                    } if gaps else None
+                }
+                
         elif method_name == 'add_conclusion_slide':
-            risk_score = kwargs.get("risk_assessment", {}).get("overall_risk_score", 50)
-            risk_level = kwargs.get("risk_assessment", {}).get("risk_level", "Medium")
-            compliance_score = kwargs.get("compliance_analysis", {}).get("overall_compliance_score", 50)
-            compliance_level = kwargs.get("compliance_analysis", {}).get("compliance_level", "Medium")
-            return {
-                "title": "Conclusion & Overall Assessment",
-                "fund_name": kwargs.get("fund_info", {}).get("fund_name", "N/A"),
-                "risk_level": risk_level, 
-                "risk_score": risk_score,
-                "compliance_level": compliance_level, 
-                "compliance_score": compliance_score,
-                "conclusion_summary": kwargs.get("conclusion_text", ""),
-                "strengths": kwargs.get("assessment_points", {}).get("strengths", [])[:3],
-                "concerns": kwargs.get("assessment_points", {}).get("concerns", [])[:3]
-            }
+                risk_score = kwargs.get("risk_assessment", {}).get("overall_risk_score", 50)
+                risk_level = kwargs.get("risk_assessment", {}).get("risk_level", "Medium")
+                compliance_score = kwargs.get("compliance_analysis", {}).get("overall_compliance_score", 50)
+                compliance_level = kwargs.get("compliance_analysis", {}).get("compliance_level", "Medium")
+                return {
+                    "title": "Conclusion & Overall Assessment",
+                    "fund_name": kwargs.get("fund_info", {}).get("fund_name", "N/A"),
+                    "risk_level": risk_level, 
+                    "risk_score": risk_score,
+                    "compliance_level": compliance_level, 
+                    "compliance_score": compliance_score,
+                    "conclusion_summary": kwargs.get("conclusion_text", ""),
+                    "strengths": kwargs.get("assessment_points", {}).get("strengths", [])[:3],
+                    "concerns": kwargs.get("assessment_points", {}).get("concerns", [])[:3]
+                }
 
-        # Default: return original kwargs if no specific prep needed
+            # Default: return original kwargs if no specific prep needed
         logger.warning(f"No specific data preparation defined for builder method '{method_name}'. Passing raw relevant args.")
-        # Filter kwargs to only pass what might be relevant
+            # Filter kwargs to only pass what might be relevant
         relevant_keys = ["title", "fund_info", "team_data", "portfolio_data", "market_analysis", 
-                        "wallet_analysis", "risk_assessment", "compliance_analysis"]
+                            "wallet_analysis", "risk_assessment", "compliance_analysis"]
         return {k: v for k, v in kwargs.items() if k in relevant_keys or 
-                k in ["summary_text", "assessment_points", "risk_narrative", "compliance_narrative", "conclusion_text"]}
+                    k in ["summary_text", "assessment_points", "risk_narrative", "compliance_narrative", "conclusion_text"]}
     # --- Fallback Methods ---
     def _generate_fallback_summary(self, analysis_results: Dict[str, Any], assessment_points: Dict[str, List[str]]) -> str:
         # (Keep existing fallback logic)

@@ -10,8 +10,7 @@ import {
   BarChart, 
   RefreshCcw,
   Info,
-  LineChart,
-  ChevronDown
+  LineChart
 } from "lucide-react";
 import axios from 'axios';
 import { LineChart as RechartsLineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine, Area } from 'recharts';
@@ -108,8 +107,7 @@ export default function ForecastPage() {
     try {
       // Try to fetch from actual API first
       try {
-        // Change this line in fetchForecastData()
-        const response = await axios.get(`/api/forecasts?symbol=${selectedCrypto}&timeframe=${timeframe}`);
+        const response = await axios.get('/api/crypto/prices');
         if (response.data && Array.isArray(response.data)) {
           const formattedData = response.data.map((item: any) => ({
             symbol: item.symbol.replace('USDT', '').replace('USD', ''),
@@ -161,88 +159,15 @@ export default function ForecastPage() {
   // Fetch forecast data from API
   const fetchForecastData = async () => {
     try {
-      // Try to fetch from actual API first
-      try {
-        const response = await axios.get(`/api/forecast/${selectedCrypto}`);
-        if (response.data && response.data.forecast) {
-          setForecastData(response.data.forecast);
-          createChartData(response.data.forecast, response.data.historicalData || []);
-          return;
-        }
-      } catch (apiError) {
-        console.warn("Could not fetch from real API, using fallback data", apiError);
+      // Try to fetch from actual API
+      const response = await axios.get(`/api/forecasts?symbol=${selectedCrypto}&timeframe=${timeframe}`);
+      
+      if (response.data && response.data.forecast) {
+        setForecastData(response.data.forecast);
+        createChartData(response.data.forecast, response.data.historicalData || []);
+      } else {
+        throw new Error("Invalid forecast data format");
       }
-      
-      // Fallback to mock forecast data if API fetch fails
-      const basePrice = cryptoData.find(c => c.symbol === selectedCrypto)?.currentPrice || 
-        (selectedCrypto === 'BTC' ? 67432 : 
-         selectedCrypto === 'ETH' ? 3421 : 
-         selectedCrypto === 'SOL' ? 143 : 
-         selectedCrypto === 'ADA' ? 0.57 : 
-         selectedCrypto === 'DOT' ? 7.85 : 0.64);
-      
-      // Determine trend direction randomly but weighted
-      const isBullish = Math.random() > 0.3; // 70% chance of bullish
-      const changePct = isBullish ? 
-        (4 + Math.random() * 12) :  // 4% to 16% up
-        (-12 + Math.random() * 8);  // -12% to -4% down
-      
-      const daysAhead = 14;
-      const now = new Date();
-      const finalPrice = basePrice * (1 + changePct/100);
-      
-      // Create forecast data
-      const forecastDates = Array.from({length: daysAhead}, (_, i) => {
-        const date = new Date(now);
-        date.setDate(date.getDate() + i + 1);
-        return date.toISOString();
-      });
-      
-      // Create forecast values with some randomness
-      const forecastValues = forecastDates.map((_, i) => {
-        const progress = (i + 1) / daysAhead;
-        const randomFactor = 0.98 + Math.random() * 0.04; // Add some noise
-        return basePrice + (finalPrice - basePrice) * progress * randomFactor;
-      });
-      
-      // Create uncertainty bounds
-      const uncertainty = 5 + Math.random() * 15; // 5% to 20%
-      const lowerBounds = forecastValues.map(val => val * (1 - uncertainty/100));
-      const upperBounds = forecastValues.map(val => val * (1 + uncertainty/100));
-      
-      // Create forecast text
-      const trend = changePct > 5 ? "strongly bullish" : 
-                   changePct > 1 ? "bullish" :
-                   changePct < -5 ? "strongly bearish" :
-                   changePct < -1 ? "bearish" : "neutral";
-      
-      const probIncrease = isBullish ? 55 + Math.random() * 30 : 20 + Math.random() * 30;
-      
-      const insight = `${selectedCrypto} shows a ${trend} trend with an expected ${changePct.toFixed(1)}% change over the next ${daysAhead} days. Probability of price increase is ${probIncrease.toFixed(1)}% with uncertainty of ±${uncertainty.toFixed(1)}%.`;
-      
-      const mockForecast: ForecastData = {
-        symbol: `${selectedCrypto}USD`,
-        forecast_timestamp: now.toISOString(),
-        model_name: "chronos-finetuned",
-        days_ahead: daysAhead,
-        current_price: basePrice,
-        forecast_dates: forecastDates,
-        forecast_values: forecastValues,
-        lower_bounds: lowerBounds,
-        upper_bounds: upperBounds,
-        final_forecast: finalPrice,
-        change_pct: changePct,
-        trend,
-        probability_increase: probIncrease,
-        average_uncertainty: uncertainty,
-        insight
-      };
-      
-      setForecastData(mockForecast);
-      
-      // Create chart data combining historical prices with forecast
-      createChartData(mockForecast);
-      
     } catch (err) {
       console.error("Error fetching forecast data:", err);
       setError("Failed to fetch forecast data");
@@ -254,7 +179,15 @@ export default function ForecastPage() {
     try {
       // Use provided historical data if available
       if (historicalData.length > 0) {
-        const historical = historicalData.map((point) => ({
+        console.log(`Processing ${historicalData.length} historical data points`);
+        
+        // Limit historical data based on timeframe if needed
+        const timeframeDays = timeframe === '7d' ? 7 : timeframe === '30d' ? 30 : 90;
+        const filteredHistorical = historicalData.length > timeframeDays 
+          ? historicalData.slice(-timeframeDays) 
+          : historicalData;
+        
+        const historical = filteredHistorical.map((point) => ({
           date: point.timestamp || point.date,
           price: point.price || point.close,
         }));
@@ -267,50 +200,9 @@ export default function ForecastPage() {
         }));
         
         setChartData([...historical, ...forecastPoints]);
-        return;
+      } else {
+        setError("No historical data available");
       }
-      
-      // Otherwise generate mock historical data
-      const now = new Date();
-      const days = timeframe === '7d' ? 7 : timeframe === '30d' ? 30 : 90;
-      
-      // Create historical dates
-      const historicalDates = Array.from({length: days}, (_, i) => {
-        const date = new Date(now);
-        date.setDate(date.getDate() - (days - i));
-        return date.toISOString();
-      });
-      
-      // Create historical prices with realistic fluctuation
-      const volatility = selectedCrypto === 'BTC' ? 0.02 : 
-                        selectedCrypto === 'ETH' ? 0.03 :
-                        selectedCrypto === 'SOL' ? 0.04 : 0.03;
-      
-      let price = forecast.current_price * 0.8; // Start at 80% of current price
-      const historicalPrices = historicalDates.map(() => {
-        const change = (Math.random() * 2 - 1) * volatility; // Random change between -volatility and +volatility
-        price = price * (1 + change);
-        return price;
-      });
-      
-      // Ensure the last historical price matches the current price
-      historicalPrices[historicalPrices.length - 1] = forecast.current_price;
-      
-      // Combine historical and forecast data
-      const historical = historicalDates.map((date, i) => ({
-        date,
-        price: historicalPrices[i],
-      }));
-      
-      const forecastPoints = forecast.forecast_dates.map((date, i) => ({
-        date,
-        forecast: forecast.forecast_values[i],
-        lowerBound: forecast.lower_bounds[i],
-        upperBound: forecast.upper_bounds[i]
-      }));
-      
-      setChartData([...historical, ...forecastPoints]);
-      
     } catch (err) {
       console.error("Error creating chart data:", err);
       setError("Failed to create chart data");
@@ -377,34 +269,6 @@ export default function ForecastPage() {
     }
     return null;
   };
-
-  // Alternative forecasts data
-  const alternativeModels = [
-    {
-      model: forecastData?.model_name || 'ChronosT5-Small',
-      currentPrice: forecastData?.current_price || 0,
-      forecastPrice: forecastData?.final_forecast || 0,
-      changePct: forecastData?.change_pct || 0,
-      confidence: forecastData?.probability_increase || 50,
-      date: forecastData?.forecast_dates?.slice(-1)[0] || new Date().toISOString()
-    },
-    {
-      model: 'LSTM',
-      currentPrice: forecastData?.current_price || 0,
-      forecastPrice: (forecastData?.current_price || 0) * (1 + (Math.random() * 0.1 - 0.03)), // Different model prediction
-      changePct: Math.random() * 10 - 3,
-      confidence: 45 + Math.random() * 30,
-      date: forecastData?.forecast_dates?.slice(-1)[0] || new Date().toISOString()
-    },
-    {
-      model: 'Prophet',
-      currentPrice: forecastData?.current_price || 0,
-      forecastPrice: (forecastData?.current_price || 0) * (1 + (Math.random() * 0.12 - 0.04)), // Different model prediction
-      changePct: Math.random() * 12 - 4,
-      confidence: 45 + Math.random() * 30,
-      date: forecastData?.forecast_dates?.slice(-1)[0] || new Date().toISOString()
-    }
-  ];
 
   return (
     <div className="flex-1 p-8 pt-6">
@@ -724,69 +588,6 @@ export default function ForecastPage() {
             </div>
           </Card>
         )}
-        
-        {/* Alternative Forecasts Table */}
-        <h3 className="text-lg font-semibold mb-4 mt-6">Compare Model Forecasts</h3>
-        <div className="bg-white rounded-xl border overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-gray-50 border-b">
-                  <th className="text-left text-sm font-medium text-gray-500 px-6 py-3">Model</th>
-                  <th className="text-right text-sm font-medium text-gray-500 px-6 py-3">Current Price</th>
-                  <th className="text-right text-sm font-medium text-gray-500 px-6 py-3">Forecast Price</th>
-                  <th className="text-right text-sm font-medium text-gray-500 px-6 py-3">Change</th>
-                  <th className="text-right text-sm font-medium text-gray-500 px-6 py-3">Confidence</th>
-                  <th className="text-right text-sm font-medium text-gray-500 px-6 py-3">Forecast Date</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                {alternativeModels.map((model, index) => (
-                  <tr key={index} className="hover:bg-gray-50">
-                    <td className="whitespace-nowrap px-6 py-4 font-medium">
-                      {model.model}
-                    </td>
-                    <td className="whitespace-nowrap text-right px-6 py-4 font-medium">
-                      {formatPrice(model.currentPrice)}
-                    </td>
-                    <td className="whitespace-nowrap text-right px-6 py-4 font-medium">
-                      {formatPrice(model.forecastPrice)}
-                    </td>
-                    <td className={`whitespace-nowrap text-right px-6 py-4 font-medium ${
-                      model.changePct > 0 ? 'text-green-600' : model.changePct < 0 ? 'text-red-600' : 'text-gray-600'
-                    }`}>
-                      <div className="flex items-center justify-end gap-1">
-                        {model.changePct > 0 ? (
-                          <TrendingUp size={16} />
-                        ) : model.changePct < 0 ? (
-                          <TrendingDown size={16} />
-                        ) : null}
-                        {model.changePct > 0 ? '+' : ''}{model.changePct.toFixed(2)}%
-                      </div>
-                    </td>
-                    <td className="whitespace-nowrap text-right px-6 py-4">
-                      <div className="flex items-center justify-end gap-2">
-                        <div className="w-16 bg-gray-200 rounded-full h-2">
-                          <div 
-                            className={`h-2 rounded-full ${
-                              model.confidence >= 80 ? 'bg-green-500' : 
-                              model.confidence >= 60 ? 'bg-yellow-500' : 'bg-orange-500'
-                            }`}
-                            style={{ width: `${model.confidence}%` }}
-                          ></div>
-                        </div>
-                        <span className="text-sm">{model.confidence.toFixed(0)}%</span>
-                      </div>
-                    </td>
-                    <td className="whitespace-nowrap text-right px-6 py-4 text-gray-500">
-                      {new Date(model.date).toLocaleDateString()}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
       </div>
     </div>
   );

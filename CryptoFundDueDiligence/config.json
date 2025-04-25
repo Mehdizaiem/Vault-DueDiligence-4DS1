@@ -5,7 +5,9 @@
     "CryptoDueDiligenceDocuments",
     "CryptoNewsSentiment",
     "MarketMetrics",
-    "OnChainAnalytics"
+    "OnChainAnalytics",
+    "UserDocuments",
+    "Forcast"
   ],
   "analysis_depth": "comprehensive",
   "validation_threshold": 0.7

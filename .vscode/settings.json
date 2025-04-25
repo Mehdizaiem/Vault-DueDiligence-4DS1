@@ -1,5 +1,6 @@
 {
     "python.analysis.extraPaths": [
-        "./Sample_Data"
+        "./Sample_Data",
+        "./Sample_Data/vector_store"
     ]
 }

@@ -4,6 +4,7 @@ import os
 import numpy as np
 import logging
 from typing import Optional, Dict, List, Union, Any, Tuple
+import requests
 import torch
 from sentence_transformers import SentenceTransformer
 from transformers import AutoTokenizer, AutoModel
@@ -15,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 # Load environment variables
 load_dotenv()
-
+EMBEDDING_SERVICE_URL = "http://localhost:5000"
 # Constants
 MPNET_MODEL_NAME = "sentence-transformers/all-mpnet-base-v2"
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -48,83 +49,55 @@ def initialize_models():
         logger.error(f"Error initializing embedding models: {e}")
         return False
 
+# Just add this line near the top of your file:
+EMBEDDING_SERVICE_URL = "http://localhost:5000"
+
+# And replace your existing embedding functions with these:
 def generate_mpnet_embedding(text: str) -> List[float]:
-    """
-    Generate an embedding vector for the given text using all-MPNet.
-    
-    Args:
-        text (str): The text to embed
-        
-    Returns:
-        list: The embedding vector as a list of floats
-    """
-    global mpnet_model
-    
     if not text or not isinstance(text, str):
         logger.warning("Invalid text provided for embedding")
         return [0.0] * MPNET_DIMENSION
     
-    if mpnet_model is None:
-        initialize_models()
-    
     try:
-        # Truncate text to avoid potential memory issues
-        text = text[:100000]  # Limit to 100K characters
+        response = requests.post(
+            f"{EMBEDDING_SERVICE_URL}/generate_mpnet_embedding",
+            json={"text": text},
+            timeout=60
+        )
         
-        # Generate embeddings
-        with torch.no_grad():  # Disable gradient calculation for inference
-            embeddings = mpnet_model.encode(text, show_progress_bar=False)
-        
-        # Convert to list if it's a numpy array
-        return embeddings.tolist() if isinstance(embeddings, np.ndarray) else embeddings
+        if response.status_code != 200:
+            logger.error(f"Error from embedding service: {response.text}")
+            return [0.0] * MPNET_DIMENSION
+            
+        result = response.json()
+        return result["embedding"]
     except Exception as e:
         logger.error(f"Error generating MPNet embedding: {str(e)}")
-        # Return a zero vector with the correct dimension in case of error
         return [0.0] * MPNET_DIMENSION
 
 def generate_finbert_embedding(text: str) -> List[float]:
-    """
-    Generate an embedding vector for the given text using FinBERT.
-    
-    Args:
-        text (str): The text to embed
-        
-    Returns:
-        list: The embedding vector as a list of floats
-    """
-    global finbert_model, finbert_tokenizer
-    
     if not text or not isinstance(text, str):
         logger.warning("Invalid text provided for FinBERT embedding")
         return [0.0] * FINBERT_DIMENSION
     
-    if finbert_model is None or finbert_tokenizer is None:
-        initialize_models()
-    
     try:
-        # Truncate text if needed
-        text = text[:500]  # FinBERT has a more limited context window
+        response = requests.post(
+            f"{EMBEDDING_SERVICE_URL}/generate_finbert_embedding",
+            json={"text": text},
+            timeout=30
+        )
         
-        # Tokenize and get input tensors
-        inputs = finbert_tokenizer(text, return_tensors="pt", padding=True, truncation=True, max_length=512)
-        
-        # Generate embeddings
-        with torch.no_grad():
-            outputs = finbert_model(**inputs)
+        if response.status_code != 200:
+            logger.error(f"Error from embedding service: {response.text}")
+            return [0.0] * FINBERT_DIMENSION
             
-        # Use the CLS token embedding as the document representation
-        cls_embedding = outputs.last_hidden_state[:, 0, :].numpy()
-        
-        # Normalize the embedding
-        embedding = cls_embedding[0]
-        embedding_norm = np.linalg.norm(embedding)
-        if embedding_norm > 0:
-            embedding = embedding / embedding_norm
-            
-        return embedding.tolist()
+        result = response.json()
+        return result["embedding"]
     except Exception as e:
         logger.error(f"Error generating FinBERT embedding: {str(e)}")
         return [0.0] * FINBERT_DIMENSION
+
+# Remove the initialize_models function and any calls to it
 
 def process_document_for_due_diligence(text: str, document_type: Optional[str] = None) -> Tuple[List[float], Dict[str, Any]]:
     """

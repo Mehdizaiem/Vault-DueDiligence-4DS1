@@ -6,7 +6,7 @@ import logging
 import pandas as pd
 import numpy as np
 from datetime import datetime
-from typing import List, Dict, Optional, Union
+from typing import Dict, Optional
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
 from nltk import download, data
 

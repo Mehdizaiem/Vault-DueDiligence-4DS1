@@ -471,22 +471,22 @@ class QueryAnalyzer:
         """Determine which collections to search based on category, entities, and intent."""
         # Define mappings from categories to collections
         category_to_collections = {
-            "legal_regulatory": ["CryptoDueDiligenceDocuments"],
-            "team_background": ["CryptoDueDiligenceDocuments"],
-            "technical": ["CryptoDueDiligenceDocuments"],
-            "financial": ["CryptoDueDiligenceDocuments", "MarketMetrics"],
+            "legal_regulatory": ["UserDocuments", "CryptoDueDiligenceDocuments"],
+            "team_background": ["UserDocuments", "CryptoDueDiligenceDocuments"],
+            "technical": ["UserDocuments", "CryptoDueDiligenceDocuments"],
+            "financial": ["UserDocuments", "CryptoDueDiligenceDocuments", "MarketMetrics"],
             "market_price": ["MarketMetrics", "CryptoTimeSeries", "CryptoNewsSentiment"],
-            "market_analysis": ["CryptoNewsSentiment", "MarketMetrics", "CryptoDueDiligenceDocuments"],
-            "governance": ["CryptoDueDiligenceDocuments", "CryptoNewsSentiment"],
-            "risk": ["CryptoDueDiligenceDocuments", "CryptoNewsSentiment", "OnChainAnalytics"],
+            "market_analysis": ["CryptoNewsSentiment", "MarketMetrics", "UserDocuments", "CryptoDueDiligenceDocuments"],
+            "governance": ["UserDocuments", "CryptoDueDiligenceDocuments", "CryptoNewsSentiment"],
+            "risk": ["UserDocuments", "CryptoDueDiligenceDocuments", "CryptoNewsSentiment", "OnChainAnalytics"],
             "sentiment": ["CryptoNewsSentiment"],
             "on_chain": ["OnChainAnalytics"],
-            "defi": ["CryptoDueDiligenceDocuments", "CryptoNewsSentiment"],
-            "nft": ["CryptoDueDiligenceDocuments", "CryptoNewsSentiment"],
-            "macroeconomic": ["CryptoNewsSentiment", "CryptoDueDiligenceDocuments"],
-            "comparative": ["CryptoDueDiligenceDocuments", "MarketMetrics", "CryptoTimeSeries"],
-            "due_diligence": ["CryptoDueDiligenceDocuments"],
-            "general": ["CryptoDueDiligenceDocuments", "CryptoNewsSentiment", "MarketMetrics"]
+            "defi": ["UserDocuments", "CryptoDueDiligenceDocuments", "CryptoNewsSentiment"],
+            "nft": ["UserDocuments", "CryptoDueDiligenceDocuments", "CryptoNewsSentiment"],
+            "macroeconomic": ["CryptoNewsSentiment", "UserDocuments", "CryptoDueDiligenceDocuments"],
+            "comparative": ["UserDocuments", "CryptoDueDiligenceDocuments", "MarketMetrics", "CryptoTimeSeries"],
+            "due_diligence": ["UserDocuments", "CryptoDueDiligenceDocuments"],
+            "general": ["UserDocuments", "CryptoDueDiligenceDocuments", "CryptoNewsSentiment", "MarketMetrics"]
         }
         
         # Adjust for intent
@@ -534,13 +534,14 @@ class RetrievalEngine:
         self.storage = storage_manager
         self.due_diligence = due_diligence_system
     
-    def retrieve(self, question: str, analysis: Dict) -> Dict[str, List[Dict]]:
+    def retrieve(self, question: str, analysis: Dict, user_id: Optional[str] = None) -> Dict[str, List[Dict]]:
         """
         Retrieve relevant information based on query analysis.
         
         Args:
             question (str): The original question
             analysis (Dict): Analysis results from QueryAnalyzer
+            user_id (str, optional): The user ID for retrieving personal documents
             
         Returns:
             Dict[str, List[Dict]]: Retrieved data organized by collection
@@ -549,6 +550,10 @@ class RetrievalEngine:
         
         # Get the prioritized collections
         collections = analysis["collections_to_search"]
+        
+        # If we have a user_id, add UserDocuments to the collections
+        if user_id and "UserDocuments" not in collections:
+            collections.insert(0, "UserDocuments")  # Prioritize user documents
         
         # Handle specific retrieval strategies based on intent and category
         if analysis["primary_category"] == "market_price" or analysis["intent"] == "price":
@@ -566,10 +571,30 @@ class RetrievalEngine:
         if analysis["primary_category"] == "due_diligence" or analysis["intent"] == "due_diligence":
             results.update(self._retrieve_due_diligence_data(question, analysis))
         
+        # First, try to retrieve from user documents if a user_id is provided
+        if user_id and "UserDocuments" in collections:
+            try:
+                user_docs = self.storage.retrieve_documents(
+                    query=question,
+                    collection_name="UserDocuments",
+                    limit=5,
+                    user_id=user_id
+                )
+                
+                if user_docs:
+                    results["UserDocuments"] = user_docs
+            except Exception as e:
+                logger.error(f"Error retrieving from UserDocuments: {e}")
+                logger.error(traceback.format_exc())
+        
         # General document retrieval based on collections
         for collection in collections:
             if collection not in results:
                 try:
+                    # For UserDocuments, we've already handled it above
+                    if collection == "UserDocuments":
+                        continue
+                        
                     retrieved = self.storage.retrieve_documents(
                         query=question,
                         collection_name=collection,
@@ -1440,8 +1465,6 @@ PRICE STATISTICS FOR {symbol} ({period}):
         except Exception as e:
             logger.error(f"Error formatting on-chain analytics: {e}")
             # Fallback
-            return f"ON-CHAIN ANALYTICS:\n{json.dumps(analytics, indent=2)[:1000]}..."
-    
     def _format_price_statistics(self, stats: Dict) -> str:
         """Format price statistics."""
         try:
@@ -1470,7 +1493,61 @@ PRICE STATISTICS FOR {symbol} ({period}):
             logger.error(f"Error formatting price statistics: {e}")
             # Fallback
             return f"PRICE STATISTICS:\n{json.dumps(stats, indent=2)[:1000]}..."
+def get_document_context(document_id, question):
+    """Get document context using DocumentAnalyzer"""
+    from UserQ_A.DocumentAnalyzer import DocumentAnalyzer
+    
+    analyzer = DocumentAnalyzer()
+    try:
+        logger.info(f"Getting document context for ID: {document_id}")
+        context_data = analyzer.get_comprehensive_context(document_id, question)
+        
+        if "error" in context_data:
+            logger.error(f"Error getting document context: {context_data['error']}")
+        
+        return context_data.get("context", "No document context available")
+    finally:
+        analyzer.close()
 
+def build_document_prompt(question, document_context):
+    """Build a prompt specifically for document-related questions"""
+    document_prompt = f"""You are a comprehensive crypto document analyst specializing in cryptocurrency due diligence.
+Your role is to analyze documents thoroughly and provide detailed, accurate answers based on document content.
+
+When analyzing documents:
+1. Identify the main purpose and key points of the document
+2. Extract and highlight key entities, dates, and cryptocurrency assets mentioned
+3. Evaluate risk factors and potential concerns identified in the document
+4. Connect document information with related market and industry knowledge
+5. Provide context and explanations for technical or specialized terms
+
+DOCUMENT CONTEXT:
+{document_context}
+
+QUESTION: {question}
+
+Provide a detailed analysis based on the document content. If the question cannot be answered based on the document,
+clearly state what information is missing and provide general knowledge about the topic if relevant to cryptocurrency
+and blockchain."""
+    
+    return document_prompt
+
+def build_general_prompt(question, context):
+    """Build a prompt for general crypto questions"""
+    general_prompt = f"""You are a cryptocurrency and blockchain expert specializing in crypto due diligence.
+Your goal is to provide accurate, insightful answers about cryptocurrency, blockchain technology, and digital assets.
+
+CONTEXT:
+{context}
+
+QUESTION: {question}
+
+Provide a comprehensive answer based on the available context. If the context doesn't contain sufficient information
+to answer the question fully, enhance your answer with relevant knowledge about cryptocurrency and blockchain topics.
+For questions unrelated to cryptocurrency, blockchain, or due diligence, inform the user that you can only assist with
+cryptocurrency-related topics."""
+    
+    return general_prompt
 class AdvancedPromptBuilder:
     """
     Builds sophisticated prompts incorporating query analysis,
@@ -1945,43 +2022,57 @@ class EnhancedCryptoQA:
             logger.error(traceback.format_exc())
             return False
     
-    def answer_question(self, question: str, document_id: Optional[str] = None, temperature: float = 0.7) -> str:
+    def answer_question(self, question: str, document_id: Optional[str] = None, temperature: float = 0.7, user_id: Optional[str] = None) -> str:
         """
-        Answer a user question using advanced RAG techniques with Llama 3.3 70B Versatile.
+        Answer a user question using advanced RAG techniques.
         
         Args:
             question (str): The user's question
             document_id (str, optional): ID of a specific document to query
-            temperature (float): Temperature for generation (0.0-1.0)
+            temperature (float): Temperature for generation
+            user_id (str, optional): ID of the user asking the question
             
         Returns:
             str: The answer
         """
         try:
+            # Log arguments for debugging
+            logger.info(f"Question: {question}")
+            logger.info(f"Document ID: {document_id}")
+            logger.info(f"User ID: {user_id}")
+            
             # 1. Perform deep query analysis
             analysis = self.query_analyzer.analyze(question)
-            logger.info(f"Query analysis completed: {json.dumps(analysis, default=str)}")
+            logger.info(f"Query analysis completed")
             
-            # 2. Retrieve relevant context using advanced strategies
+            # 2. Retrieve context based on document_id or general question
             if document_id:
-                retrieved_data = {"specific_document": self.retrieval_engine.retrieve_document_by_id(document_id)}
+                # For document-specific queries, use the DocumentAnalyzer
+                logger.info(f"Getting document context for document ID: {document_id}")
+                document_context = get_document_context(document_id, question)
+                
+                # Check if document context was found
+                if "Document not found" in document_context or "No document information available" in document_context:
+                    logger.error(f"Failed to retrieve document context: {document_context}")
+                    # You could fall back to general retrieval here
+                
+                prompt = build_document_prompt(question, document_context)
             else:
-                retrieved_data = self.retrieval_engine.retrieve(question, analysis)
+                # For general queries, use the regular retrieval process
+                logger.info("Performing general context retrieval")
+                retrieved_data = self.retrieval_engine.retrieve(question, analysis, user_id)
+                context = self.context_formatter.format(retrieved_data, analysis)
+                prompt = self.prompt_builder.build_prompt(question, context, analysis)
             
-            # 3. Format the context for optimal LLM consumption
-            context = self.context_formatter.format(retrieved_data, analysis)
-            
-            # 4. Build sophisticated prompt incorporating analysis
-            prompt = self.prompt_builder.build_prompt(question, context, analysis)
-            
-            # 5. Generate answer with Llama 3.3 70B Versatile
+            # 3. Generate answer
+            logger.info("Generating answer")
             answer = self.llama_client.generate_answer(prompt, temperature)
             
-            # 6. Post-process the answer if needed
+            # 4. Post-process the answer if needed
             answer = self._post_process_answer(answer, analysis)
             
             return answer
-            
+                
         except Exception as e:
             logger.error(f"Error answering question: {e}")
             logger.error(traceback.format_exc())
@@ -2081,7 +2172,7 @@ if __name__ == "__main__":
                 print(f"\nAnswer: {answer}")
 
         elif args.question:
-            answer = qa_system.answer_question(args.question, args.document_id, args.temperature)
+            answer = qa_system.answer_question(args.question, args.document_id, args.temperature, args.user_id)
             print(f"\nQuestion: {args.question}")
             print(f"\nAnswer: {answer}")
 

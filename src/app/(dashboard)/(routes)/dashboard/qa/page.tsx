@@ -34,24 +34,6 @@ export default function QAPage() {
   ];
 
   useEffect(() => {
-    // Initialize conversation ID if it doesn't exist
-    if (!conversationId) {
-      setConversationId(uuidv4());
-    }
-    
-    // Load saved conversations from local storage
-    const loadSavedConversations = () => {
-      try {
-        const saved = localStorage.getItem('qa_conversations');
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          setSavedConversations(parsed);
-        }
-      } catch (error) {
-        console.error('Error loading conversations from localStorage:', error);
-      }
-    };
-    
     // Load conversation history if we have a conversation ID
     const loadConversation = () => {
       try {
@@ -74,8 +56,21 @@ export default function QAPage() {
       }
     };
     
-    loadSavedConversations();
     loadConversation();
+    
+    // Check for document context in URL
+    const searchParams = new URLSearchParams(window.location.search);
+    const documentId = searchParams.get('documentId');
+    
+    if (documentId && messages.length === 0) {
+      // Automatically add a hint about the document
+      setMessages([{
+        id: uuidv4(),
+        role: 'assistant',
+        content: "I'm ready to answer questions about the document you've selected. What would you like to know?",
+        createdAt: new Date(),
+      }]);
+    }
   }, [conversationId, messages.length]);
   
   useEffect(() => {
@@ -141,7 +136,11 @@ export default function QAPage() {
     setIsLoading(true);
     
     try {
-      const response = await askQuestion(userMessage.content);
+      // Get the document ID from URL if present
+      const searchParams = new URLSearchParams(window.location.search);
+      const documentId = searchParams.get('documentId');
+      
+      const response = await askQuestion(userMessage.content, documentId || undefined);
       
       const assistantMessage: Message = {
         id: uuidv4(),
@@ -172,6 +171,7 @@ export default function QAPage() {
   };
   
   const handleFeedback = (messageId: string, rating: 'positive' | 'negative') => {
+    // First update the local state for immediate visual feedback
     setFeedback(prev => ({
       ...prev,
       [messageId]: {
@@ -180,6 +180,9 @@ export default function QAPage() {
         comment: ''
       }
     }));
+    
+    // Then submit the feedback to be stored in the QA history
+    submitFeedback(messageId, rating);
   };
   
   const startNewConversation = () => {
@@ -237,7 +240,55 @@ export default function QAPage() {
       console.error('Error deleting conversation:', error);
     }
   };
+  // Function to submit feedback
+const submitFeedback = async (messageId: string, rating: 'positive' | 'negative', comment?: string) => {
+  try {
+    // Find the message
+    const message = messages.find(m => m.id === messageId);
+    if (!message || message.role !== 'assistant') return;
+    
+    // Find the corresponding user question
+    const questionIndex = messages.findIndex(m => m.id === messageId);
+    if (questionIndex <= 0) return; // Make sure there's a question before this answer
+    
+    const userQuestion = messages[questionIndex - 1];
+    if (userQuestion.role !== 'user') return;
+    
+    // Store feedback in QA history
+    const response = await fetch('/api/qa/history', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        question: userQuestion.content,
+        answer: message.content,
+        sessionId: conversationId,
+        feedback: {
+          rating: rating === 'positive' ? 5 : 1, // Convert to numerical rating
+          comment
+        }
+      }),
+    });
 
+    if (!response.ok) {
+      console.error('Failed to store feedback:', await response.text());
+    }
+    
+    // Update local feedback state
+    setFeedback(prev => ({
+      ...prev,
+      [messageId]: {
+        messageId,
+        rating,
+        comment
+      }
+    }));
+    
+  } catch (error) {
+    console.error('Error submitting feedback:', error);
+  }
+};
   // Function to format the message content with Markdown
   const formatMessage = (content: string) => {
     return (

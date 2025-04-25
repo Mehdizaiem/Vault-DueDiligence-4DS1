@@ -1,0 +1,14 @@
+{
+  "output_dir": "reports",
+  "report_templates": "templates",
+  "data_sources": [
+    "CryptoDueDiligenceDocuments",
+    "CryptoNewsSentiment",
+    "MarketMetrics",
+    "OnChainAnalytics",
+    "UserDocuments",
+    "Forcast"
+  ],
+  "analysis_depth": "comprehensive",
+  "validation_threshold": 0.7
+}

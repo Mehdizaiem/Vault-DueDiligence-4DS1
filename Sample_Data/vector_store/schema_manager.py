@@ -174,6 +174,145 @@ def create_crypto_news_sentiment_schema(client):
         except Exception as e:
             logger.error(f"Failed to create CryptoNewsSentiment collection: {e}")
             raise
+def create_user_documents_schema(client):
+    """
+    Create the UserDocuments collection for user-uploaded documents.
+    """
+    try:
+        # Check if collection already exists
+        collection = client.collections.get("UserDocuments")
+        logger.info("UserDocuments collection already exists")
+        return collection
+    except Exception:
+        logger.info("Creating UserDocuments collection")
+        
+        try:
+            # Create the collection with proper vector configuration
+            collection = client.collections.create(
+                name="UserDocuments",
+                description="Collection for user-uploaded due diligence documents",
+                vectorizer_config=Configure.Vectorizer.none(),  # We'll provide vectors directly
+                vector_index_config=Configure.VectorIndex.hnsw(
+                    distance_metric=Configure.VectorIndex.Distance.cosine
+                ),
+                properties=[
+                    # Basic document properties
+                    {
+                        "name": "content",
+                        "data_type": DataType.TEXT,
+                        "description": "Extracted text from the document"
+                    },
+                    {
+                        "name": "source",
+                        "data_type": DataType.TEXT,
+                        "description": "Original file name or source"
+                    },
+                    {
+                        "name": "document_type",
+                        "data_type": DataType.TEXT,
+                        "description": "Type of document"
+                    },
+                    {
+                        "name": "title",
+                        "data_type": DataType.TEXT,
+                        "description": "Title or name of the document"
+                    },
+                    {
+                        "name": "date",
+                        "data_type": DataType.DATE,
+                        "description": "Creation or publication date"
+                    },
+                    # User tracking
+                    {
+                        "name": "user_id",
+                        "data_type": DataType.TEXT,
+                        "description": "ID of the user who uploaded the document"
+                    },
+                    {
+                        "name": "upload_date",
+                        "data_type": DataType.DATE,
+                        "description": "Date when document was uploaded" 
+                    },
+                    {
+                        "name": "is_public",
+                        "data_type": DataType.BOOLEAN,
+                        "description": "Whether the document is publicly accessible"
+                    },
+                    # Additional metadata fields
+                    {
+                        "name": "author_issuer",
+                        "data_type": DataType.TEXT,
+                        "description": "Author, issuer, or organization responsible"
+                    },
+                    {
+                        "name": "category",
+                        "data_type": DataType.TEXT,
+                        "description": "Category (e.g., technical, legal, compliance, business)"
+                    },
+                    {
+                        "name": "risk_score",
+                        "data_type": DataType.NUMBER,
+                        "description": "Risk assessment score (0-100)"
+                    },
+                    {
+                        "name": "keywords",
+                        "data_type": DataType.TEXT_ARRAY,
+                        "description": "Key terms extracted from the document"
+                    },
+                    # Extracted entities
+                    {
+                        "name": "org_entities",
+                        "data_type": DataType.TEXT_ARRAY,
+                        "description": "Organization entities mentioned in the document"
+                    },
+                    {
+                        "name": "person_entities",
+                        "data_type": DataType.TEXT_ARRAY,
+                        "description": "Person entities mentioned in the document"
+                    },
+                    {
+                        "name": "location_entities",
+                        "data_type": DataType.TEXT_ARRAY,
+                        "description": "Location entities mentioned in the document"
+                    },
+                    {
+                        "name": "file_size",
+                        "data_type": DataType.INT,
+                        "description": "File size in bytes"
+                    },
+                    {
+                        "name": "file_type",
+                        "data_type": DataType.TEXT,
+                        "description": "File type (e.g., PDF, DOCX, TXT)"
+                    },
+                    {
+                        "name": "processing_status",
+                        "data_type": DataType.TEXT,
+                        "description": "Status of document processing (pending, processing, completed, failed)"
+                    },
+                    {
+                        "name": "notes",
+                        "data_type": DataType.TEXT,
+                        "description": "User-provided notes about the document"
+                    },
+                    {
+                        "name": "crypto_entities",
+                        "data_type": DataType.TEXT_ARRAY,
+                        "description": "Cryptocurrency entities mentioned in the document"
+                    },
+                    {
+                        "name": "risk_factors",
+                        "data_type": DataType.TEXT_ARRAY,
+                        "description": "Risk factors identified in the document"
+                    }
+                ]
+            )
+            
+            logger.info("Successfully created UserDocuments collection")
+            return collection
+        except Exception as e:
+            logger.error(f"Failed to create UserDocuments collection: {e}")
+            raise
 
 def create_market_metrics_schema(client):
     """
@@ -312,7 +451,6 @@ def create_crypto_time_series_schema(client):
             logger.error(f"Failed to create CryptoTimeSeries collection: {str(e)}")
             raise
 
-
 def create_onchain_analytics_schema(client):
     """
     Create the OnChainAnalytics collection without embeddings.
@@ -436,6 +574,312 @@ def create_onchain_analytics_schema(client):
             logger.error(f"Failed to create OnChainAnalytics collection: {e}")
             raise
 
+def create_forecast_schema(client):
+    """
+    Create the Forecast collection if it doesn't exist.
+    
+    Args:
+        client: Weaviate client
+        
+    Returns:
+        The created or existing collection
+    """
+    try:
+        # Check if collection already exists
+        collection = client.collections.get("Forecast")
+        logger.info("Forecast collection already exists")
+        return collection
+    except Exception:
+        logger.info("Creating Forecast collection")
+        
+        try:
+            # Create the collection without vectorizer since we don't need embeddings
+            collection = client.collections.create(
+                name="Forecast",
+                description="Collection for cryptocurrency price forecasts",
+                vectorizer_config=Configure.Vectorizer.none(),  # No vectorizer needed
+                properties=[
+                    # Basic forecast metadata
+                    {
+                        "name": "symbol",
+                        "data_type": DataType.TEXT,
+                        "description": "Cryptocurrency symbol (e.g., BTCUSDT)"
+                    },
+                    {
+                        "name": "forecast_timestamp",
+                        "data_type": DataType.DATE,
+                        "description": "When the forecast was generated"
+                    },
+                    {
+                        "name": "model_name",
+                        "data_type": DataType.TEXT,
+                        "description": "Name of the model used for forecasting"
+                    },
+                    {
+                        "name": "model_type",
+                        "data_type": DataType.TEXT,
+                        "description": "Type of forecasting model (e.g., chronos, ensemble, lstm)"
+                    },
+                    {
+                        "name": "days_ahead",
+                        "data_type": DataType.INT,
+                        "description": "Number of days in the forecast horizon"
+                    },
+                    
+                    # Current market state
+                    {
+                        "name": "current_price",
+                        "data_type": DataType.NUMBER,
+                        "description": "Current price at time of forecast"
+                    },
+                    
+                    # Forecast data
+                    {
+                        "name": "forecast_dates",
+                        "data_type": DataType.DATE_ARRAY,
+                        "description": "Array of forecast dates"
+                    },
+                    {
+                        "name": "forecast_values",
+                        "data_type": DataType.NUMBER_ARRAY,
+                        "description": "Array of forecasted price values (typically median forecast)"
+                    },
+                    {
+                        "name": "lower_bounds",
+                        "data_type": DataType.NUMBER_ARRAY,
+                        "description": "Array of lower confidence interval bounds"
+                    },
+                    {
+                        "name": "upper_bounds",
+                        "data_type": DataType.NUMBER_ARRAY,
+                        "description": "Array of upper confidence interval bounds"
+                    },
+                    
+                    # Forecast statistics
+                    {
+                        "name": "final_forecast",
+                        "data_type": DataType.NUMBER,
+                        "description": "Final forecasted price value"
+                    },
+                    {
+                        "name": "change_pct",
+                        "data_type": DataType.NUMBER,
+                        "description": "Forecasted percentage change from current price"
+                    },
+                    {
+                        "name": "trend",
+                        "data_type": DataType.TEXT,
+                        "description": "Overall trend description (e.g., bullish, bearish, neutral)"
+                    },
+                    {
+                        "name": "probability_increase",
+                        "data_type": DataType.NUMBER,
+                        "description": "Probability of price increase (0-100)"
+                    },
+                    {
+                        "name": "average_uncertainty",
+                        "data_type": DataType.NUMBER,
+                        "description": "Average uncertainty in the forecast (%)"
+                    },
+                    {
+                        "name": "insight",
+                        "data_type": DataType.TEXT,
+                        "description": "Text description of forecast insights"
+                    },
+                    
+                    # Image storage
+                    {
+                        "name": "plot_path",
+                        "data_type": DataType.TEXT,
+                        "description": "Path to the forecast plot image"
+                    },
+                    {
+                        "name": "plot_image",
+                        "data_type": DataType.BLOB,
+                        "description": "Base64 encoded forecast plot image"
+                    }
+                ]
+            )
+            
+            logger.info("Successfully created Forecast collection")
+            return collection
+        except Exception as e:
+            logger.error(f"Failed to create Forecast collection: {e}")
+            raise
+def create_user_qa_history_schema(client):
+    """
+    Create the UserQAHistory collection to store user questions and AI answers.
+    """
+    try:
+        # Check if collection already exists
+        collection = client.collections.get("UserQAHistory")
+        logger.info("UserQAHistory collection already exists")
+        return collection
+    except Exception:
+        logger.info("Creating UserQAHistory collection")
+        
+        try:
+            # Create the collection
+            collection = client.collections.create(
+                name="UserQAHistory",
+                description="Collection for storing user questions and AI answers",
+                vectorizer_config=Configure.Vectorizer.text2vec_transformers(),  # Use embedding for question similarity
+                vector_index_config=Configure.VectorIndex.hnsw(
+                    distance_metric=Configure.VectorIndex.Distance.cosine
+                ),
+                properties=[
+                    # Basic Q&A properties
+                    {
+                        "name": "user_id",
+                        "data_type": DataType.TEXT,
+                        "description": "ID of the user who asked the question"
+                    },
+                    {
+                        "name": "question",
+                        "data_type": DataType.TEXT,
+                        "description": "The user's question"
+                    },
+                    {
+                        "name": "answer",
+                        "data_type": DataType.TEXT,
+                        "description": "The AI's answer"
+                    },
+                    {
+                        "name": "timestamp",
+                        "data_type": DataType.DATE,
+                        "description": "When the Q&A occurred"
+                    },
+                    # Reference to documents used
+                    {
+                        "name": "document_ids",
+                        "data_type": DataType.TEXT_ARRAY,
+                        "description": "IDs of documents referenced in the answer"
+                    },
+                    # Query analysis
+                    {
+                        "name": "primary_category",
+                        "data_type": DataType.TEXT,
+                        "description": "Primary category of the question from analysis"
+                    },
+                    {
+                        "name": "secondary_categories",
+                        "data_type": DataType.TEXT_ARRAY,
+                        "description": "Secondary categories of the question"
+                    },
+                    {
+                        "name": "crypto_entities",
+                        "data_type": DataType.TEXT_ARRAY,
+                        "description": "Cryptocurrency entities mentioned in the question"
+                    },
+                    {
+                        "name": "intent",
+                        "data_type": DataType.TEXT,
+                        "description": "Detected intent of the question"
+                    },
+                    # Session tracking
+                    {
+                        "name": "session_id",
+                        "data_type": DataType.TEXT,
+                        "description": "Session ID for grouping related Q&A"
+                    },
+                    # Feedback and metrics
+                    {
+                        "name": "user_feedback",
+                        "data_type": DataType.TEXT,
+                        "description": "Optional user feedback on the answer"
+                    },
+                    {
+                        "name": "feedback_rating",
+                        "data_type": DataType.NUMBER,
+                        "description": "Optional numerical rating from user (1-5)"
+                    },
+                    {
+                        "name": "duration_ms",
+                        "data_type": DataType.NUMBER,
+                        "description": "Time taken to generate the answer in milliseconds"
+                    }
+                ]
+            )
+            
+            logger.info("Successfully created UserQAHistory collection")
+            return collection
+        except Exception as e:
+            logger.error(f"Failed to create UserQAHistory collection: {e}")
+            raise
+def create_risk_profiles_schema(client):
+    """
+    Create the RiskProfiles collection to store calculated risk scores.
+    """
+    collection_name = "RiskProfiles"
+    try:
+        # Check if collection already exists
+        collection = client.collections.get(collection_name)
+        logger.info(f"{collection_name} collection already exists")
+        return collection
+    except Exception:
+        logger.info(f"Creating {collection_name} collection")
+
+        try:
+            # Create the collection (no vectorizer needed for storing results)
+            collection = client.collections.create(
+                name=collection_name,
+                description="Stores calculated risk profiles for cryptocurrencies",
+                vectorizer_config=Configure.Vectorizer.none(), # No embeddings needed here
+                properties=[
+                    {
+                        "name": "symbol",
+                        "dataType": [DataType.TEXT], # Changed for v4 syntax
+                        "description": "Cryptocurrency symbol (e.g., BTC, ETHUSDT)"
+                    },
+                    {
+                        "name": "risk_score",
+                        "dataType": [DataType.NUMBER],
+                        "description": "Calculated risk score (0-100, -1 if error)"
+                    },
+                    {
+                        "name": "risk_category",
+                        "dataType": [DataType.TEXT],
+                        "description": "Risk category (Very Low, Low, Moderate, High, Very High, Undetermined, Error)"
+                    },
+                    {
+                        "name": "analysis_timestamp",
+                        "dataType": [DataType.DATE],
+                        "description": "Timestamp when the risk analysis was performed"
+                    },
+                    {
+                        "name": "analysis_period_days",
+                        "dataType": [DataType.INT],
+                        "description": "Number of days used for the analysis period"
+                    },
+                    {
+                        "name": "market_data_points",
+                        "dataType": [DataType.INT],
+                        "description": "Number of market data points used in the analysis"
+                    },
+                    {
+                        "name": "sentiment_data_points",
+                        "dataType": [DataType.INT],
+                        "description": "Number of sentiment articles used in the analysis"
+                    },
+                    {
+                        "name": "risk_factors",
+                        "dataType": [DataType.TEXT_ARRAY],
+                        "description": "List of identified risk factors contributing to the score"
+                    },
+                    {
+                         "name": "calculation_error",
+                         "dataType": [DataType.TEXT],
+                         "description": "Error message if risk calculation failed"
+                    }
+                ]
+            )
+
+            logger.info(f"Successfully created {collection_name} collection")
+            return collection
+        except Exception as e:
+            logger.error(f"Failed to create {collection_name} collection: {e}", exc_info=True)
+            raise
+
 def setup_all_schemas(client):
     """Setup all required schemas"""
     try:
@@ -444,6 +888,10 @@ def setup_all_schemas(client):
         create_market_metrics_schema(client)
         create_crypto_time_series_schema(client)
         create_onchain_analytics_schema(client)
+        create_user_documents_schema(client)
+        create_forecast_schema(client)
+        create_user_qa_history_schema(client)
+        create_risk_profiles_schema(client)
         logger.info("✅ All collections created successfully")
         return True
     except Exception as e:

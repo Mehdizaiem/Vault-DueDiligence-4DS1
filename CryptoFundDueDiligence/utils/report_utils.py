@@ -252,15 +252,17 @@ def extract_key_points(text: str, max_points: int = 5,
 
 def rgb_to_hex(rgb: Tuple[int, int, int]) -> str:
     """
-    Convert RGB tuple to hex color code.
-    
-    Args:
-        rgb: Tuple of (r, g, b) values (0-255)
-        
-    Returns:
-        Hex color code string
+    Convert RGB tuple to hex color code string (e.g., "FF0000").
     """
-    return f"#{rgb[0]:02x}{rgb[1]:02x}{rgb[2]:02x}"
+    if not isinstance(rgb, tuple) or len(rgb) != 3:
+        logger.warning(f"Invalid RGB tuple provided to rgb_to_hex: {rgb}. Returning default black '000000'.")
+        return "000000"
+    try:
+        r, g, b = [max(0, min(int(val), 255)) for val in rgb]
+        return f"{r:02X}{g:02X}{b:02X}"
+    except (ValueError, TypeError) as e:
+        logger.error(f"Error converting RGB {rgb} to hex: {e}")
+        return "000000"
 
 def create_risk_label(score: float, with_emoji: bool = True) -> str:
     """

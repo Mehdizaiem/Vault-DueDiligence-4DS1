@@ -1,23 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { readFile } from 'fs/promises';
-import { join } from 'path';
-import { parse } from 'csv-parse/sync';
 import fs from 'fs';
 import path from 'path';
+import { parse } from 'papaparse';
 import axios from 'axios';
 
 interface HistoricalData {
   date: string;
   price: number;
-  open: number;
-  high: number;
-  low: number;
-  volume: number;
 }
 
 // Helper function to convert symbol for API
 function convertSymbolForApi(symbol: string) {
-  const coinIdMap: { [key: string]: string } = {
+  const coinIdMap: Record<string, string> = {
     "BTC": "bitcoin",
     "ETH": "ethereum",
     "SOL": "solana",
@@ -40,8 +34,8 @@ function convertSymbolForApi(symbol: string) {
   return { coinId, baseSymbol, quoteCurrency };
 }
 
-// Helper function to fetch API data
-async function fetchApiData(symbol: string, days: number | string = 'max') {
+// Helper function to fetch data from CoinGecko API
+async function fetchCoinGeckoData(symbol: string, days = 365) {
   const { coinId, quoteCurrency } = convertSymbolForApi(symbol);
   
   try {
@@ -60,23 +54,18 @@ async function fetchApiData(symbol: string, days: number | string = 'max') {
     const response = await axios.get(url, { 
       params, 
       headers,
-      validateStatus: (status) => status === 200 // Only accept 200 status
+      timeout: 15000
     });
     
     if (response.data?.prices) {
       return response.data.prices.map((item: [number, number]) => ({
-        date: new Date(item[0]),
+        date: new Date(item[0]).toISOString().split('T')[0],
         price: item[1]
       }));
     }
     return null;
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error('Error fetching API data:', error.response?.status, error.message);
-    } else {
-      console.error('Error fetching API data:', (error as Error).message);
-    }
-    // Don't throw error, just return null to fallback to CSV
+  } catch (error: unknown) {
+    console.error('Error fetching API data:', error instanceof Error ? error.message : 'Unknown error');
     return null;
   }
 }
@@ -96,17 +85,26 @@ function findCsvFile(symbol: string) {
 
     const patterns = [
       `*${symbol}*.csv`,
-      `*${symbol.replace('USDT', '')}*.csv`,
-      `*${symbol.replace('USD', '')}*.csv`
+      `*${symbol.replace('_', '')}*.csv`,
+      `*${symbol.replace('_USD', '')}*.csv`,
+      `*${symbol.replace('_USDT', '')}*.csv`,
+      `*${symbol.split('_')[0]}*.csv`
     ];
 
     for (const pattern of patterns) {
-      const files = fs.readdirSync(dir).filter(file => 
-        file.toLowerCase().includes(symbol.toLowerCase()) && file.endsWith('.csv')
-      );
+      try {
+        // Try to find files matching the pattern
+        const files = fs.readdirSync(dir)
+          .filter(file => 
+            file.toLowerCase().includes(symbol.toLowerCase().replace('_', '')) && 
+            file.endsWith('.csv')
+          );
 
-      if (files.length > 0) {
-        return path.join(dir, files[0]);
+        if (files.length > 0) {
+          return path.join(dir, files[0]);
+        }
+      } catch (err) {
+        console.error(`Error searching for files with pattern ${pattern} in ${dir}:`, err);
       }
     }
   }
@@ -115,94 +113,155 @@ function findCsvFile(symbol: string) {
 }
 
 // Helper function to load CSV data
-function loadCsvData(filePath: string) {
+function loadCsvData(filePath: string): HistoricalData[] | null {
   try {
     const fileContent = fs.readFileSync(filePath, 'utf-8');
-    const records = parse(fileContent, {
-      columns: true,
-      skip_empty_lines: true,
-      relax_quotes: true,
-      relax_column_count: true,
-      bom: true
+    
+    const parseResult = parse(fileContent, {
+      header: true,
+      skipEmptyLines: true,
+      dynamicTyping: true
     });
-
+    
+    if (parseResult.errors.length > 0) {
+      console.warn('CSV parsing errors:', parseResult.errors);
+    }
+    
+    const records = parseResult.data as Record<string, unknown>[];
+    
+    // Identify date and price columns
+    const dateColumn = findColumn(records[0], ['Date', 'date', 'timestamp', 'Timestamp', 'Time', 'time']);
+    const priceColumn = findColumn(records[0], ['price', 'Price', 'close', 'Close', 'last', 'Last', 'value', 'Value']);
+    
+    if (!dateColumn || !priceColumn) {
+      console.error('Could not identify date or price columns in CSV');
+      return null;
+    }
+    
     return records
-      .map((record: any) => {
-        const date = new Date(record.Date || record.date || record.timestamp);
-        const price = parseFloat(String(record.Price || record.price || record.close || record.Close).replace(/,/g, ''));
-        return { date, price };
+      .map((record: Record<string, unknown>) => {
+        const dateValue = record[dateColumn];
+        let date;
+        
+        if (typeof dateValue === 'string') {
+          // Try different date formats
+          date = new Date(dateValue);
+          if (isNaN(date.getTime())) {
+            // Try alternative formats
+            const formats = [
+              /(\d{4})-(\d{2})-(\d{2})/, // YYYY-MM-DD
+              /(\d{2})[/-](\d{2})[/-](\d{4})/, // DD/MM/YYYY or MM/DD/YYYY
+              /(\d{2})[/-](\d{2})[/-](\d{2})/ // DD/MM/YY or MM/DD/YY
+            ];
+            
+            for (const format of formats) {
+              const match = dateValue.match(format);
+              if (match) {
+                if (format === formats[0]) {
+                  date = new Date(`${match[1]}-${match[2]}-${match[3]}`);
+                } else {
+                  // Assume MM/DD/YYYY for simplicity
+                  date = new Date(`${match[2]}/${match[1]}/${match[3]}`);
+                }
+                break;
+              }
+            }
+          }
+        } else if (typeof dateValue === 'number') {
+          // Assume Unix timestamp (in seconds)
+          date = new Date(dateValue * 1000);
+        }
+        
+        if (!date || isNaN(date.getTime())) {
+          return null;
+        }
+        
+        let price = record[priceColumn];
+        if (typeof price === 'string') {
+          price = parseFloat(price.replace(/,/g, ''));
+        }
+        
+        if (isNaN(price as number)) {
+          return null;
+        }
+        
+        return {
+          date: date.toISOString().split('T')[0],
+          price: price as number
+        };
       })
-      .filter((record: any) => !isNaN(record.price) && record.date instanceof Date)
-      .sort((a: any, b: any) => a.date.getTime() - b.date.getTime());
+      .filter((item): item is HistoricalData => item !== null)
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   } catch (error) {
     console.error('Error loading CSV data:', error);
     return null;
   }
 }
 
+// Helper function to find column with matching name
+function findColumn(record: Record<string, unknown> | null, possibleNames: string[]): string | null {
+  if (!record) return null;
+  
+  const recordKeys = Object.keys(record);
+  for (const name of possibleNames) {
+    const found = recordKeys.find(key => key.toLowerCase() === name.toLowerCase());
+    if (found) return found;
+  }
+  return null;
+}
+
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const symbol = searchParams.get('symbol') || 'BTC_USD';
+    const daysParam = searchParams.get('days') || '365';
+    const days = parseInt(daysParam, 10);
     
-    // Try to find CSV file first
+    // First try to get data from API for most recent data
+    console.log(`Fetching data from API for ${symbol} (${days} days)`);
+    const apiData = await fetchCoinGeckoData(symbol, days);
+    
+    if (apiData && apiData.length > 0) {
+      console.log(`Successfully fetched ${apiData.length} days of data from API`);
+      return NextResponse.json({
+        success: true,
+        data: apiData
+      });
+    }
+    
+    // If API fails, fall back to CSV data
+    console.log('API fetch failed or returned no data, falling back to CSV');
     const csvFile = findCsvFile(symbol);
+    
     if (!csvFile) {
       return NextResponse.json({
         success: false,
         error: `No data available for ${symbol}`
       });
     }
-
+    
     // Load CSV data
-    console.log('Loading CSV data from:', csvFile);
+    console.log(`Loading CSV data from ${csvFile}`);
     const csvData = loadCsvData(csvFile);
-    if (!csvData) {
+    
+    if (!csvData || csvData.length === 0) {
       return NextResponse.json({
         success: false,
-        error: `Failed to load CSV data for ${symbol}`
+        error: `Failed to load data for ${symbol}`
       });
     }
-
-    // Try to get recent data from API (but don't fail if we can't)
-    let apiData = null;
-    try {
-      apiData = await fetchApiData(symbol, 'max');
-    } catch (error) {
-      console.error('Failed to fetch API data:', error instanceof Error ? error.message : 'Unknown error');
-    }
-
-    if (apiData && apiData.length > 0) {
-      // Find overlap to align data
-      const apiFirstDate = new Date(apiData[0].date).getTime();
-      const csvLastDate = new Date(csvData[csvData.length - 1].date).getTime();
-
-      let combinedData;
-      if (apiFirstDate <= csvLastDate) {
-        // Remove overlapping days from CSV data
-        const csvDataNoOverlap = csvData.filter(
-          (d: any) => new Date(d.date).getTime() < apiFirstDate
-        );
-        combinedData = [...csvDataNoOverlap, ...apiData];
-      } else {
-        combinedData = [...csvData, ...apiData];
-      }
-
-      return NextResponse.json({
-        success: true,
-        data: combinedData
-      });
-    }
-
-    // Return CSV data if API data is not available
-    console.log('Using CSV data only');
+    
+    // Limit data to requested number of days
+    const limitedData = csvData.slice(-days);
+    
     return NextResponse.json({
       success: true,
-      data: csvData
+      source: 'csv',
+      data: limitedData
     });
 
   } catch (error) {
-    console.error('Error in historical data route:', error instanceof Error ? error.message : 'Unknown error');
+    console.error('Error in historical data route:', error);
     return NextResponse.json({
       success: false,
       error: 'Failed to fetch historical data'

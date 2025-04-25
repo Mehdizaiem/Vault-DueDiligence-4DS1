@@ -31,16 +31,25 @@ class PresentationBuilder:
         self.design = DesignElements()
         self.chart_factory = ChartFactory()
 
+        # Determine the template path
+        if not template_path:
+            # If no template path provided, use the default one
+            project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            default_template_path = os.path.join(project_root, "reporting", "templates", "base_template.pptx")
+            template_path = default_template_path
+            logger.info(f"Using default template: {template_path}")
+
         try:
             if template_path and os.path.exists(template_path):
                 self.prs = Presentation(template_path)
                 logger.info(f"Using template: {template_path}")
             else:
+                # If template doesn't exist, create a new presentation
+                logger.warning(f"Template not found at {template_path}. Using default presentation template.")
                 self.prs = Presentation()
-                logger.info("Template not found or not provided. Using default presentation template.")
                 # Set default slide size (Widescreen 16:9)
-                self.prs.slide_width = Emu(12192000) # Inches(13.33)
-                self.prs.slide_height = Emu(6858000) # Inches(7.5)
+                self.prs.slide_width = Emu(12192000)  # Inches(13.33)
+                self.prs.slide_height = Emu(6858000)  # Inches(7.5)
         except Exception as e:
             logger.error(f"Error initializing Presentation object: {e}", exc_info=True)
             logger.warning("Falling back to a new default presentation.")
@@ -265,15 +274,26 @@ class PresentationBuilder:
     # --------------------------------------------------------------------------
     # Add these missing methods to pptx_builder.py
 
-    def add_fund_overview_slide(self, title: str, fund_data: List[List[str]], strategy_description: str = None) -> None:
+    def add_fund_overview_slide(self, fund_info: Dict[str, Any]) -> None:
         """
         Creates a fund overview slide with fund details in table format and strategy description.
         
         Args:
-            title: Slide title
-            fund_data: Tabular data with fund information
-            strategy_description: Optional longer strategy description
+            fund_info: Dictionary containing fund information
         """
+        title = "Fund Overview"
+        
+        # Extract fund data for table
+        fund_data = []
+        for key, value in fund_info.items():
+            if key != "strategy" and key != "fund_name":  # Handle these separately
+                label = " ".join(word.capitalize() for word in key.split('_'))
+                fund_data.append([label, str(value)])
+        
+        # Extract strategy description
+        strategy_description = fund_info.get("strategy", "Strategy information not available.")
+        
+        # Call the original implementation with the extracted data
         slide_layout = self._get_slide_layout(self.design.TITLE_CONTENT_LAYOUT_IDX)
         slide = self.prs.slides.add_slide(slide_layout)
         self.slide_count += 1
@@ -292,7 +312,7 @@ class PresentationBuilder:
         
         # Add fund info table
         table_shape = self._add_table(slide, left_margin, content_top, table_width, Inches(4.5), fund_data, 
-                                    first_row_header=True, first_col_bold=True)
+                                    first_row_header=False, first_col_bold=True)
         
         # Add strategy description on right if provided
         if strategy_description and table_shape:
@@ -308,14 +328,16 @@ class PresentationBuilder:
                 self._add_styled_paragraph(tf, "Strategy Description", bold=True, size=Pt(14), space_after=Pt(6))
                 self._add_styled_paragraph(tf, strategy_description, size=Pt(11))
 
-    def add_team_analysis_slide(self, title: str, team_profiles: List[Dict[str, str]]) -> None:
+    def add_team_analysis_slide(self, team_data: Dict[str, Any]) -> None:
         """
         Creates a slide showing key team members with their backgrounds.
         
         Args:
-            title: Slide title
-            team_profiles: List of dictionaries with keys 'name', 'title', and 'background'
+            team_data: Dictionary with team information including key_personnel
         """
+        title = "Team Analysis"
+        team_profiles = team_data.get("key_personnel", [])
+        
         if not team_profiles:
             logger.warning("No team profiles provided. Skipping team analysis slide.")
             return
@@ -377,14 +399,18 @@ class PresentationBuilder:
     # These updated methods should replace the ones in the fixed-code artifact
 # They properly use the more comprehensive ChartFactory methods you've provided
 
-    def add_portfolio_allocation_slide(self, title: str, chart_data: List[Tuple[str, float]]) -> None:
+    def add_portfolio_allocation_slide(self, portfolio_data: Dict[str, float], market_analysis: Optional[Dict] = None) -> None:
         """
         Creates a slide showing portfolio allocation as a pie chart.
         
         Args:
-            title: Slide title
-            chart_data: List of tuples with (asset_name, percentage)
+            portfolio_data: Dictionary with asset allocations
+            market_analysis: Optional market analysis data
         """
+        title = "Portfolio Allocation"
+        
+        # Convert portfolio data to format needed for chart
+        chart_data = [(asset, value * 100) for asset, value in portfolio_data.items()]
         if not chart_data:
             logger.warning("No chart data provided. Skipping portfolio allocation slide.")
             return
@@ -440,18 +466,33 @@ class PresentationBuilder:
             
             self._add_table(slide, Inches(1.5), Inches(2.0), Inches(9.0), Inches(4.0), table_data)
 
-    def add_wallet_security_analysis(self, title: str, total_balance: str, wallet_count: int, 
-                                avg_risk_score: float, wallet_chart_data: List[Tuple[str, float]]) -> None:
+    def add_wallet_security_analysis(self, wallet_analysis: Dict[str, Any]) -> None:
         """
         Creates a slide showing wallet infrastructure overview.
         
         Args:
-            title: Slide title
-            total_balance: Total balance as formatted string
-            wallet_count: Number of wallets
-            avg_risk_score: Average risk score (0-100)
-            wallet_chart_data: List of tuples with wallet types and amounts
+            wallet_analysis: Dictionary with wallet analysis results
         """
+        title = "Wallet Security Analysis"
+        self._add_styled_paragraph(tf, str(total_balance), bold=True, size=Pt(24), align=PP_ALIGN.CENTER, color=self.design.ACCENT_1)
+        # Extract data from wallet analysis
+        total_balance = wallet_analysis.get("aggregate_stats", {}).get("total_balance_eth", 0)
+        total_balance_str = f"{total_balance:.2f} ETH"
+        
+        wallet_count = len(wallet_analysis.get("wallets", {}))
+        
+        avg_risk_score = wallet_analysis.get("aggregate_stats", {}).get("average_risk_score", 50)
+        
+        # Create chart data from wallets
+        wallet_types = {}
+        for address, wallet in wallet_analysis.get("wallets", {}).items():
+            wtype = wallet.get("wallet_type", "Unknown")
+            if wtype in wallet_types:
+                wallet_types[wtype] += wallet.get("balance", 0)
+            else:
+                wallet_types[wtype] = wallet.get("balance", 0)
+        
+        wallet_chart_data = [(wtype, balance) for wtype, balance in wallet_types.items()]
         slide_layout = self._get_slide_layout(self.design.TITLE_CONTENT_LAYOUT_IDX)
         slide = self.prs.slides.add_slide(slide_layout)
         self.slide_count += 1
@@ -962,6 +1003,27 @@ class PresentationBuilder:
             logger.error(f"Error adding gauge chart element for '{title}': {e}", exc_info=True)
 
     # Rewritten to accept LLM text and structured points separately
+    def add_risk_assessment_slides(self, overview_data: Dict, factors_data: Optional[Dict] = None,
+                                mitigation_data: Optional[Dict] = None) -> None:
+        """
+        Creates slides for risk assessment (overview, factors, and mitigations).
+        Calls specific risk slide builders for each component.
+        
+        Args:
+            overview_data: Data for the risk overview slide
+            factors_data: Data for the risk factors slide (optional)
+            mitigation_data: Data for the risk mitigation slide (optional)
+        """
+        # Add risk overview slide
+        self.add_risk_overview_slide(**overview_data)
+        
+        # Add risk factors slide if data provided
+        if factors_data:
+            self.add_text_slide(**factors_data)
+        
+        # Add risk mitigation slide if data provided
+        if mitigation_data:
+            self.add_text_slide(**mitigation_data)
     def add_executive_summary_slide(self, title: str, fund_name: str, aum: str,
                                  strategy: str,
                                  risk_score: float, risk_level: str, risk_color: Tuple[int, int, int],

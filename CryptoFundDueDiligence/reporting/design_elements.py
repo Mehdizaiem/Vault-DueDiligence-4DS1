@@ -7,6 +7,7 @@ all design decisions to maintain a cohesive visual identity across reports.
 """
 
 from typing import Dict, List, Any, Optional, Union, Tuple
+from venv import logger
 
 class DesignElements:
     """
@@ -22,7 +23,8 @@ class DesignElements:
         self.ACCENT_COLOR = (255, 153, 0)       # Orange
         self.DARK_COLOR = (51, 51, 51)          # Dark gray
         self.LIGHT_COLOR = (245, 245, 245)      # Light gray
-        
+        self.ACCENT_1 = (255, 153, 0)           # Same as ACCENT_COLOR 
+        self.ACCENT_2 = (102, 45, 145)    
         # Background colors
         self.COVER_BACKGROUND = (25, 33, 51)    # Dark blue-gray for cover
         self.SLIDE_BACKGROUND = (255, 255, 255) # White for content slides
@@ -134,7 +136,19 @@ class DesignElements:
             return self.RISK_LOW
         else:
             return self.RISK_VERY_LOW
-    
+    def rgb_to_hex(self, rgb: Tuple[int, int, int]) -> str:
+        """
+        Convert RGB tuple to hex color code string (e.g., "FF0000").
+        """
+        if not isinstance(rgb, tuple) or len(rgb) != 3:
+            logger.warning(f"Invalid RGB tuple provided to rgb_to_hex: {rgb}. Returning default black '000000'.")
+            return "000000"
+        try:
+            r, g, b = [max(0, min(int(val), 255)) for val in rgb]
+            return f"{r:02X}{g:02X}{b:02X}"
+        except (ValueError, TypeError) as e:
+            logger.error(f"Error converting RGB {rgb} to hex: {e}")
+            return "000000"
     def get_change_color(self, value: float, positive_is_good: bool = True) -> Tuple[int, int, int]:
         """
         Get color for percentage changes.

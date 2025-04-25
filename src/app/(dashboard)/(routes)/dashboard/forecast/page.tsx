@@ -10,13 +10,23 @@ import {
   BarChart,
   DollarSign,
   Info,
-  ShieldAlert
+  ShieldAlert,
+  Brain,
+  LineChart,
+  Clock,
+  ChevronDown,
+  ArrowRight,
+  Sparkles,
+  Target,
+  Gauge,
+  Calendar
 } from 'lucide-react';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import TimeFrameSelector from '@/components/ui/time-frame-selector';
 import MetricCard from '@/components/ui/metric-card';
 import ForecastChart from '@/components/ui/forecast-chart';
 import ForecastInsight from '@/components/ui/forecast-insight';
+import { cn } from '@/lib/utils';
 
 interface HistoricalData {
   date: string;
@@ -50,6 +60,153 @@ interface ChartData {
   lower?: number;
   upper?: number;
 }
+
+// Helper functions for formatting
+const formatPrice = (price: number) => {
+  return new Intl.NumberFormat('en-US', { 
+    style: 'currency', 
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2 
+  }).format(price);
+};
+
+const formatDate = (dateStr: string) => {
+  return new Date(dateStr).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+};
+
+const getConfidenceColor = (uncertainty: number) => {
+  if (uncertainty <= 5) return 'text-green-600';
+  if (uncertainty <= 10) return 'text-yellow-600';
+  return 'text-red-600';
+};
+
+const PriceMetricCard = ({ 
+  title, 
+  price,
+  change,
+  date,
+  type = 'current',
+  icon: Icon,
+}: { 
+  title: string;
+  price: number;
+  change?: number;
+  date?: string;
+  type?: 'current' | 'forecast';
+  icon: any;
+}) => {
+  const isPositiveChange = change && change > 0;
+  const gradientColors = type === 'current' 
+    ? 'from-blue-500 to-blue-600'
+    : isPositiveChange 
+      ? 'from-green-500 to-emerald-600'
+      : 'from-red-500 to-rose-600';
+
+  return (
+    <div className="relative overflow-hidden rounded-xl border bg-white p-6 shadow-lg transition-all hover:shadow-xl">
+      <div className="absolute inset-0 bg-gradient-to-br opacity-[0.03] from-gray-100 to-gray-200" />
+      <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-gradient-to-br opacity-10" />
+      
+      <div className="relative">
+        <div className="flex items-center gap-3 text-sm text-muted-foreground">
+          <Icon className="h-5 w-5" />
+          <span>{title}</span>
+        </div>
+
+        <div className="mt-4 space-y-1">
+          <div className={cn(
+            "text-3xl font-bold tracking-tight bg-gradient-to-br bg-clip-text text-transparent",
+            gradientColors
+          )}>
+            {formatPrice(price)}
+          </div>
+          
+          {change && (
+            <div className="flex items-center gap-2">
+              <div className={cn(
+                "flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium",
+                isPositiveChange ? "bg-green-50 text-green-600" : "bg-red-50 text-red-600"
+              )}>
+                {isPositiveChange ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+                {isPositiveChange ? '+' : ''}{change.toFixed(2)}%
+              </div>
+              {date && (
+                <span className="text-xs text-muted-foreground">
+                  as of {formatDate(date)}
+                </span>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const MetricTile = ({
+  label,
+  value,
+  icon: Icon,
+  color = "blue"
+}: {
+  label: string;
+  value: string | number;
+  icon: any;
+  color?: "blue" | "green" | "red" | "purple" | "yellow";
+}) => {
+  const colors = {
+    blue: "bg-blue-50 text-blue-600",
+    green: "bg-green-50 text-green-600",
+    red: "bg-red-50 text-red-600",
+    purple: "bg-purple-50 text-purple-600",
+    yellow: "bg-yellow-50 text-yellow-600",
+  };
+
+  return (
+    <div className="flex items-center gap-3 rounded-lg border bg-white p-4">
+      <div className={cn("rounded-lg p-2", colors[color])}>
+        <Icon className="h-4 w-4" />
+      </div>
+      <div>
+        <p className="text-sm text-muted-foreground">{label}</p>
+        <p className="font-medium">{value}</p>
+      </div>
+    </div>
+  );
+};
+
+const ConfidenceIndicator = ({ value }: { value: number }) => {
+  const getColor = (v: number) => {
+    if (v <= 5) return { bg: "bg-green-100", text: "text-green-700", ring: "ring-green-600" };
+    if (v <= 10) return { bg: "bg-yellow-100", text: "text-yellow-700", ring: "ring-yellow-600" };
+    return { bg: "bg-red-100", text: "text-red-700", ring: "ring-red-600" };
+  };
+
+  const { bg, text, ring } = getColor(value);
+  const percentage = Math.min(100, Math.max(0, (value / 20) * 100));
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-medium text-muted-foreground">Uncertainty Level</span>
+        <span className={cn("text-sm font-bold", text)}>±{value.toFixed(1)}%</span>
+      </div>
+      <div className="h-2 w-full rounded-full bg-gray-100">
+        <div 
+          className={cn("h-full rounded-full transition-all", bg)}
+          style={{ width: `${percentage}%` }}
+        />
+      </div>
+    </div>
+  );
+};
 
 export default function ForecastPage() {
   const [historicalData, setHistoricalData] = useState<HistoricalData[]>([]);
@@ -155,10 +312,14 @@ export default function ForecastPage() {
 
   if (loading) {
     return (
-      <div className="flex-1 p-8 pt-6 flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="h-12 w-12 animate-spin text-blue-500 mx-auto mb-4" />
-          <h3 className="text-lg font-medium">Loading forecast data...</h3>
+      <div className="flex-1 p-8 pt-6 flex items-center justify-center min-h-[600px] bg-gradient-to-br from-blue-50 to-purple-50">
+        <div className="text-center space-y-4">
+          <div className="relative">
+            <div className="absolute inset-0 rounded-full animate-ping bg-blue-400 opacity-20" />
+            <Loader2 className="h-12 w-12 animate-spin text-blue-500 mx-auto relative z-10" />
+          </div>
+          <h3 className="text-xl font-medium text-muted-foreground">Loading forecast data...</h3>
+          <p className="text-sm text-muted-foreground">Please wait while we analyze market data</p>
         </div>
       </div>
     );
@@ -166,11 +327,11 @@ export default function ForecastPage() {
 
   if (error) {
     return (
-      <div className="flex-1 p-8 pt-6">
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
+      <div className="flex-1 p-8 pt-6 bg-gradient-to-br from-red-50 to-orange-50">
+        <Alert variant="destructive" className="max-w-2xl mx-auto">
+          <AlertCircle className="h-5 w-5" />
+          <AlertTitle className="text-lg">Error Loading Data</AlertTitle>
+          <AlertDescription className="mt-2">{error}</AlertDescription>
         </Alert>
       </div>
     );
@@ -181,109 +342,172 @@ export default function ForecastPage() {
     : 0;
 
   return (
-    <div className="flex-1 p-8 pt-6">
-      <div className="space-y-6">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <h2 className="text-3xl font-bold tracking-tight">Crypto Forecast</h2>
-            <p className="text-muted-foreground">
-              Price predictions and market analysis for cryptocurrencies
-            </p>
+    <div className="min-h-screen bg-[#fafafa]">
+      <div className="flex-1 p-8 pt-6">
+        <div className="space-y-8 max-w-[1400px] mx-auto">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div>
+              <div className="flex items-center gap-3">
+                <h2 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  Crypto Forecast
+                </h2>
+                <div className="flex h-6 items-center rounded-full bg-blue-50 px-2 text-xs font-medium text-blue-600">
+                  AI-Powered
+                </div>
+              </div>
+              <p className="text-muted-foreground mt-2 text-lg">
+                Advanced price predictions and market analysis for Bitcoin
+              </p>
+            </div>
+            
+            <TimeFrameSelector 
+              selected={selectedTimePeriod} 
+              onChange={setSelectedTimePeriod} 
+            />
           </div>
-          
-          <TimeFrameSelector 
-            selected={selectedTimePeriod} 
-            onChange={setSelectedTimePeriod} 
-          />
-        </div>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <MetricCard
-            title="Current Price"
-            value={new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(latestHistoricalPrice)}
-            icon={<DollarSign className="h-5 w-5 text-blue-500" />}
-            subtitle={`as of ${historicalData.length > 0 
-              ? new Date(historicalData[historicalData.length - 1].date).toLocaleDateString() 
-              : 'N/A'}`}
-            iconBgColor="bg-blue-100"
-          />
+          <div className="grid gap-6 md:grid-cols-2">
+            <PriceMetricCard
+              title="Current Price"
+              price={latestHistoricalPrice}
+              date={historicalData.length > 0 ? historicalData[historicalData.length - 1].date : undefined}
+              icon={DollarSign}
+              type="current"
+            />
+            
+            {forecastData && (
+              <PriceMetricCard
+                title={`${forecastData.days_ahead}-Day Forecast`}
+                price={forecastData.final_forecast}
+                change={forecastData.change_pct}
+                icon={Target}
+                type="forecast"
+              />
+            )}
+          </div>
 
           {forecastData && (
-            <>
-              <MetricCard
-                title={`${forecastData.days_ahead}-Day Forecast`}
-                value={new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(forecastData.final_forecast)}
-                icon={<BarChart className="h-5 w-5 text-green-500" />}
-                subtitle={`${forecastData.change_pct >= 0 ? '+' : ''}${forecastData.change_pct.toFixed(2)}% from current`}
-                trend={forecastData.change_pct >= 0 ? 'up' : 'down'}
-                iconBgColor="bg-green-100"
+            <div className="grid gap-6 md:grid-cols-3">
+              <MetricTile
+                label="Model"
+                value={forecastData.model_name}
+                icon={Brain}
+                color="purple"
               />
-
-              <MetricCard
-                title="Price Trend"
-                value={forecastData.trend.charAt(0).toUpperCase() + forecastData.trend.slice(1)}
-                icon={forecastData.trend === 'bullish' || forecastData.trend === 'strongly bullish'
-                  ? <TrendingUp className="h-5 w-5 text-green-500" />
-                  : <TrendingDown className="h-5 w-5 text-red-500" />
-                }
-                subtitle={`${forecastData.probability_increase.toFixed(1)}% chance of increase`}
-                trend={forecastData.trend.includes('bullish') ? 'up' : 'down'}
-                iconBgColor={forecastData.trend.includes('bullish') ? "bg-green-100" : "bg-red-100"}
+              <MetricTile
+                label="Generated"
+                value={formatDate(forecastData.forecast_timestamp)}
+                icon={Calendar}
+                color="blue"
               />
-
-              <MetricCard
-                title="Uncertainty"
-                value={`±${forecastData.average_uncertainty.toFixed(1)}%`}
-                icon={<ShieldAlert className="h-5 w-5 text-orange-500" />}
-                subtitle={`Model: ${forecastData.model_name}`}
-                iconBgColor="bg-orange-100"
+              <MetricTile
+                label="Probability of Increase"
+                value={`${forecastData.probability_increase.toFixed(1)}%`}
+                icon={Gauge}
+                color={forecastData.probability_increase > 50 ? "green" : "red"}
               />
-            </>
+            </div>
           )}
-        </div>
 
-        <div className="grid gap-6">
-          <Card className="overflow-hidden">
-            <CardHeader className="pb-0">
+          <Card className="overflow-hidden bg-white shadow-xl border-none">
+            <CardHeader className="border-b bg-gray-50/50">
               <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle>BTC/USD Price Forecast</CardTitle>
+                <div className="space-y-1">
+                  <CardTitle className="text-xl">BTC/USD Price Forecast</CardTitle>
                   <CardDescription>
-                    Historical data and price predictions for Bitcoin
+                    Historical data and AI-powered price predictions
                   </CardDescription>
                 </div>
-                <div className="hidden md:flex items-center gap-2">
-                  <div className="flex items-center gap-1">
-                    <div className="w-4 h-1 bg-[#4F46E5] rounded-full"></div>
-                    <span className="text-xs text-gray-500">Historical</span>
+                <div className="hidden md:flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-blue-500 rounded-full" />
+                    <span className="text-sm text-muted-foreground">Historical</span>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <div className="w-4 h-1 bg-[#10B981] rounded-full"></div>
-                    <span className="text-xs text-gray-500">Forecast</span>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-green-500 rounded-full" />
+                    <span className="text-sm text-muted-foreground">Forecast</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-green-500/20 rounded-full" />
+                    <span className="text-sm text-muted-foreground">Confidence</span>
                   </div>
                 </div>
               </div>
             </CardHeader>
-            <CardContent>
-              <ForecastChart data={chartData} timeFrame={selectedTimePeriod} />
+            <CardContent className="p-6">
+              <div className="h-[400px]">
+                <ForecastChart data={chartData} timeFrame={selectedTimePeriod} />
+              </div>
             </CardContent>
           </Card>
 
           {forecastData && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Forecast Analysis</CardTitle>
-                <CardDescription>
-                  Detailed insights and analysis of the price forecast
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ForecastInsight 
-                  currentPrice={latestHistoricalPrice} 
-                  forecastData={forecastData} 
-                />
-              </CardContent>
-            </Card>
+            <div className="grid gap-6 md:grid-cols-2">
+              <Card className="bg-white shadow-lg border-none">
+                <CardHeader className="border-b bg-gray-50/50">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="h-5 w-5 text-purple-500" />
+                    <CardTitle>AI Analysis</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <div className="prose prose-sm">
+                    <p className="text-gray-600 leading-relaxed">
+                      {forecastData.insight}
+                    </p>
+                  </div>
+                  <div className="mt-6 space-y-6">
+                    <ConfidenceIndicator value={forecastData.average_uncertainty} />
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">Price Range</span>
+                        <span className="font-medium">
+                          {formatPrice(forecastData.lower_bounds[0])} - {formatPrice(forecastData.upper_bounds[0])}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white shadow-lg border-none">
+                <CardHeader className="border-b bg-gray-50/50">
+                  <div className="flex items-center gap-2">
+                    <Target className="h-5 w-5 text-blue-500" />
+                    <CardTitle>Forecast Details</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <div className="space-y-6">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <p className="text-sm text-muted-foreground">Model Type</p>
+                        <p className="font-medium">{forecastData.model_type}</p>
+                      </div>
+                      <div className="space-y-2">
+                        <p className="text-sm text-muted-foreground">Timeframe</p>
+                        <p className="font-medium">{forecastData.days_ahead} days ahead</p>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">Day 1 Forecast</span>
+                        <span className="font-medium">{formatPrice(forecastData.forecast_values[0])}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">Day 2 Forecast</span>
+                        <span className="font-medium">{formatPrice(forecastData.forecast_values[1])}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">Day 3 Forecast</span>
+                        <span className="font-medium">{formatPrice(forecastData.forecast_values[2])}</span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           )}
         </div>
       </div>

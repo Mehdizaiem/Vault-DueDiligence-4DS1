@@ -401,10 +401,12 @@ export default function ForecastPage() {
         >
           <div className="relative">
             <div className="absolute inset-0 rounded-full animate-ping bg-blue-400 opacity-20" />
-            <Loader2 className="h-12 w-12 animate-spin text-blue-500 mx-auto relative z-10" />
+            <div className="relative z-10 bg-white/50 backdrop-blur-lg rounded-2xl p-8 shadow-xl border border-blue-100">
+              <Loader2 className="h-12 w-12 animate-spin text-blue-500 mx-auto" />
+              <h3 className="text-xl font-medium text-muted-foreground mt-4">Analyzing Market Data</h3>
+              <p className="text-sm text-muted-foreground mt-2">Please wait while we prepare your forecast...</p>
+            </div>
           </div>
-          <h3 className="text-xl font-medium text-muted-foreground">Loading forecast data...</h3>
-          <p className="text-sm text-muted-foreground">Please wait while we analyze market data</p>
         </motion.div>
       </div>
     );

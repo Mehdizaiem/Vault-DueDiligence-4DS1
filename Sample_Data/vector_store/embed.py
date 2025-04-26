@@ -188,7 +188,7 @@ def process_news_for_sentiment(text: str, title: Optional[str] = None) -> Tuple[
 
 def extract_keywords(text: str, max_keywords: int = 10) -> List[str]:
     """
-    Extract keywords from text (simplified implementation).
+    Extract keywords from text with improved implementation.
     
     Args:
         text (str): The text to extract keywords from
@@ -197,19 +197,81 @@ def extract_keywords(text: str, max_keywords: int = 10) -> List[str]:
     Returns:
         list: List of keywords
     """
-    # This is a placeholder implementation
-    # In a real application, use a proper keyword extraction algorithm
-    common_words = set(['the', 'and', 'a', 'to', 'of', 'in', 'that', 'is', 'for', 'it', 'with', 'as', 'be', 'on', 'at'])
-    words = text.lower().split()
-    # Filter out common words and count occurrences
+    # Skip very short texts
+    if not text or len(text) < 50:
+        return []
+        
+    # Common stopwords to filter out
+    stopwords = {'the', 'and', 'a', 'to', 'of', 'in', 'that', 'is', 'for', 'it', 'with', 'as', 
+                'be', 'on', 'at', 'this', 'by', 'an', 'we', 'our', 'from', 'your', 'their',
+                'has', 'have', 'had', 'not', 'but', 'what', 'all', 'were', 'when', 'who',
+                'will', 'more', 'if', 'no', 'or', 'about', 'which', 'when', 'would', 'there',
+                'can', 'also', 'use'}
+                
+    # Crypto-specific terms to prioritize
+    crypto_terms = {'bitcoin', 'ethereum', 'blockchain', 'crypto', 'token', 'defi', 'nft',
+                   'wallet', 'exchange', 'mining', 'node', 'ledger', 'smart contract',
+                   'decentralized', 'transaction', 'address', 'key', 'regulation', 'compliance'}
+    
+    # Normalize text and split into words
+    import re
+    # Remove punctuation and normalize whitespace
+    text = re.sub(r'[^\w\s]', ' ', text.lower())
+    words = text.split()
+    
+    # Count word frequencies
     word_counts = {}
     for word in words:
-        if len(word) > 3 and word not in common_words:
-            word_counts[word] = word_counts.get(word, 0) + 1
+        # Skip very short words and stopwords
+        if len(word) <= 3 or word in stopwords:
+            continue
+            
+        word_counts[word] = word_counts.get(word, 0) + 1
     
-    # Sort by count and get top keywords
-    keywords = sorted(word_counts.items(), key=lambda x: x[1], reverse=True)[:max_keywords]
-    return [keyword for keyword, _ in keywords]
+    # Prioritize crypto terms by boosting their counts
+    for word in list(word_counts.keys()):
+        if word in crypto_terms:
+            word_counts[word] *= 2  # Double the count for crypto-specific terms
+    
+    # Extract bigrams (two-word phrases) - often more meaningful than single words
+    bigrams = []
+    for i in range(len(words) - 1):
+        if words[i] not in stopwords and words[i+1] not in stopwords:
+            if len(words[i]) > 3 and len(words[i+1]) > 3:
+                bigram = f"{words[i]} {words[i+1]}"
+                bigrams.append(bigram)
+    
+    # Count bigram frequencies
+    bigram_counts = {}
+    for bigram in bigrams:
+        bigram_counts[bigram] = bigram_counts.get(bigram, 0) + 1
+    
+    # Prioritize crypto-term bigrams
+    for bigram in list(bigram_counts.keys()):
+        if any(term in bigram for term in crypto_terms):
+            bigram_counts[bigram] *= 2
+    
+    # Combine single words and bigrams, sorted by frequency
+    all_terms = sorted(word_counts.items(), key=lambda x: x[1], reverse=True)
+    bigram_terms = sorted(bigram_counts.items(), key=lambda x: x[1], reverse=True)
+    
+    # Prioritize important bigrams over common single words
+    keywords = []
+    
+    # Add top bigrams first (they're often more meaningful)
+    for term, _ in bigram_terms[:max_keywords // 2]:
+        keywords.append(term)
+    
+    # Then add single words to fill the list
+    for term, _ in all_terms:
+        if len(keywords) >= max_keywords:
+            break
+        if term not in ' '.join(keywords):  # Avoid words that are already part of bigrams
+            keywords.append(term)
+    
+    return keywords[:max_keywords]
+
+
 def process_document(text, document_type=None):
     """
     Process a document to extract features and generate embedding.

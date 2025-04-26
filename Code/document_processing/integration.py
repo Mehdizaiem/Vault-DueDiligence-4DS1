@@ -3,6 +3,7 @@ import hashlib
 from typing import Dict, Any, Optional, Union
 import sys
 import os
+import traceback
 from pathlib import Path
 from datetime import datetime
 
@@ -11,12 +12,16 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..
 if project_root not in sys.path:
     sys.path.append(project_root)
 
-from Code.document_processing.crypto_document_processor import CryptoDocumentProcessor
-from Code.document_processing.document_tracker import DocumentTracker
-
-# Configure logging
+# Debugging - print paths for troubleshooting
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+logger.info(f"Current directory: {os.getcwd()}")
+logger.info(f"Project root: {project_root}")
+logger.info(f"Python path: {sys.path}")
+
+# Import local modules
+from Code.document_processing.crypto_document_processor import CryptoDocumentProcessor
+from Code.document_processing.document_tracker import DocumentTracker
 
 # Global instances
 doc_processor = None
@@ -111,6 +116,7 @@ def process_document_with_tracking(content: Union[str, bytes], filename: str, do
         if is_file_path:
             # Read the file based on type
             if filename.lower().endswith('.pdf'):
+                # Import here to avoid circular imports
                 from Code.document_processing.process_documents import read_pdf
                 file_content = read_pdf(content)
             elif filename.lower().endswith('.docx'):
@@ -142,7 +148,24 @@ def process_document_with_tracking(content: Union[str, bytes], filename: str, do
     
     except Exception as e:
         logger.error(f"Error processing document {filename} with tracking: {e}")
+        logger.error(traceback.format_exc())
         return None
+    
+def find_similar_documents(query_text, documents, top_n=5):
+    """Find similar documents using TF-IDF similarity.
+    
+    Args:
+        query_text (str): Query text or document content
+        documents (list): List of document dictionaries
+        top_n (int): Number of results to return
+        
+    Returns:
+        list: Similar documents with similarity scores
+    """
+    from Code.document_processing.document_similarity import DocumentSimilarityService
+    
+    similarity_service = DocumentSimilarityService()
+    return similarity_service.find_similar_documents(query_text, documents, top_n=top_n)
 
 def store_processed_document(doc_data, storage_manager):
     """Store processed document data in Weaviate"""
@@ -155,24 +178,80 @@ def store_processed_document(doc_data, storage_manager):
         metadata = doc_data.get("metadata", {})
         document_type = doc_data.get("document_type", "other")
         
+        # IMPROVED CONTENT EXTRACTION - try multiple possible locations
+        content = metadata.get("text", "")
+        if not content:
+            content = doc_data.get("content", "")
+        if not content and "metadata" in doc_data:
+            content = doc_data["metadata"].get("content", "")
+        
+        # Extract keywords from multiple possible locations with TF-IDF enhancement
+        keywords = []
+        
+        # First try to get TF-IDF enhanced keywords from summary.main_topics
+        if "summary" in doc_data and "main_topics" in doc_data["summary"]:
+            keywords = doc_data["summary"]["main_topics"]
+            logger.info(f"Using TF-IDF enhanced keywords: {keywords[:5]}")
+        # Fall back to old keyword extraction method if no TF-IDF keywords
+        elif "entities" in doc_data and "keywords" in doc_data["entities"]:
+            keywords = doc_data["entities"]["keywords"]
+            logger.info(f"Using entity-based keywords: {keywords[:5]}")
+        
+        # Extract crypto-specific data if available
+        crypto_data = doc_data.get("crypto_specific", {})
+        crypto_entities = []
+        if crypto_data:
+            if "blockchain_protocols" in crypto_data:
+                crypto_entities.extend(crypto_data["blockchain_protocols"])
+            if "token_standards" in crypto_data:
+                crypto_entities.extend(crypto_data["token_standards"])
+        
+        # Calculate better risk score
+        risk_score = 50  # Default neutral value
+        if "risk_indicators" in doc_data and "risk_indicators" in doc_data["risk_indicators"]:
+            # More risk indicators = higher risk score
+            risk_indicators = doc_data["risk_indicators"]["risk_indicators"]
+            risk_score += len(risk_indicators) * 5  # Each risk indicator adds 5 points
+            
+            # Cap at 100
+            risk_score = min(100, risk_score)
+        
+        # Extract entities from doc_data
+        entities = doc_data.get("entities", {})
+
         # Prepare document for storage
         document = {
-            "content": metadata.get("text", ""),
+            "content": content,  # Enhanced extraction
             "title": metadata.get("source", "Untitled Document"),
             "document_type": document_type,
             "source": metadata.get("source", "unknown"),
             "word_count": metadata.get("word_count", 0),
             "sentence_count": metadata.get("sentence_count", 0),
-            "keywords": doc_data.get("entities", {}).get("keywords", []),
-            "org_entities": doc_data.get("entities", {}).get("organizations", []),
-            "person_entities": doc_data.get("entities", {}).get("persons", []),
-            "location_entities": doc_data.get("entities", {}).get("locations", []),
-            "extracted_risk_score": 50,  # Default value
+            "keywords": keywords,  # Now includes TF-IDF keywords if available
+            "org_entities": entities.get("organizations", []),
+            "person_entities": entities.get("persons", []),
+            "location_entities": entities.get("locations", []),
+            "crypto_entities": crypto_entities,
+            "extracted_risk_score": risk_score,
+            "extracted_date": metadata.get("document_date", datetime.now().isoformat())
         }
+        
+        # Add compliance data if available
+        if "compliance_data" in doc_data:
+            compliance = doc_data["compliance_data"]
+            if "compliance_level" in compliance:
+                document["compliance_level"] = compliance["compliance_level"]
+            if "regulatory_requirements" in compliance:
+                document["regulatory_requirements"] = compliance["regulatory_requirements"]
+        
+        # Add debug logging to verify document structure before storage
+        logger.debug(f"Storing document with title: {document['title']}")
+        logger.debug(f"Document keywords: {document['keywords']}")
         
         # Store document in Weaviate
         success = storage_manager.store_due_diligence_document(document)
         return success
     except Exception as e:
         logger.error(f"Error storing processed document: {e}")
+        logger.error(traceback.format_exc())
         return False

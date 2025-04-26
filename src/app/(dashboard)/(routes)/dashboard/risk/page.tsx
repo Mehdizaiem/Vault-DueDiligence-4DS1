@@ -175,7 +175,7 @@ export default function RiskDashboardPage() {
 
   return (
     <div className="p-8 space-y-6">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">📊 Risk Analysis Dashboard</h1>
+      <h1 className="text-3xl font-bold text-gray-800 mb-6">Risk Analysis Dashboard</h1>
 
       {error && <p className="text-red-600">{error}</p>}
 

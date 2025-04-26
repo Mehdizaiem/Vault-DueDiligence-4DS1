@@ -880,6 +880,23 @@ def create_risk_profiles_schema(client):
             logger.error(f"Failed to create {collection_name} collection: {e}", exc_info=True)
             raise
 
+def create_user_doc_risk_schema(client):
+    client.collections.create(
+        name="user_doc_risk",
+        description="Stores risk scores generated from UserDocuments",
+        vectorizer_config=Configure.Vectorizer.none(),
+        properties=[
+            {"name": "document_id", "dataType": [DataType.TEXT]},
+            {"name": "user_id", "dataType": [DataType.TEXT]},
+            {"name": "title", "dataType": [DataType.TEXT]},
+            {"name": "upload_date", "dataType": [DataType.TEXT]},
+            {"name": "risk_score", "dataType": [DataType.NUMBER]},
+            {"name": "risk_category", "dataType": [DataType.TEXT]},
+            {"name": "risk_factors", "dataType": [DataType.TEXT_ARRAY]}
+        ]
+    )
+
+
 def setup_all_schemas(client):
     """Setup all required schemas"""
     try:
@@ -892,6 +909,8 @@ def setup_all_schemas(client):
         create_forecast_schema(client)
         create_user_qa_history_schema(client)
         create_risk_profiles_schema(client)
+        create_user_doc_risk_schema(client)
+
         logger.info("✅ All collections created successfully")
         return True
     except Exception as e:

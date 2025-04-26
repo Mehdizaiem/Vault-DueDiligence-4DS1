@@ -1562,7 +1562,7 @@ def main():
             logger.info("Connected to Weaviate for data operations")
         
         # Load combined data from CSV and API with sentiment if requested
-        data = load_combined_data(args.symbol, lookback_days=args.lookback, api_days=365)
+        data = load_combined_data(args.symbol, lookback_days=args.lookback, api_days=365, include_sentiment=args.use_sentiment)
         
         if data is None:
             logger.error(f"Failed to load data for {args.symbol}")

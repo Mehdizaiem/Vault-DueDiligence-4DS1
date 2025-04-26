@@ -39,9 +39,117 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+class ChronosForecaster:
+    """
+    A class for forecasting cryptocurrency prices using Amazon's Chronos model.
+    """
+    def __init__(self, model_name="amazon/chronos-t5-small", use_gpu=True):
+        """
+        Initialize the Chronos forecaster.
+        
+        Args:
+            model_name (str): Name of the Chronos model to use
+            use_gpu (bool): Whether to use GPU for inference
+        """
+        self.model_name = model_name
+        self.use_gpu = use_gpu
+        
+        # Initialize the model
+        try:
+            from chronos import BaseChronosPipeline
+            
+            # Determine torch dtype
+            if use_gpu and torch.cuda.is_available():
+                torch_dtype = torch.bfloat16
+                device_map = "auto"
+            else:
+                torch_dtype = torch.float32
+                device_map = "cpu"
+            
+            logger.info(f"Loading Chronos model: {model_name}")
+            self.model = BaseChronosPipeline.from_pretrained(
+                model_name,
+                device_map=device_map,
+                torch_dtype=torch_dtype
+            )
+            
+        except Exception as e:
+            logger.error(f"Error initializing Chronos model: {e}")
+            raise
+    
+    def forecast(self, data, prediction_length=7, num_samples=100, quantile_levels=[0.1, 0.5, 0.9]):
+        """
+        Generate a forecast using the Chronos model.
+        
+        Args:
+            data (pd.DataFrame): Historical price data
+            prediction_length (int): Number of days to forecast
+            num_samples (int): Number of samples for uncertainty quantification
+            quantile_levels (list): Quantile levels to compute
+            
+        Returns:
+            dict: Forecast results including quantiles and samples
+        """
+        try:
+            # Get the last context_length points for prediction
+            context = torch.tensor(data['normalized_price'].values[-30:], dtype=torch.float32).reshape(1, -1)
+            
+            # Generate samples
+            samples = self.model.predict(
+                context=context,
+                prediction_length=prediction_length,
+                num_samples=num_samples
+            )
+            
+            # Get quantiles
+            quantiles, mean = self.model.predict_quantiles(
+                context=context,
+                prediction_length=prediction_length,
+                quantile_levels=quantile_levels
+            )
+            
+            # Generate forecast dates
+            last_date = data.index[-1]
+            forecast_dates = [last_date + timedelta(days=i+1) for i in range(prediction_length)]
+            
+            # Prepare results
+            results = {
+                'dates': forecast_dates,
+                'samples': samples,
+                'quantiles': quantiles,
+                'quantile_levels': quantile_levels,
+                'mean': mean
+            }
+            
+            return results
+            
+        except Exception as e:
+            logger.error(f"Error generating forecast: {e}")
+            raise
+
+def find_project_root():
+    """Find the project root directory that contains the data folder."""
+    current_dir = os.path.abspath(os.path.dirname(__file__))
+    test_dirs = [
+        current_dir,
+        os.path.dirname(current_dir),
+        os.path.dirname(os.path.dirname(current_dir))
+    ]
+    
+    for directory in test_dirs:
+        data_dir = os.path.join(directory, 'data')
+        if os.path.exists(data_dir) and os.path.isdir(data_dir):
+            return directory
+    
+    return current_dir
+
+# Find project root
+PROJECT_ROOT = find_project_root()
+logger.info(f"Using project root: {PROJECT_ROOT}")
+
 # Add project root to path
-project_root = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(project_root)
+if PROJECT_ROOT not in sys.path:
+    sys.path.append(PROJECT_ROOT)
 
 def check_chronos_availability():
     """Check if Chronos package is installed and install if needed."""
@@ -181,6 +289,9 @@ def find_csv_file(symbol, data_dir="data/time series cryptos"):
     Returns:
         str: Path to the CSV file or None if not found
     """
+    # Find project root
+    project_root = find_project_root()
+    
     # Normalize path
     data_dir = os.path.join(project_root, data_dir)
     
@@ -211,13 +322,6 @@ def find_csv_file(symbol, data_dir="data/time series cryptos"):
 def load_csv_data(file_path, lookback_days=365):
     """
     Load cryptocurrency data from a CSV file with automatic format detection.
-    
-    Args:
-        file_path (str): Path to CSV file
-        lookback_days (int): Number of days of historical data to use
-        
-    Returns:
-        tuple: (DataFrame, data_type_info)
     """
     logger.info(f"Loading data from: {file_path}")
     filename = os.path.basename(file_path)
@@ -230,8 +334,8 @@ def load_csv_data(file_path, lookback_days=365):
         # Check for common delimiters
         delimiter = ',' if ',' in sample else ';' if ';' in sample else '\t'
         
-        # Try parsing with pandas
-        df = pd.read_csv(file_path, delimiter=delimiter)
+        # Try parsing with pandas, handling comma-separated numbers
+        df = pd.read_csv(file_path, delimiter=delimiter, thousands=',')
         
         # Look for date/timestamp column
         date_columns = ['Date', 'date', 'Timestamp', 'timestamp', 'Time', 'time', 'datetime']
@@ -243,24 +347,14 @@ def load_csv_data(file_path, lookback_days=365):
                 break
         
         if date_col is None:
-            # Try to find a column that looks like a date
-            for col in df.columns:
-                if df[col].dtype == 'object':
-                    # Check first value to see if it looks like a date
-                    first_val = str(df[col].iloc[0])
-                    if re.search(r'\d{1,4}[-/]\d{1,2}[-/]\d{1,4}', first_val) or re.search(r'\d{2}:\d{2}', first_val):
-                        date_col = col
-                        break
-        
-        if date_col is None:
             logger.warning("No date column found, using row index")
             df['timestamp'] = pd.date_range(end=datetime.now(), periods=len(df))
         else:
-            # Try to parse the date column
+            # Try to parse the date column with specific format first
             try:
-                df['timestamp'] = pd.to_datetime(df[date_col])
+                df['timestamp'] = pd.to_datetime(df[date_col], format='%m/%d/%Y')
             except Exception as e:
-                logger.warning(f"Error parsing date column: {e}")
+                logger.warning(f"Error parsing date column with specific format: {e}")
                 # Try multiple date formats
                 for date_format in ['%Y-%m-%d', '%d/%m/%Y', '%m/%d/%Y', '%Y/%m/%d']:
                     try:
@@ -277,24 +371,81 @@ def load_csv_data(file_path, lookback_days=365):
         # Set timestamp as index
         df = df.set_index('timestamp')
         
+        # Look for price columns
+        price_columns = ['price', 'close', 'Close', 'last', 'Last', 'Price', 'value', 'Value']
+        price_col = None
+        
+        for col in price_columns:
+            if col in df.columns:
+                price_col = col
+                break
+        
+        if price_col is None:
+            # Try to find a column that might contain price data
+            numeric_cols = df.select_dtypes(include=[np.number]).columns
+            if len(numeric_cols) > 0:
+                price_col = numeric_cols[0]
+                logger.warning(f"No clear price column found, using first numeric column: {price_col}")
+            else:
+                logger.error("No numeric columns found for price data")
+                return None
+        
+        # Create a standardized 'price' column
+        if price_col != 'price':
+            df['price'] = df[price_col]
+        
+        # Fill any NaNs using forward and backward fill
+        df['price'] = df['price'].ffill().bfill()
+        
+        # Extract base and quote currency from filename
+        base_currency = "Unknown"
+        quote_currency = "Unknown"
+        
+        # Detect if this is USD or BTC denominated
+        mean_price = df['price'].mean()
+        
+        if 'BTC' in filename or mean_price < 0.1:
+            logger.info(f"Detected BTC denomination (mean price: {mean_price:.6f} BTC)")
+            price_denomination = "BTC"
+            currency_symbol = "₿"
+        else:
+            logger.info(f"Detected USD denomination (mean price: ${mean_price:.2f})")
+            price_denomination = "USD"
+            currency_symbol = "$"
+        
         # Sort by index
         df = df.sort_index()
-        
-        # Detect data type and price format
-        data_type_info = detect_data_type(df, filename)
         
         # Extract the lookback period
         if len(df) > lookback_days:
             df = df.iloc[-lookback_days:]
         
+        # Normalize prices to improve training stability
+        price_mean = df['price'].mean()
+        price_std = df['price'].std()
+        df['normalized_price'] = (df['price'] - price_mean) / price_std
+        
+        # Add metadata to DataFrame
+        df.attrs['currency_symbol'] = currency_symbol
+        df.attrs['price_denomination'] = price_denomination
+        df.attrs['mean_price'] = mean_price
+        df.attrs['median_price'] = df['price'].median()
+        df.attrs['filename'] = filename
+        df.attrs['price_mean'] = price_mean
+        df.attrs['price_std'] = price_std
+        
+        # Log the first and last row for verification
+        logger.info(f"First row: {df.iloc[0]['price']} at {df.index[0]}")
+        logger.info(f"Last row: {df.iloc[-1]['price']} at {df.index[-1]}")
         logger.info(f"Loaded {len(df)} data points from CSV")
-        return df, data_type_info
+        
+        return df
         
     except Exception as e:
         logger.error(f"Error loading CSV file: {e}")
         import traceback
         logger.error(traceback.format_exc())
-        return None, None
+        return None
 
 def load_time_series_data(symbol, lookback_days=365, use_csv=True):
     """
@@ -314,7 +465,22 @@ def load_time_series_data(symbol, lookback_days=365, use_csv=True):
         # Find a CSV file for this symbol
         csv_file = find_csv_file(symbol)
         if csv_file:
-            return load_csv_data(csv_file, lookback_days)
+            data = load_csv_data(csv_file, lookback_days)
+            if data is not None:
+                # Create data_type_info from DataFrame attributes
+                data_info = {
+                    "type": f"{symbol}",
+                    "base_currency": symbol.split('_')[0],
+                    "quote_currency": symbol.split('_')[1] if '_' in symbol else "USD",
+                    "denomination": data.attrs.get('price_denomination', 'USD'),
+                    "scale": 1.0,
+                    "symbol": data.attrs.get('currency_symbol', '$'),
+                    "mean_price": data.attrs.get('mean_price', 0),
+                    "median_price": data.attrs.get('median_price', 0),
+                    "max_price": data['price'].max()
+                }
+                return data, data_info
+        logger.warning(f"Failed to load data from CSV for {symbol}")
     
     # If CSV loading failed or not requested, try Weaviate
     try:
@@ -347,11 +513,21 @@ def load_time_series_data(symbol, lookback_days=365, use_csv=True):
             # Sort by timestamp
             df = df.sort_index()
             
-            # Detect data type
-            data_type_info = detect_data_type(df, symbol)
+            # Create data_type_info
+            data_info = {
+                "type": f"{symbol}",
+                "base_currency": symbol.split('_')[0],
+                "quote_currency": symbol.split('_')[1] if '_' in symbol else "USD",
+                "denomination": "USD",
+                "scale": 1.0,
+                "symbol": "$",
+                "mean_price": df['price'].mean(),
+                "median_price": df['price'].median(),
+                "max_price": df['price'].max()
+            }
             
             logger.info(f"Loaded {len(df)} data points from Weaviate")
-            return df, data_type_info
+            return df, data_info
             
         finally:
             storage.close()
@@ -375,17 +551,11 @@ def generate_forecast(data, data_info, model_name, days_ahead, num_samples=100):
         tuple: (forecast_results, market_insights, plot_path)
     """
     try:
-        # Import the ChronosForecaster
-        from models.chronos.chronos_crypto_forecaster import ChronosForecaster
-        
-        # Check for GPU availability and set appropriate device
-        use_gpu = check_cuda_availability()
-        
         # Initialize the forecaster
         logger.info(f"Initializing Chronos forecaster with model: {model_name}")
         forecaster = ChronosForecaster(
             model_name=model_name,
-            use_gpu=use_gpu
+            use_gpu=True
         )
         
         # Generate forecast
@@ -742,7 +912,7 @@ def list_available_coins():
     Returns:
         list: List of available cryptocurrencies
     """
-    data_dir = os.path.join(project_root, "data", "time series cryptos")
+    data_dir = os.path.join(PROJECT_ROOT, "data", "time series cryptos")
     
     if not os.path.exists(data_dir):
         logger.error(f"Data directory not found: {data_dir}")

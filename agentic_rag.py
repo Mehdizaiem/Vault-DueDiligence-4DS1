@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 import time
 import threading
 import json
+import traceback
 from typing import Dict, List, Any, Optional, Union
 from Code.document_processing.integration import get_document_processor, store_processed_document
 
@@ -460,6 +461,25 @@ class CryptoDueDiligenceSystem:
         except Exception as e:
             logger.error(f"Error storing document: {e}")
             return False
+        
+    def find_similar_documents(self, query_text, top_n=5):
+        """Find documents similar to the given query text.
+        
+        Args:
+            query_text (str): Query text
+            top_n (int): Number of results to return
+            
+        Returns:
+            list: Similar documents
+        """
+        # Get all documents from Weaviate
+        documents = self.storage.retrieve_documents("", limit=100)  # Empty query to get all docs
+        
+        # Find similar documents using TF-IDF
+        from Code.document_processing.integration import find_similar_documents
+        similar_docs = find_similar_documents(query_text, documents, top_n)
+        
+        return similar_docs
     
     def _infer_document_type(self, filename: str) -> str:
         """

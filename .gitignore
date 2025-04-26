@@ -75,3 +75,4 @@ Code/document_processing/output/entity_relationships.gexf
 Sample_Data/data_ingestion/news_cache
 Sample_Data/data_ingestion/processed/crypto_news.csv
 Code/document_processing/tfidf_corpus.pkl
+output/processed_documents.json

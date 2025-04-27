@@ -6,7 +6,7 @@ import logging
 import pandas as pd
 import numpy as np
 from datetime import datetime
-from typing import List, Dict, Optional, Union
+from typing import Dict, Optional
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
 from nltk import download, data
 
@@ -90,20 +90,18 @@ def format_date_rfc3339(date_value):
 class CryptoSentimentAnalyzer:
     def __init__(self):
         logger.info("Initializing FinBERT sentiment pipeline...")
-        self.model_name = "yiyanghkust/finbert-tone"
-        
+        model_path = os.path.join(project_root, "models", "finbert_tone")
+        if not os.path.exists(model_path):
+            raise FileNotFoundError(f"Model path not found: {model_path}")
+
+        self.tokenizer = AutoTokenizer.from_pretrained(model_path)
+        self.model = AutoModelForSequenceClassification.from_pretrained(model_path)
+        self.pipeline = pipeline("sentiment-analysis", model=self.model, tokenizer=self.tokenizer)
+
         try:
-            self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
-            self.model = AutoModelForSequenceClassification.from_pretrained(self.model_name)
-            self.pipeline = pipeline("sentiment-analysis", model=self.model, tokenizer=self.tokenizer)
-            
-            try:
-                data.find("tokenizers/punkt")
-            except LookupError:
-                download("punkt")
-        except Exception as e:
-            logger.error(f"Error initializing sentiment analyzer: {e}")
-            raise
+            data.find("tokenizers/punkt")
+        except LookupError:
+            download("punkt")
 
     def analyze_text(self, text: str) -> Dict:
         text = preprocess_text(text)

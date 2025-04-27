@@ -87,3 +87,6 @@ output/processed_documents.json
 *.ico
 *.webp
 *.svg
+models/finbert-tone/pytorch_model.bin
+package-lock.json
+package.json

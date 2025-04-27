@@ -1,359 +1,598 @@
-"use client";
+'use client';
 
-import { useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
+import { Line, Pie } from 'react-chartjs-2';
 import { 
-  Newspaper, 
-  Search, 
-  Bell, 
-  Star, 
-  MessageSquare, 
-  Share2, 
-  BookmarkPlus,
-  TrendingUp,
-  Filter,
-  ChevronDown,
-  ExternalLink,
-  AlertCircle,
-  BarChart
-} from "lucide-react";
+  Chart as ChartJS, 
+  CategoryScale, 
+  LinearScale, 
+  BarElement, 
+  Title, 
+  Tooltip, 
+  Legend, 
+  PointElement, 
+  LineElement, 
+  ArcElement 
+} from 'chart.js';
 
-// Mock data for news articles
-const newsArticles = [
-  {
-    id: 1,
-    title: 'SEC Approves Multiple Bitcoin ETFs, Opening Doors for Institutional Investment',
-    source: 'CryptoNews',
-    category: 'Regulation',
-    date: '2025-04-18',
-    snippet: 'The Securities and Exchange Commission has approved several Bitcoin ETF applications, signaling a major shift in regulatory stance...',
-    image: '/crypto-news-1.jpg',
-    impact: 'high',
-    bookmarked: false,
-    commentCount: 24,
-    shareCount: 18
-  },
-  {
-    id: 2,
-    title: 'Ethereum Layer 2 Solutions See Record Growth as Gas Fees Decrease',
-    source: 'DeFi Insider',
-    category: 'Technology',
-    date: '2025-04-17',
-    snippet: 'Ethereum scaling solutions like Optimism and Arbitrum are experiencing unprecedented growth as users migrate to Layer 2 networks...',
-    image: '/crypto-news-2.jpg',
-    impact: 'medium',
-    bookmarked: true,
-    commentCount: 14,
-    shareCount: 9
-  },
-  {
-    id: 3,
-    title: 'Central Banks Worldwide Accelerate CBDC Development Efforts',
-    source: 'Global Finance',
-    category: 'CBDC',
-    date: '2025-04-16',
-    snippet: 'Central banks across the globe are intensifying their research and development of Central Bank Digital Currencies in response to...',
-    image: '/crypto-news-3.jpg',
-    impact: 'high',
-    bookmarked: false,
-    commentCount: 32,
-    shareCount: 27
-  },
-  {
-    id: 4,
-    title: 'Major DeFi Protocol Announces Governance Token to Decentralize Platform',
-    source: 'DeFi Daily',
-    category: 'DeFi',
-    date: '2025-04-15',
-    snippet: 'A leading decentralized finance protocol has announced the launch of its governance token, enabling community members to participate in decision-making...',
-    image: '/crypto-news-4.jpg',
-    impact: 'medium',
-    bookmarked: false,
-    commentCount: 19,
-    shareCount: 12
-  },
-  {
-    id: 5,
-    title: 'Bitcoin Mining Companies Shift to Renewable Energy Sources',
-    source: 'Crypto Environmental',
-    category: 'Mining',
-    date: '2025-04-14',
-    snippet: 'Major Bitcoin mining operations are rapidly transitioning to renewable energy sources amid growing environmental concerns and regulatory pressure...',
-    image: '/crypto-news-5.jpg',
-    impact: 'medium',
-    bookmarked: false,
-    commentCount: 27,
-    shareCount: 31
-  },
-  {
-    id: 6,
-    title: 'New Regulatory Framework for Crypto Assets Proposed by G20 Nations',
-    source: 'Global Policy',
-    category: 'Regulation',
-    date: '2025-04-13',
-    snippet: 'The G20 nations have jointly proposed a comprehensive regulatory framework for cryptocurrency assets, aiming to address issues of taxation, consumer protection...',
-    image: '/crypto-news-6.jpg',
-    impact: 'high',
-    bookmarked: true,
-    commentCount: 42,
-    shareCount: 38
-  }
-];
+// Register ChartJS components
+ChartJS.register(
+  CategoryScale, 
+  LinearScale, 
+  BarElement, 
+  Title, 
+  Tooltip, 
+  Legend, 
+  PointElement, 
+  LineElement,
+  ArcElement
+);
 
-// Mock data for trending topics
-const trendingTopics = [
-  'Bitcoin ETF', 'Layer 2 Scaling', 'CBDCs', 'DeFi Regulation', 
-  'Green Mining', 'Stablecoin Oversight', 'NFT Market Recovery'
-];
+type NewsItem = {
+  id?: string;
+  title: string;
+  source: string;
+  date: string;
+  content: string;
+  sentiment_label: string;
+  sentiment_score: number;
+  aspect?: string;
+  url?: string;
+  explanation?: string;
+  cryptocurrency?: string; // Added field for filtering
+};
 
-// Mock data for impact metrics
-const impactMetrics = [
-  {
-    label: 'Regulatory Updates',
-    count: 24,
-    change: '+8',
-    trend: 'up'
-  },
-  {
-    label: 'Market Events',
-    count: 37,
-    change: '+12',
-    trend: 'up'
-  },
-  {
-    label: 'Technology Updates',
-    count: 19,
-    change: '+5',
-    trend: 'up'
-  },
-  {
-    label: 'Security Incidents',
-    count: 7,
-    change: '-2',
-    trend: 'down'
-  }
-];
+// Number of items to load per infinite scroll trigger
+const LOAD_INCREMENT = 6;
 
-export default function NewsPage() {
-  const [selectedCategory, setSelectedCategory] = useState('All');
-  const categories = ['All', 'Regulation', 'Technology', 'CBDC', 'DeFi', 'Mining', 'Security'];
-  const [searchQuery, setSearchQuery] = useState('');
+export default function NewsDashboard() {
+  const [news, setNews] = useState<NewsItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState('all');
+  const [search, setSearch] = useState('');
+  const [displayCount, setDisplayCount] = useState(LOAD_INCREMENT);
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  const [activeTab, setActiveTab] = useState('news'); // Added for tab navigation
+  const [cryptoFilter, setCryptoFilter] = useState('all'); // For crypto type filtering
+  const [sourceFilter, setSourceFilter] = useState('all'); // For source filtering
   
-  // Filter articles based on selected category and search query
-  const filteredArticles = newsArticles.filter(article => {
-    const matchesCategory = selectedCategory === 'All' || article.category === selectedCategory;
-    const matchesSearch = searchQuery === '' || 
-      article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      article.snippet.toLowerCase().includes(searchQuery.toLowerCase());
+  // Refs for infinite scroll
+  const observer = useRef<IntersectionObserver | null>(null);
+  const lastNewsElementRef = useCallback((node: HTMLDivElement | null) => {
+    if (loading) return;
+    if (observer.current) observer.current.disconnect();
     
-    return matchesCategory && matchesSearch;
-  });
+    observer.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && filtered.length > displayCount) {
+        setDisplayCount(prevCount => prevCount + LOAD_INCREMENT);
+      }
+    });
+    
+    if (node) observer.current.observe(node);
+  }, [loading, displayCount]);
+
+  const toggleExpanded = (id: string) => {
+    setExpanded(prev => {
+      const newSet = new Set(prev);
+      newSet.has(id) ? newSet.delete(id) : newSet.add(id);
+      return newSet;
+    });
+  };
+
+  useEffect(() => {
+    fetchNews();
+  }, []);
+
+  const fetchNews = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/news_sentiment');
+      const data = await res.json();
+      if (Array.isArray(data.articles)) setNews(data.articles);
+    } catch (err) {
+      console.error('Fetch failed', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRefresh = async () => {
+    setLoading(true);
+    try {
+      await fetch('/api/refresh_news');
+      await fetchNews();
+    } catch (err) {
+      console.error('Refresh failed:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatDate = (d: string) => {
+    const date = new Date(d);
+    return isNaN(date.getTime()) ? 'N/A' : date.toLocaleDateString();
+  };
+
+  const getSentimentColor = (s?: string) =>
+    s?.toLowerCase().includes('positive') ? 'emerald'
+    : s?.toLowerCase().includes('negative') ? 'rose'
+    : 'amber';
   
+
+  // All available cryptocurrencies
+  const cryptocurrencies = ['Bitcoin', 'Ethereum', 'XRP', 'BNB', 'SOL', 'DOGE', 'ADA', 'LINK', 'AVAX'];
+  
+  // All available news sources
+  const newsSources = Array.from(new Set(news.map(item => item.source))).sort();
+
+  // Filtering logic with added filters
+  const filtered = news.filter(item => {
+    const textMatch = 
+      item.title?.toLowerCase().includes(search.toLowerCase()) ||
+      item.content?.toLowerCase().includes(search.toLowerCase());
+    
+    const sentimentMatch = 
+      filter === 'all' ? true : item.sentiment_label?.toLowerCase() === filter;
+
+    const cryptoMatch = 
+      cryptoFilter === 'all' ? true : 
+      (item.cryptocurrency?.toLowerCase() === cryptoFilter.toLowerCase() ||
+       item.title?.toLowerCase().includes(cryptoFilter.toLowerCase()) ||
+       item.content?.toLowerCase().includes(cryptoFilter.toLowerCase()));
+
+    const sourceMatch = 
+      sourceFilter === 'all' ? true : item.source === sourceFilter;
+      
+    return textMatch && sentimentMatch && cryptoMatch && sourceMatch;
+  });
+
+  // Items for display with infinite scroll
+  const displayItems = filtered.slice(0, displayCount);
+
+  // Function to export data as CSV
+  const exportCSV = () => {
+    const headers = ['Title', 'Source', 'Date', 'Sentiment', 'Score', 'Content', 'URL'];
+    const csvContent = filtered.map(item => 
+      [
+        `"${item.title.replace(/"/g, '""')}"`,
+        item.source,
+        item.date,
+        item.sentiment_label,
+        item.sentiment_score,
+        `"${item.content.replace(/"/g, '""')}"`,
+        item.url || ''
+      ].join(',')
+    );
+    
+    const csv = [headers.join(','), ...csvContent].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `crypto_news_sentiment_${new Date().toISOString().split('T')[0]}.csv`);
+    link.click();
+  };
+
+  // Function to export data as JSON
+  const exportJSON = () => {
+    const dataStr = JSON.stringify(filtered, null, 2);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `crypto_news_sentiment_${new Date().toISOString().split('T')[0]}.json`);
+    link.click();
+  };
+
+  // For sentiment visualization 
+  const sentimentCounts = {
+    positive: filtered.filter(item => item.sentiment_label?.toLowerCase().includes('positive')).length,
+    neutral: filtered.filter(item => item.sentiment_label?.toLowerCase().includes('neutral')).length,
+    negative: filtered.filter(item => item.sentiment_label?.toLowerCase().includes('negative')).length
+  };
+  
+
+  // Group by date for trend chart
+  const sentimentByDate = filtered.reduce((acc, item) => {
+    const date = item.date.split('T')[0];
+    if (!acc[date]) {
+      acc[date] = { positive: 0, neutral: 0, negative: 0, total: 0 };
+    }
+    
+    if (item.sentiment_label?.toLowerCase().includes('positive')) {
+      acc[date].positive++;
+    } else if (item.sentiment_label?.toLowerCase().includes('negative')) {
+      acc[date].negative++;
+    } else {
+      acc[date].neutral++;
+    }
+    
+    
+    acc[date].total++;
+    return acc;
+  }, {} as Record<string, { positive: number, neutral: number, negative: number, total: number }>);
+
+  // Sort dates for trend chart
+  const sortedDates = Object.keys(sentimentByDate).sort();
+
+  // Chart data
+  const pieChartData = {
+    labels: ['Positive', 'Neutral', 'Negative'],
+    datasets: [
+      {
+        data: [sentimentCounts.positive, sentimentCounts.neutral, sentimentCounts.negative],
+        backgroundColor: ['rgba(52, 211, 153, 0.8)', 'rgba(251, 191, 36, 0.8)', 'rgba(239, 68, 68, 0.8)'],
+        borderColor: ['rgb(16, 185, 129)', 'rgb(245, 158, 11)', 'rgb(220, 38, 38)'],
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const trendChartData = {
+    labels: sortedDates,
+    datasets: [
+      {
+        label: 'Positive',
+        data: sortedDates.map(date => sentimentByDate[date].positive),
+        borderColor: 'rgb(16, 185, 129)',
+        backgroundColor: 'rgba(52, 211, 153, 0.5)',
+        tension: 0.2,
+      },
+      {
+        label: 'Neutral',
+        data: sortedDates.map(date => sentimentByDate[date].neutral),
+        borderColor: 'rgb(245, 158, 11)',
+        backgroundColor: 'rgba(251, 191, 36, 0.5)',
+        tension: 0.2,
+      },
+      {
+        label: 'Negative',
+        data: sortedDates.map(date => sentimentByDate[date].negative),
+        borderColor: 'rgb(220, 38, 38)',
+        backgroundColor: 'rgba(239, 68, 68, 0.5)',
+        tension: 0.2,
+      },
+    ],
+  };
+
   return (
-    <div className="flex-1 p-8 pt-6">
-      <div className="space-y-6">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <h2 className="text-3xl font-bold tracking-tight">Crypto News</h2>
-            <p className="text-muted-foreground">
-              Latest news, regulatory updates, and market events
-            </p>
-          </div>
-          
-          <div className="flex items-center gap-3">
-            <div className="relative w-full md:w-auto">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-              <input 
-                type="text" 
-                placeholder="Search news..." 
-                className="pl-9 pr-4 py-2 border rounded-lg text-sm w-full md:w-64"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-            
-            <button className="flex items-center gap-2 bg-white border px-4 py-2 rounded-lg text-sm hover:bg-gray-50">
-              <Bell size={16} />
-              <span className="hidden md:inline">Alerts</span>
-            </button>
-            
-            <button className="flex items-center gap-2 bg-white border px-4 py-2 rounded-lg text-sm hover:bg-gray-50">
-              <Filter size={16} />
-              <span className="hidden md:inline">Filter</span>
-              <ChevronDown size={16} className="md:ml-1" />
-            </button>
-          </div>
-        </div>
-        
-        {/* Impact Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {impactMetrics.map((metric) => (
-            <div key={metric.label} className="bg-white p-4 rounded-xl border shadow-sm">
-              <div className="flex justify-between items-start">
-                <p className="text-sm text-gray-500">{metric.label}</p>
-                <div className={`rounded-full p-1 ${
-                  metric.trend === 'up' ? 'bg-blue-100' : 'bg-gray-100'
-                }`}>
-                  {metric.trend === 'up' ? (
-                    <TrendingUp className="h-4 w-4 text-blue-600" />
-                  ) : (
-                    <TrendingUp className="h-4 w-4 text-gray-500 rotate-180" />
-                  )}
-                </div>
-              </div>
-              <div className="flex items-end mt-2">
-                <span className="text-2xl font-bold">{metric.count}</span>
-                <span className={`text-xs ml-2 ${
-                  metric.trend === 'up' 
-                    ? 'text-green-600' 
-                    : 'text-red-600'
-                }`}>
-                  {metric.change}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-        
-        {/* Category Pills */}
-        <div className="flex flex-wrap gap-2">
-          {categories.map((category) => (
+    <main className="bg-gray-50 min-h-screen">
+      <div className="max-w-6xl mx-auto p-6">
+        {/* Header */}
+        <header className="mb-6">
+          <div className="flex justify-center items-center gap-4 mb-3">
+            <h1 className="text-3xl font-bold text-gray-800 flex items-center gap-2">
+              📊 Crypto News Sentiment Dashboard
+            </h1>
             <button
-              key={category}
-              onClick={() => setSelectedCategory(category)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                selectedCategory === category
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-white border hover:bg-gray-50 text-gray-700'
-              }`}
+              onClick={handleRefresh}
+              disabled={loading}
+              className="bg-blue-100 text-blue-800 px-3 py-1.5 rounded-lg hover:bg-blue-200 transition"
             >
-              {category}
+              🔄
             </button>
-          ))}
-        </div>
-        
-        {/* News Feed Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-7 gap-6">
-          {/* Main News Feed */}
-          <div className="lg:col-span-5 space-y-6">
-            {filteredArticles.length > 0 ? (
-              filteredArticles.map((article) => (
-                <article key={article.id} className="bg-white rounded-xl border shadow-sm overflow-hidden">
-                  <div className="p-6">
-                    <div className="flex justify-between items-start mb-3">
-                      <div className="flex items-center gap-2">
-                        <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                          article.impact === 'high' 
-                            ? 'bg-red-100 text-red-700' 
-                            : article.impact === 'medium'
-                            ? 'bg-yellow-100 text-yellow-700'
-                            : 'bg-green-100 text-green-700'
-                        }`}>
-                          {article.impact.charAt(0).toUpperCase() + article.impact.slice(1)} Impact
-                        </span>
-                        <span className="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-700">
-                          {article.category}
-                        </span>
-                      </div>
-                      <span className="text-xs text-gray-500">{article.date}</span>
-                    </div>
-                    
-                    <h3 className="text-lg font-semibold mb-2">{article.title}</h3>
-                    <p className="text-gray-600 text-sm mb-4">{article.snippet}</p>
-                    
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1">
-                        <span className="text-sm font-medium">{article.source}</span>
-                        <ExternalLink size={14} className="text-gray-400" />
-                      </div>
-                      
-                      <div className="flex items-center gap-3">
-                        <button className="text-gray-400 hover:text-gray-600">
-                          <MessageSquare size={18} />
-                        </button>
-                        <button className="text-gray-400 hover:text-gray-600">
-                          <Share2 size={18} />
-                        </button>
-                        <button className={`${
-                          article.bookmarked ? 'text-blue-500' : 'text-gray-400 hover:text-gray-600'
-                        }`}>
-                          <BookmarkPlus size={18} />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </article>
-              ))
-            ) : (
-              <div className="bg-white rounded-xl border shadow-sm p-8 text-center">
-                <Newspaper className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                <h3 className="text-lg font-medium text-gray-700 mb-1">No news articles found</h3>
-                <p className="text-gray-500 text-sm">
-                  Try adjusting your filters or search criteria
-                </p>
-              </div>
-            )}
           </div>
-          
-          {/* Sidebar */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Trending Topics */}
-            <div className="bg-white rounded-xl border shadow-sm p-5">
-              <div className="flex items-center gap-2 mb-4">
-                <TrendingUp className="h-5 w-5 text-blue-500" />
-                <h3 className="font-semibold">Trending Topics</h3>
-              </div>
-              <div className="space-y-2">
-                {trendingTopics.map((topic, index) => (
-                  <div 
-                    key={index} 
-                    className="px-3 py-2 rounded-lg text-sm hover:bg-gray-50 cursor-pointer transition-colors flex items-center justify-between"
-                  >
-                    <span>{topic}</span>
-                    {index < 3 && <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />}
-                  </div>
-                ))}
-              </div>
-            </div>
+
+          {/* Tabs */}
+          <div className="border-b border-gray-200 mb-4">
+            <ul className="flex flex-wrap -mb-px">
+              <li className="mr-2">
+                <button 
+                  onClick={() => setActiveTab('news')}
+                  className={`inline-block py-2 px-4 text-sm font-medium ${
+                    activeTab === 'news'
+                    ? 'text-blue-600 border-b-2 border-blue-600'
+                    : 'text-gray-500 hover:text-gray-600 hover:border-gray-300'
+                  }`}
+                >
+                  News Feed
+                </button>
+              </li>
+              <li className="mr-2">
+                <button 
+                  onClick={() => setActiveTab('analytics')}
+                  className={`inline-block py-2 px-4 text-sm font-medium ${
+                    activeTab === 'analytics'
+                    ? 'text-blue-600 border-b-2 border-blue-600'
+                    : 'text-gray-500 hover:text-gray-600 hover:border-gray-300'
+                  }`}
+                >
+                  Sentiment Analytics
+                </button>
+              </li>
+            </ul>
+          </div>
+
+          {/* Search and Filters */}
+          <div className="flex flex-wrap gap-4 items-center justify-between mb-4">
+            <input
+              type="text"
+              placeholder="🔍 Search title or content..."
+              className="flex-1 p-2 border rounded-lg shadow-sm"
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setDisplayCount(LOAD_INCREMENT);
+              }}
+            />
             
-            {/* News Impact Chart */}
-            <div className="bg-white rounded-xl border shadow-sm p-5">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <BarChart className="h-5 w-5 text-indigo-500" />
-                  <h3 className="font-semibold">Market Impact</h3>
-                </div>
-                <button className="text-xs text-gray-500 hover:text-gray-700">
-                  Last 7 days
+            <div className="flex flex-wrap gap-2">
+              {/* Export buttons */}
+              <div className="bg-white p-2 rounded-lg shadow-sm flex gap-2">
+                <button 
+                  onClick={exportCSV}
+                  className="px-3 py-1 text-sm font-medium bg-green-100 text-green-800 hover:bg-green-200 rounded-md"
+                >
+                  Export CSV
+                </button>
+                <button 
+                  onClick={exportJSON}
+                  className="px-3 py-1 text-sm font-medium bg-purple-100 text-purple-800 hover:bg-purple-200 rounded-md"
+                >
+                  Export JSON
                 </button>
               </div>
-              
-              {/* Chart placeholder */}
-              <div className="h-48 bg-gray-50 rounded-lg border border-dashed flex items-center justify-center mb-3">
-                <div className="text-center p-4">
-                  <p className="text-gray-500 text-sm">Market impact visualization</p>
-                  <p className="text-gray-400 text-xs mt-1">Connect to data source</p>
-                </div>
-              </div>
-            </div>
-            
-            {/* Important Alert */}
-            <div className="bg-amber-50 rounded-xl border border-amber-200 p-5">
-              <div className="flex items-start gap-3">
-                <AlertCircle className="h-5 w-5 text-amber-500 mt-0.5" />
-                <div>
-                  <h3 className="font-semibold text-amber-800 mb-1">Regulatory Alert</h3>
-                  <p className="text-amber-700 text-sm">
-                    New compliance requirements for crypto exchanges take effect next month.
-                  </p>
-                  <button className="mt-3 text-sm text-amber-800 font-medium hover:text-amber-900">
-                    View Details
-                  </button>
-                </div>
-              </div>
             </div>
           </div>
-        </div>
+
+          {/* Additional Filters */}
+          <div className="bg-white p-4 rounded-lg shadow-sm mb-4 flex flex-wrap gap-4">
+            {/* Sentiment Filter */}
+            <div>
+              <span className="text-sm text-gray-600 mr-2">Sentiment:</span>
+              {['all', 'positive', 'neutral', 'negative'].map(type => (
+                <button
+                  key={type}
+                  onClick={() => {
+                    setFilter(type);
+                    setDisplayCount(LOAD_INCREMENT);
+                  }}
+                  className={`px-3 py-1 text-sm font-medium ${
+                    filter === type
+                      ? 'bg-blue-100 text-blue-800'
+                      : 'bg-white text-gray-700 hover:bg-gray-100'
+                  } rounded-md mx-1`}
+                >
+                  {type.charAt(0).toUpperCase() + type.slice(1)}
+                </button>
+              ))}
+            </div>
+
+            {/* Cryptocurrency Filter */}
+            <div>
+              <span className="text-sm text-gray-600 mr-2">Cryptocurrency:</span>
+              <select
+                value={cryptoFilter}
+                onChange={(e) => {
+                  setCryptoFilter(e.target.value);
+                  setDisplayCount(LOAD_INCREMENT);
+                }}
+                className="px-3 py-1 text-sm font-medium bg-white border rounded-md"
+              >
+                <option value="all">All Cryptocurrencies</option>
+                {cryptocurrencies.map(crypto => (
+                  <option key={crypto} value={crypto}>{crypto}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Source Filter */}
+            <div>
+              <span className="text-sm text-gray-600 mr-2">Source:</span>
+              <select
+                value={sourceFilter}
+                onChange={(e) => {
+                  setSourceFilter(e.target.value);
+                  setDisplayCount(LOAD_INCREMENT);
+                }}
+                className="px-3 py-1 text-sm font-medium bg-white border rounded-md"
+              >
+                <option value="all">All Sources</option>
+                {newsSources.map(source => (
+                  <option key={source} value={source}>{source}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </header>
+
+        {/* Loader */}
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+          </div>
+        ) : (
+          <>
+            {activeTab === 'news' ? (
+              /* Articles Grid */
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {displayItems.map((item, idx) => {
+                    const sentimentColor = getSentimentColor(item.sentiment_label);
+                    const isLastElement = idx === displayItems.length - 1;
+                    
+                    return (
+                      <div
+                        key={item.id || idx}
+                        ref={isLastElement ? lastNewsElementRef : null}
+                        className="bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition"
+                      >
+                        <div className="px-6 py-4">
+                          <div className="flex justify-between items-start mb-2">
+                            <h2 className="font-bold text-xl text-gray-800">{item.title}</h2>
+                            <span className="text-xs bg-gray-100 px-2 py-1 rounded-full text-gray-700">{item.source}</span>
+                          </div>
+                          <p className="text-gray-600 mb-3 line-clamp-3">{item.content}</p>
+
+                          <div className="flex flex-wrap gap-2 mb-3 text-sm">
+                          {item.sentiment_label && (
+  <span className={`bg-${sentimentColor}-100 text-${sentimentColor}-800 px-2 py-1 rounded-full`}>
+    {item.sentiment_label}
+  </span>
+)}
+
+{item.sentiment_score != null && !isNaN(item.sentiment_score) && (
+  <span className={`bg-${sentimentColor}-200 text-${sentimentColor}-900 px-2 py-1 rounded-full`}>
+    Score: {item.sentiment_score.toFixed(2)}
+  </span>
+)}
+
+
+                            {item.aspect && (
+                              <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded-full">
+                                {item.aspect}
+                              </span>
+                            )}
+                            {item.cryptocurrency && (
+                              <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                                {item.cryptocurrency}
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Explanation toggle */}
+                          {item.explanation && (
+                            <button
+                              onClick={() => toggleExpanded(item.id || idx.toString())}
+                              className="text-sm text-blue-600 hover:underline"
+                            >
+                              {expanded.has(item.id || idx.toString()) ? "Hide Explanation" : "Show Explanation"}
+                            </button>
+                          )}
+                          {expanded.has(item.id || idx.toString()) && (
+                            <p className="text-sm text-gray-700 mt-2 italic">{item.explanation}</p>
+                          )}
+                        </div>
+
+                        <div className="bg-gray-50 px-6 py-3 flex justify-between items-center border-t">
+                          <span className="text-xs text-gray-500">{formatDate(item.date)}</span>
+                          {item.url && (
+                            <a
+                              href={item.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 text-sm hover:underline"
+                            >
+                              Read more →
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                
+                {/* Loading indicator for infinite scroll */}
+                {displayCount < filtered.length && (
+                  <div className="flex justify-center my-6">
+                    <div className="animate-pulse text-gray-500">Loading more...</div>
+                  </div>
+                )}
+                
+                {/* No results message */}
+                {filtered.length === 0 && (
+                  <div className="text-center py-10">
+                    <p className="text-gray-500 text-xl">No news items match your current filters</p>
+                  </div>
+                )}
+              </>
+            ) : (
+              /* Analytics View */
+              <div className="bg-white rounded-xl shadow-md p-6">
+                <h2 className="text-2xl font-bold text-gray-800 mb-6">Sentiment Analysis</h2>
+                
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  {/* Pie Chart */}
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h3 className="text-lg font-medium text-gray-700 mb-4">Sentiment Distribution</h3>
+                    <div className="h-64">
+                      <Pie 
+                        data={pieChartData} 
+                        options={{
+                          plugins: {
+                            legend: {
+                              position: 'right',
+                            },
+                            tooltip: {
+                              callbacks: {
+                                label: function(tooltipItem) {
+                                  const value = tooltipItem.raw as number;
+                                  const total = sentimentCounts.positive + sentimentCounts.neutral + sentimentCounts.negative;
+                                  const percentage = Math.round((value / total) * 100);
+                                  return `${tooltipItem.label}: ${value} (${percentage}%)`;
+                                }
+                              }
+                            }
+                          },
+                          maintainAspectRatio: false,
+                        }}
+                      />
+                    </div>
+                  </div>
+                  
+                  {/* Trend Chart */}
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h3 className="text-lg font-medium text-gray-700 mb-4">Sentiment Trends Over Time</h3>
+                    <div className="h-64">
+                      <Line 
+                        data={trendChartData}
+                        options={{
+                          plugins: {
+                            legend: {
+                              position: 'top',
+                            },
+                          },
+                          scales: {
+                            y: {
+                              beginAtZero: true
+                            }
+                          },
+                          maintainAspectRatio: false,
+                        }}
+                      />
+                    </div>
+                  </div>
+                  
+                  {/* Summary Statistics */}
+                  <div className="lg:col-span-2 mt-4">
+                    <h3 className="text-lg font-medium text-gray-700 mb-4">Summary Statistics</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="bg-green-50 p-4 rounded-lg border border-green-100">
+                        <h4 className="text-green-800 font-medium">Positive News</h4>
+                        <p className="text-3xl font-bold text-green-600">{sentimentCounts.positive}</p>
+                        <p className="text-sm text-green-700">
+                          {Math.round(sentimentCounts.positive / filtered.length * 100) || 0}% of total
+                        </p>
+                      </div>
+                      
+                      <div className="bg-amber-50 p-4 rounded-lg border border-amber-100">
+                        <h4 className="text-amber-800 font-medium">Neutral News</h4>
+                        <p className="text-3xl font-bold text-amber-600">{sentimentCounts.neutral}</p>
+                        <p className="text-sm text-amber-700">
+                          {Math.round(sentimentCounts.neutral / filtered.length * 100) || 0}% of total
+                        </p>
+                      </div>
+                      
+                      <div className="bg-rose-50 p-4 rounded-lg border border-rose-100">
+                        <h4 className="text-rose-800 font-medium">Negative News</h4>
+                        <p className="text-3xl font-bold text-rose-600">{sentimentCounts.negative}</p>
+                        <p className="text-sm text-rose-700">
+                          {Math.round(sentimentCounts.negative / filtered.length * 100) || 0}% of total
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+
+        <footer className="mt-10 text-center text-sm text-gray-500">
+          <p>Last updated: {new Date().toLocaleDateString()}</p>
+        </footer>
       </div>
-    </div>
+    </main>
   );
 }

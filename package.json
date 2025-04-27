@@ -38,13 +38,12 @@
     "weaviate-ts-client": "^2.2.0"
   },
   "devDependencies": {
+    "@types/csv-parse": "^1.1.12",
     "@types/node": "16.18.11",
     "@types/papaparse": "^5.3.15",
     "@types/react": "18.0.26",
     "@types/react-dom": "18.0.10",
-    "@types/uuid": "^10.0.0",
-    "@typescript-eslint/eslint-plugin": "5.62.0",
-    "@typescript-eslint/parser": "5.62.0",
+    "@types/three": "^0.176.0",
     "autoprefixer": "^10.4.17",
     "eslint": "8.47.0",
     "eslint-config-next": "13.5.8",

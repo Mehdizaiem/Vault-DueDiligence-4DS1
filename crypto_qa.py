@@ -4,12 +4,12 @@ import logging
 import sys
 import json
 import re
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Any, Optional, Union, Tuple, Set
+from typing import Dict, List, Optional
 import requests
 import traceback
-import numpy as np
+# Removed unused import
 
 # Configure logging
 logging.basicConfig(
@@ -636,7 +636,7 @@ class RetrievalEngine:
         
         return results
     
-    def _retrieve_market_data(self, question: str, analysis: Dict) -> Dict[str, List[Dict]]:
+    def _retrieve_market_data(self, analysis: Dict) -> Dict[str, List[Dict]]:
         """Specialized retrieval for market data questions."""
         results = {}
         
@@ -822,7 +822,7 @@ class RetrievalEngine:
         except Exception:
             return 0
     
-    def _retrieve_sentiment_data(self, question: str, analysis: Dict) -> Dict[str, List[Dict]]:
+    def _retrieve_sentiment_data(self, analysis: Dict) -> Dict[str, List[Dict]]:
         """Specialized retrieval for sentiment analysis questions."""
         results = {}
         
@@ -872,7 +872,7 @@ class RetrievalEngine:
                 
         return results
     
-    def _retrieve_onchain_data(self, question: str, analysis: Dict) -> Dict[str, List[Dict]]:
+    def _retrieve_onchain_data(self, analysis: Dict) -> Dict[str, List[Dict]]:
         """Specialized retrieval for on-chain analysis questions."""
         results = {}
         
@@ -901,7 +901,7 @@ class RetrievalEngine:
         
         return results
     
-    def _retrieve_comparison_data(self, question: str, analysis: Dict) -> Dict[str, List[Dict]]:
+    def _retrieve_comparison_data(self, analysis: Dict) -> Dict[str, List[Dict]]:
         """Specialized retrieval for comparison questions."""
         results = {}
         
@@ -978,7 +978,7 @@ class RetrievalEngine:
         
         return results
     
-    def _retrieve_due_diligence_data(self, question: str, analysis: Dict) -> Dict[str, List[Dict]]:
+    def _retrieve_due_diligence_data(self, analysis: Dict) -> Dict[str, List[Dict]]:
         """Specialized retrieval for due diligence questions."""
         results = {}
         
@@ -2155,45 +2155,56 @@ def check_market_data_availability(client):
 # Example usage
 if __name__ == "__main__":
     import argparse
-    
-    parser = argparse.ArgumentParser(description='Enhanced Crypto Due Diligence Q&A System with Llama 3.3')
-    parser.add_argument('--api-key', '--api_key', dest='api_key', help='Groq API key (optional, defaults to env variable)')
-    parser.add_argument('--question', help='Question to answer')
-    parser.add_argument('--document-id', '--document_id', dest='document_id', help='Optional document ID to query specifically')
-    parser.add_argument('--user-id', '--user_id', dest='user_id', help='Optional user ID for personalized answers')
-    parser.add_argument('--model', default='llama-3.3-70b-versatile', help='Model to use (default: llama-3.3-70b-versatile)')
-    parser.add_argument('--temperature', type=float, default=0.7, help='Temperature (0.0-1.0, default: 0.7)')
-    parser.add_argument('--interactive', action='store_true', help='Run in interactive mode')
-    
+
+    parser = argparse.ArgumentParser(description="Enhanced Crypto Due Diligence Q&A System with Llama 3.3")
+
+    parser.add_argument("--generate-ppt", action="store_true", help="Generate a styled PowerPoint summary")
+    parser.add_argument("--api-key", help="Groq API key (optional, defaults to env variable)")
+    parser.add_argument("--question", help="Question to answer")
+    parser.add_argument("--document-id", help="Optional document ID to query specifically")
+    parser.add_argument("--model", default="llama-3.3-70b-versatile", help="Model to use (default: llama-3.3-70b-versatile)")
+    parser.add_argument("--temperature", type=float, default=0.7, help="Temperature (0.0-1.0, default: 0.7)")
+    parser.add_argument("--interactive", action="store_true", help="Run in interactive mode")
+
     args = parser.parse_args()
-    
+
     qa_system = EnhancedCryptoQA(args.api_key, args.model)
-    
+
     try:
         if args.interactive:
             print("\n=== Enhanced Crypto Q&A System with Llama 3.3 70B Versatile ===")
             print("Type 'exit' to quit")
-            
-            # Optional user ID for interactive mode
-            user_id = args.user_id
-            if user_id:
-                print(f"Using personalized answers for user: {user_id}")
-            
+
             while True:
                 question = input("\nQuestion: ")
                 if question.lower() == "exit":
                     break
-                
+
                 print("\nGenerating answer...")
-                answer = qa_system.answer_question(question, temperature=args.temperature, user_id=user_id)
+                answer = qa_system.answer_question(question, temperature=args.temperature)
                 print(f"\nAnswer: {answer}")
+
         elif args.question:
             answer = qa_system.answer_question(args.question, args.document_id, args.temperature, args.user_id)
             print(f"\nQuestion: {args.question}")
             print(f"\nAnswer: {answer}")
+
+            if args.generate_ppt:
+                try:
+                    from Code.utils.ppt_generator import create_crypto_ppt_styled
+                    ppt_path = create_crypto_ppt_styled(
+                        topic=args.question,
+                        qa_summary=answer,
+                        weaviate_insights="Summary generated using CryptoDueDiligence RAG system"
+                    )
+                    print(f"\n📊 PowerPoint presentation saved at: {ppt_path}")
+                except Exception as e:
+                    logger.error(f"Failed to export styled PPT: {e}")
         else:
             parser.print_help()
+
     except KeyboardInterrupt:
         print("\nExiting...")
+
     finally:
         qa_system.close()

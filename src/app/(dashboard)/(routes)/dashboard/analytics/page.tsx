@@ -767,19 +767,19 @@ export default function AnalyticsPage() {
             </div>
             
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
-              <Card className="p-6 lg:col-span-2 hover:shadow-md transition-shadow">
-                <div className="flex justify-between items-center mb-6">
-                  <div>
-                    <h3 className="text-lg font-semibold">Crypto Price Performance</h3>
-                    <p className="text-sm text-gray-500">Percentage change over time for major assets</p>
-                  </div>
-                  <div className="flex flex-wrap gap-2" role="group" aria-label="Symbol filters">
-                    {uniqueSymbols.map((symbol) => (
-                      <button 
-                        key={symbol}
-                        onClick={() => handleSymbolFilter(symbol)}
-                        className={`px-3 py-1 text-xs rounded-lg ${
-                          activeSymbols.includes(symbol) || (symbol === 'All' && activeSymbols.includes('All'))
+            <Card className="p-6 lg:col-span-2 hover:shadow-md transition-shadow">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
+                <div>
+                  <h3 className="text-lg font-semibold">Crypto Price Performance</h3>
+                  <p className="text-sm text-gray-500">Percentage change over time for major assets</p>
+                </div>
+                <div className="flex flex-wrap gap-2" role="group" aria-label="Symbol filters">
+                  {uniqueSymbols.map((symbol) => (
+                    <button 
+                      key={symbol}
+                      onClick={() => handleSymbolFilter(symbol)}
+                      className={`px-3 py-1 text-xs rounded-lg ${
+                        activeSymbols.includes(symbol) || (symbol === 'All' && activeSymbols.includes('All'))
                           ? 'bg-black text-white'
                           : 'bg-white text-gray-600 border hover:bg-gray-50'
                       }`}
@@ -791,43 +791,54 @@ export default function AnalyticsPage() {
                 </div>
               </div>
               
-              <div className="h-64">
+              <div className="h-[400px]">
                 {portfolioPerformance.length > 0 ? (
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart 
                       data={preparePricePerformanceData().chartData}
-                      margin={{ top: 5, right: 30, left: 20, bottom: 25 }}
+                      margin={{ top: 20, right: 30, left: 30, bottom: 30 }}
                     >
-                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
                       <XAxis 
                         dataKey="date"
+                        tickMargin={10}
+                        tick={{ fontSize: 12 }}
                         label={{ 
                           value: 'Date', 
                           position: 'insideBottom', 
-                          offset: -10 
+                          offset: -15,
+                          fontSize: 12
                         }}
-                        tick={{ fontSize: 12 }}
                       />
                       <YAxis 
+                        tickMargin={10}
+                        tick={{ fontSize: 12 }}
+                        tickFormatter={(value) => `${value}%`}
                         label={{ 
                           value: 'Change %', 
                           angle: -90, 
                           position: 'insideLeft',
+                          fontSize: 12,
                           style: { textAnchor: 'middle' } 
                         }}
-                        tick={{ fontSize: 12 }}
-                        tickFormatter={(value) => `${value}%`}
                       />
                       <Tooltip 
                         formatter={(value: number) => [`${value.toFixed(2)}%`, ""]}
                         labelFormatter={(label) => `Date: ${label}`}
-                        contentStyle={{ backgroundColor: 'white', borderRadius: '8px', border: '1px solid #e2e8f0' }}
+                        contentStyle={{ 
+                          backgroundColor: 'white', 
+                          borderRadius: '8px', 
+                          border: '1px solid #e2e8f0',
+                          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                          fontSize: '12px'
+                        }}
                       />
                       <Legend 
                         verticalAlign="top" 
-                        height={36}
+                        height={40}
                         iconType="circle"
-                        iconSize={8}
+                        iconSize={10}
+                        wrapperStyle={{ paddingBottom: '20px' }}
                       />
                       {preparePricePerformanceData().lines.map((line, index) => (
                         <Line
@@ -838,7 +849,7 @@ export default function AnalyticsPage() {
                           stroke={line.stroke}
                           strokeWidth={2}
                           dot={{ r: 2 }}
-                          activeDot={{ r: 4 }}
+                          activeDot={{ r: 5, strokeWidth: 1 }}
                         />
                       ))}
                     </LineChart>

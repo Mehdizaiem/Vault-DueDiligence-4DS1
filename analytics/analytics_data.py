@@ -6,19 +6,24 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Any, Optional
 import uuid
 
-# Configure logging to stderr only
-logging.basicConfig(level=logging.INFO, stream=sys.stderr)
+# Configure logging to use a specific format and suppress all loggers by default
+logging.basicConfig(
+    level=logging.INFO,
+    format='PYLOG: %(levelname)s - %(message)s',
+    stream=sys.stderr  # Send logs to stderr only
+)
 logger = logging.getLogger(__name__)
 
-# Suppress httpx logging (Weaviate HTTP requests)
-logging.getLogger("httpx").setLevel(logging.WARNING)
+# Suppress httpx and other library logging
+for log_name in ["httpx", "weaviate", "urllib3"]:
+    logging.getLogger(log_name).setLevel(logging.WARNING)
 
 # Add project root to path
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(project_root)
 
-# Custom JSON encoder to handle Weaviate UUIDs and other non-serializable types
 class WeaviateJSONEncoder(json.JSONEncoder):
+    """Custom JSON encoder to handle UUID objects and dates"""
     def default(self, obj):
         # Handle Weaviate UUID objects
         if hasattr(obj, 'uuid_bytes') and callable(getattr(obj, 'uuid_bytes', None)):
@@ -39,21 +44,32 @@ def fetch_analytics_data():
     """
     try:
         # Import Weaviate client
-        from Sample_Data.vector_store.weaviate_client import get_weaviate_client
-        
-        client = get_weaviate_client()
-        logger.info("Weaviate client is connected.")
+        try:
+            from Sample_Data.vector_store.weaviate_client import get_weaviate_client
+            client = get_weaviate_client()
+            logger.info("Weaviate client is connected.")
+        except ImportError:
+            logger.error("Failed to import weaviate client module")
+            return json_output({"error": "Failed to import Weaviate client module"})
+        except Exception as e:
+            logger.error(f"Error connecting to Weaviate: {str(e)}")
+            return json_output({"error": f"Weaviate connection error: {str(e)}"})
         
         if not client.is_live():
             logger.error("Failed to connect to Weaviate")
-            return json.dumps({"error": "Weaviate connection failed"}, cls=WeaviateJSONEncoder)
+            return json_output({"error": "Weaviate connection failed"})
 
         try:
             # Fetch data from Weaviate collections
+            logger.info("Fetching KPIs...")
             kpis = fetch_kpis_from_weaviate(client)
+            logger.info("Fetching asset distribution...")
             asset_distribution = fetch_asset_distribution_from_weaviate(client)
+            logger.info("Fetching portfolio performance...")
             portfolio_performance = fetch_portfolio_performance_from_weaviate(client)
+            logger.info("Fetching recent news...")
             recent_news = fetch_recent_news_from_weaviate(client)
+            logger.info("Fetching due diligence documents...")
             due_diligence_docs = fetch_due_diligence_from_weaviate(client)
             
             # Close the Weaviate client
@@ -68,28 +84,32 @@ def fetch_analytics_data():
                 "due_diligence": due_diligence_docs
             }
             
-            # Use the custom JSON encoder to handle non-serializable types
-            return json.dumps(result, cls=WeaviateJSONEncoder)
+            logger.info("Data fetch completed successfully")
+            return json_output(result)
             
         except Exception as e:
-            logger.error(f"Error fetching data from Weaviate: {e}")
+            logger.error(f"Error fetching data from Weaviate: {str(e)}")
             client.close()
-            return json.dumps({"error": str(e)}, cls=WeaviateJSONEncoder)
+            return json_output({"error": f"Error fetching data: {str(e)}"})
                 
     except Exception as e:
-        logger.error(f"Fatal error in fetch_analytics_data: {e}")
-        return json.dumps({"error": str(e)}, cls=WeaviateJSONEncoder)
+        logger.error(f"Fatal error in fetch_analytics_data: {str(e)}")
+        return json_output({"error": f"Fatal error: {str(e)}"})
+
+def json_output(data):
+    """
+    Convert data to JSON with proper handling of special types.
+    """
+    try:
+        json_string = json.dumps(data, cls=WeaviateJSONEncoder, indent=2)
+        # No longer wrap with markers, just return clean JSON
+        return json_string
+    except Exception as e:
+        logger.error(f"Error serializing to JSON: {str(e)}")
+        return json.dumps({"error": f"JSON serialization error: {str(e)}"})
 
 def fetch_kpis_from_weaviate(client) -> Dict:
-    """
-    Fetch KPI data from Weaviate collections using correct v4 API syntax.
-    
-    Args:
-        client: Weaviate client
-        
-    Returns:
-        Dict: KPI data
-    """
+    """Fetch KPI data from Weaviate collections"""
     try:
         # For total market cap and asset count
         try:
@@ -108,7 +128,7 @@ def fetch_kpis_from_weaviate(client) -> Dict:
                     market_cap = obj.properties.get("market_cap", 0)
                     total_market_cap += market_cap
             except Exception as e:
-                logger.error(f"Error calculating total market cap: {e}")
+                logger.error(f"Error calculating total market cap: {str(e)}")
             
             # Format market cap as "$XM" string
             total_market_cap_str = f"${total_market_cap / 1_000_000:.1f}M"
@@ -129,10 +149,10 @@ def fetch_kpis_from_weaviate(client) -> Dict:
                 
                 asset_count = len(symbols)
             except Exception as e:
-                logger.error(f"Error calculating asset count: {e}")
+                logger.error(f"Error calculating asset count: {str(e)}")
             
         except Exception as e:
-            logger.error(f"Error fetching market metrics: {e}")
+            logger.error(f"Error fetching market metrics: {str(e)}")
             total_market_cap_str = "$0M"
             asset_count = 0
         
@@ -155,13 +175,13 @@ def fetch_kpis_from_weaviate(client) -> Dict:
                 if price_changes:
                     avg_price_change = sum(price_changes) / len(price_changes)
             except Exception as e:
-                logger.error(f"Error calculating average price change: {e}")
+                logger.error(f"Error calculating average price change: {str(e)}")
                 
             avg_price_change_str = f"{avg_price_change:.1f}%"
             price_trend = "up" if avg_price_change >= 0 else "down"
             
         except Exception as e:
-            logger.error(f"Error fetching price change data: {e}")
+            logger.error(f"Error fetching price change data: {str(e)}")
             avg_price_change_str = "0%"
             price_trend = "neutral"
             
@@ -182,7 +202,7 @@ def fetch_kpis_from_weaviate(client) -> Dict:
                         sentiment_values.append(score)
                         
             except Exception as e:
-                logger.error(f"Error fetching sentiment scores: {e}")
+                logger.error(f"Error fetching sentiment scores: {str(e)}")
             
             # Calculate average sentiment
             avg_sentiment = 0
@@ -195,7 +215,7 @@ def fetch_kpis_from_weaviate(client) -> Dict:
             sentiment_trend = "up" if avg_sentiment > 0 else "down"
             
         except Exception as e:
-            logger.error(f"Error calculating sentiment: {e}")
+            logger.error(f"Error calculating sentiment: {str(e)}")
             sentiment_str = "50%"
             sentiment_trend = "neutral"
         
@@ -224,19 +244,11 @@ def fetch_kpis_from_weaviate(client) -> Dict:
         }
         
     except Exception as e:
-        logger.error(f"Error in fetch_kpis_from_weaviate: {e}")
+        logger.error(f"Error in fetch_kpis_from_weaviate: {str(e)}")
         return {}
 
 def fetch_asset_distribution_from_weaviate(client) -> List[Dict]:
-    """
-    Fetch asset distribution data using the correct v4 API syntax.
-    
-    Args:
-        client: Weaviate client
-        
-    Returns:
-        List[Dict]: Asset distribution data
-    """
+    """Fetch asset distribution data"""
     try:
         # Get MarketMetrics collection
         market_metrics = client.collections.get("MarketMetrics")
@@ -306,20 +318,11 @@ def fetch_asset_distribution_from_weaviate(client) -> List[Dict]:
         return result
         
     except Exception as e:
-        logger.error(f"Error in fetch_asset_distribution_from_weaviate: {e}")
+        logger.error(f"Error in fetch_asset_distribution_from_weaviate: {str(e)}")
         return []
 
 def fetch_portfolio_performance_from_weaviate(client, date_range="30d") -> List[Dict]:
-    """
-    Fetch cryptocurrency performance data using correct v4 API syntax and symbol names.
-    
-    Args:
-        client: Weaviate client
-        date_range: Time range (e.g., "30d")
-        
-    Returns:
-        List[Dict]: Portfolio performance data
-    """
+    """Fetch cryptocurrency performance data"""
     try:
         # Get CryptoTimeSeries collection
         time_series = client.collections.get("CryptoTimeSeries")
@@ -352,7 +355,7 @@ def fetch_portfolio_performance_from_weaviate(client, date_range="30d") -> List[
             logger.info(f"Available symbols in CryptoTimeSeries: {available_symbols}")
             
         except Exception as e:
-            logger.error(f"Error getting available symbols: {e}")
+            logger.error(f"Error getting available symbols: {str(e)}")
         
         performance_data = []
         
@@ -426,10 +429,10 @@ def fetch_portfolio_performance_from_weaviate(client, date_range="30d") -> List[
                             "change_pct": round(change_pct, 2)
                         })
                     except Exception as e:
-                        logger.error(f"Error processing data point: {e}")
+                        logger.error(f"Error processing data point: {str(e)}")
                         continue
             except Exception as e:
-                logger.error(f"Error processing symbol {symbol}: {e}")
+                logger.error(f"Error processing symbol {symbol}: {str(e)}")
         
         if performance_data:
             logger.info(f"Successfully retrieved {len(performance_data)} performance data points")
@@ -439,20 +442,11 @@ def fetch_portfolio_performance_from_weaviate(client, date_range="30d") -> List[
             return []
         
     except Exception as e:
-        logger.error(f"Error in fetch_portfolio_performance_from_weaviate: {e}")
+        logger.error(f"Error in fetch_portfolio_performance_from_weaviate: {str(e)}")
         return []
 
 def fetch_recent_news_from_weaviate(client, limit=5) -> List[Dict]:
-    """
-    Fetch recent news with sentiment analysis from CryptoNewsSentiment collection.
-    
-    Args:
-        client: Weaviate client
-        limit: Number of news items to fetch
-        
-    Returns:
-        List[Dict]: Recent news with sentiment
-    """
+    """Fetch recent news with sentiment analysis"""
     try:
         news = client.collections.get("CryptoNewsSentiment")
         
@@ -493,20 +487,11 @@ def fetch_recent_news_from_weaviate(client, limit=5) -> List[Dict]:
         return news_items
         
     except Exception as e:
-        logger.error(f"Error in fetch_recent_news_from_weaviate: {e}")
+        logger.error(f"Error in fetch_recent_news_from_weaviate: {str(e)}")
         return []
 
 def fetch_due_diligence_from_weaviate(client, limit=4) -> List[Dict]:
-    """
-    Fetch due diligence documents from CryptoDueDiligenceDocuments collection.
-    
-    Args:
-        client: Weaviate client
-        limit: Number of documents to fetch
-        
-    Returns:
-        List[Dict]: Due diligence document summaries
-    """
+    """Fetch due diligence documents"""
     try:
         docs = client.collections.get("CryptoDueDiligenceDocuments")
         
@@ -549,7 +534,7 @@ def fetch_due_diligence_from_weaviate(client, limit=4) -> List[Dict]:
         return documents
         
     except Exception as e:
-        logger.error(f"Error in fetch_due_diligence_from_weaviate: {e}")
+        logger.error(f"Error in fetch_due_diligence_from_weaviate: {str(e)}")
         return []
 
 if __name__ == "__main__":

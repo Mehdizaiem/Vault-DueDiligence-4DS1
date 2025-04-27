@@ -39,7 +39,7 @@ type NewsItem = {
   aspect?: string;
   url?: string;
   explanation?: string;
-  cryptocurrency?: string; // Added field for filtering
+  cryptocurrency?: string;
 };
 
 // Number of items to load per infinite scroll trigger
@@ -52,9 +52,11 @@ export default function NewsDashboard() {
   const [search, setSearch] = useState('');
   const [displayCount, setDisplayCount] = useState(LOAD_INCREMENT);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
-  const [activeTab, setActiveTab] = useState('news'); // Added for tab navigation
-  const [cryptoFilter, setCryptoFilter] = useState('all'); // For crypto type filtering
-  const [sourceFilter, setSourceFilter] = useState('all'); // For source filtering
+  const [activeTab, setActiveTab] = useState('news');
+  const [cryptoFilter, setCryptoFilter] = useState('all');
+  const [sourceFilter, setSourceFilter] = useState('all');
+  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+  const [refreshAnimation, setRefreshAnimation] = useState(false);
   
   // Refs for infinite scroll
   const observer = useRef<IntersectionObserver | null>(null);
@@ -98,6 +100,7 @@ export default function NewsDashboard() {
 
   const handleRefresh = async () => {
     setLoading(true);
+    setRefreshAnimation(true);
     try {
       await fetch('/api/refresh_news');
       await fetchNews();
@@ -105,6 +108,7 @@ export default function NewsDashboard() {
       console.error('Refresh failed:', err);
     } finally {
       setLoading(false);
+      setTimeout(() => setRefreshAnimation(false), 1000);
     }
   };
 
@@ -113,11 +117,11 @@ export default function NewsDashboard() {
     return isNaN(date.getTime()) ? 'N/A' : date.toLocaleDateString();
   };
 
-  const getSentimentColor = (s?: string) =>
-    s?.toLowerCase().includes('positive') ? 'emerald'
-    : s?.toLowerCase().includes('negative') ? 'rose'
-    : 'amber';
-  
+  const getSentimentColor = (s?: string) => {
+    if (s?.toLowerCase().includes('positive')) return { bg: 'bg-indigo-100', text: 'text-indigo-800', border: 'border-indigo-200', dark: 'bg-indigo-200' };
+    if (s?.toLowerCase().includes('negative')) return { bg: 'bg-pink-100', text: 'text-pink-800', border: 'border-pink-200', dark: 'bg-pink-200' };
+    return { bg: 'bg-teal-100', text: 'text-teal-800', border: 'border-teal-200', dark: 'bg-teal-200' };
+  };
 
   // All available cryptocurrencies
   const cryptocurrencies = ['Bitcoin', 'Ethereum', 'XRP', 'BNB', 'SOL', 'DOGE', 'ADA', 'LINK', 'AVAX'];
@@ -191,7 +195,6 @@ export default function NewsDashboard() {
     negative: filtered.filter(item => item.sentiment_label?.toLowerCase().includes('negative')).length
   };
   
-
   // Group by date for trend chart
   const sentimentByDate = filtered.reduce((acc, item) => {
     const date = item.date.split('T')[0];
@@ -207,7 +210,6 @@ export default function NewsDashboard() {
       acc[date].neutral++;
     }
     
-    
     acc[date].total++;
     return acc;
   }, {} as Record<string, { positive: number, neutral: number, negative: number, total: number }>);
@@ -215,14 +217,14 @@ export default function NewsDashboard() {
   // Sort dates for trend chart
   const sortedDates = Object.keys(sentimentByDate).sort();
 
-  // Chart data
+  // Chart data with updated colors
   const pieChartData = {
     labels: ['Positive', 'Neutral', 'Negative'],
     datasets: [
       {
         data: [sentimentCounts.positive, sentimentCounts.neutral, sentimentCounts.negative],
-        backgroundColor: ['rgba(52, 211, 153, 0.8)', 'rgba(251, 191, 36, 0.8)', 'rgba(239, 68, 68, 0.8)'],
-        borderColor: ['rgb(16, 185, 129)', 'rgb(245, 158, 11)', 'rgb(220, 38, 38)'],
+        backgroundColor: ['rgba(99, 102, 241, 0.7)', 'rgba(20, 184, 166, 0.7)', 'rgba(236, 72, 153, 0.7)'],
+        borderColor: ['rgb(79, 70, 229)', 'rgb(13, 148, 136)', 'rgb(219, 39, 119)'],
         borderWidth: 1,
       },
     ],
@@ -234,55 +236,61 @@ export default function NewsDashboard() {
       {
         label: 'Positive',
         data: sortedDates.map(date => sentimentByDate[date].positive),
-        borderColor: 'rgb(16, 185, 129)',
-        backgroundColor: 'rgba(52, 211, 153, 0.5)',
-        tension: 0.2,
+        borderColor: 'rgb(79, 70, 229)',
+        backgroundColor: 'rgba(99, 102, 241, 0.3)',
+        tension: 0.3,
+        fill: true,
       },
       {
         label: 'Neutral',
         data: sortedDates.map(date => sentimentByDate[date].neutral),
-        borderColor: 'rgb(245, 158, 11)',
-        backgroundColor: 'rgba(251, 191, 36, 0.5)',
-        tension: 0.2,
+        borderColor: 'rgb(13, 148, 136)',
+        backgroundColor: 'rgba(20, 184, 166, 0.3)',
+        tension: 0.3,
+        fill: true,
       },
       {
         label: 'Negative',
         data: sortedDates.map(date => sentimentByDate[date].negative),
-        borderColor: 'rgb(220, 38, 38)',
-        backgroundColor: 'rgba(239, 68, 68, 0.5)',
-        tension: 0.2,
+        borderColor: 'rgb(219, 39, 119)',
+        backgroundColor: 'rgba(236, 72, 153, 0.3)',
+        tension: 0.3,
+        fill: true,
       },
     ],
   };
 
   return (
-    <main className="bg-gray-50 min-h-screen">
+    <main className="bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen">
       <div className="max-w-6xl mx-auto p-6">
         {/* Header */}
         <header className="mb-6">
-          <div className="flex justify-center items-center gap-4 mb-3">
-            <h1 className="text-3xl font-bold text-gray-800 flex items-center gap-2">
+          <div className="flex justify-center items-center gap-4 mb-5">
+            <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-indigo-600 flex items-center gap-2">
               📊 Crypto News Sentiment Dashboard
             </h1>
             <button
               onClick={handleRefresh}
               disabled={loading}
-              className="bg-blue-100 text-blue-800 px-3 py-1.5 rounded-lg hover:bg-blue-200 transition"
+              className={`bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-3 py-1.5 rounded-lg shadow-md hover:shadow-lg hover:from-indigo-600 hover:to-purple-600 transition-all duration-300 disabled:opacity-50 ${refreshAnimation ? 'animate-pulse' : ''}`}
             >
-              🔄
+              {loading ? (
+                <span className="inline-block animate-spin">🔄</span>
+              ) : (
+                <span>🔄</span>
+              )}
             </button>
           </div>
 
-          {/* Tabs */}
-          <div className="border-b border-gray-200 mb-4">
+          <div className="border-b border-gray-200 mb-6">
             <ul className="flex flex-wrap -mb-px">
               <li className="mr-2">
                 <button 
                   onClick={() => setActiveTab('news')}
-                  className={`inline-block py-2 px-4 text-sm font-medium ${
+                  className={`inline-block py-2 px-4 text-sm font-medium rounded-t-lg transition-all duration-300 ${
                     activeTab === 'news'
-                    ? 'text-blue-600 border-b-2 border-blue-600'
-                    : 'text-gray-500 hover:text-gray-600 hover:border-gray-300'
+                    ? 'text-indigo-600 border-b-2 border-indigo-600 bg-indigo-50 shadow-inner'
+                    : 'text-gray-500 hover:text-indigo-500 hover:bg-gray-100'
                   }`}
                 >
                   News Feed
@@ -291,10 +299,10 @@ export default function NewsDashboard() {
               <li className="mr-2">
                 <button 
                   onClick={() => setActiveTab('analytics')}
-                  className={`inline-block py-2 px-4 text-sm font-medium ${
+                  className={`inline-block py-2 px-4 text-sm font-medium rounded-t-lg transition-all duration-300 ${
                     activeTab === 'analytics'
-                    ? 'text-blue-600 border-b-2 border-blue-600'
-                    : 'text-gray-500 hover:text-gray-600 hover:border-gray-300'
+                    ? 'text-indigo-600 border-b-2 border-indigo-600 bg-indigo-50 shadow-inner'
+                    : 'text-gray-500 hover:text-indigo-500 hover:bg-gray-100'
                   }`}
                 >
                   Sentiment Analytics
@@ -308,7 +316,7 @@ export default function NewsDashboard() {
             <input
               type="text"
               placeholder="🔍 Search title or content..."
-              className="flex-1 p-2 border rounded-lg shadow-sm"
+              className="flex-1 p-2 border border-gray-200 rounded-lg shadow-md focus:ring-2 focus:ring-indigo-300 focus:border-indigo-300 transition-all duration-300"
               value={search}
               onChange={(e) => {
                 setSearch(e.target.value);
@@ -318,44 +326,70 @@ export default function NewsDashboard() {
             
             <div className="flex flex-wrap gap-2">
               {/* Export buttons */}
-              <div className="bg-white p-2 rounded-lg shadow-sm flex gap-2">
+              <div className="bg-white p-2 rounded-lg shadow-md flex gap-2">
                 <button 
                   onClick={exportCSV}
-                  className="px-3 py-1 text-sm font-medium bg-green-100 text-green-800 hover:bg-green-200 rounded-md"
+                  className="px-3 py-1.5 text-sm font-medium bg-gradient-to-r from-teal-400 to-teal-500 text-white rounded-md shadow-sm hover:shadow-md transition-all duration-300 flex items-center gap-1 transform hover:scale-105"
                 >
-                  Export CSV
+                  <span>📄</span> Export CSV
                 </button>
                 <button 
                   onClick={exportJSON}
-                  className="px-3 py-1 text-sm font-medium bg-purple-100 text-purple-800 hover:bg-purple-200 rounded-md"
+                  className="px-3 py-1.5 text-sm font-medium bg-gradient-to-r from-purple-400 to-purple-500 text-white rounded-md shadow-sm hover:shadow-md transition-all duration-300 flex items-center gap-1 transform hover:scale-105"
                 >
-                  Export JSON
+                  <span>📋</span> Export JSON
                 </button>
               </div>
             </div>
           </div>
 
           {/* Additional Filters */}
-          <div className="bg-white p-4 rounded-lg shadow-sm mb-4 flex flex-wrap gap-4">
+          <div className="bg-white p-4 rounded-lg shadow-md mb-6 flex flex-wrap gap-4 backdrop-blur-sm bg-opacity-80">
             {/* Sentiment Filter */}
             <div>
               <span className="text-sm text-gray-600 mr-2">Sentiment:</span>
-              {['all', 'positive', 'neutral', 'negative'].map(type => (
-                <button
-                  key={type}
-                  onClick={() => {
-                    setFilter(type);
-                    setDisplayCount(LOAD_INCREMENT);
-                  }}
-                  className={`px-3 py-1 text-sm font-medium ${
-                    filter === type
-                      ? 'bg-blue-100 text-blue-800'
-                      : 'bg-white text-gray-700 hover:bg-gray-100'
-                  } rounded-md mx-1`}
-                >
-                  {type.charAt(0).toUpperCase() + type.slice(1)}
-                </button>
-              ))}
+              <div className="inline-flex rounded-md shadow-sm">
+                {['all', 'positive', 'neutral', 'negative'].map(type => {
+                  // Select appropriate colors based on sentiment type
+                  const getBgColor = () => {
+                    if (filter === type) {
+                      if (type === 'positive') return 'bg-gradient-to-r from-indigo-100 to-indigo-200 hover:from-indigo-200 hover:to-indigo-300';
+                      if (type === 'neutral') return 'bg-gradient-to-r from-teal-100 to-teal-200 hover:from-teal-200 hover:to-teal-300';
+                      if (type === 'negative') return 'bg-gradient-to-r from-pink-100 to-pink-200 hover:from-pink-200 hover:to-pink-300';
+                      return 'bg-gradient-to-r from-blue-100 to-blue-200 hover:from-blue-200 hover:to-blue-300';
+                    }
+                    return 'bg-white hover:bg-gray-100';
+                  };
+                  
+                  const getTextColor = () => {
+                    if (filter === type) {
+                      if (type === 'positive') return 'text-indigo-800';
+                      if (type === 'neutral') return 'text-teal-800';
+                      if (type === 'negative') return 'text-pink-800';
+                      return 'text-blue-800';
+                    }
+                    return 'text-gray-700';
+                  };
+                  
+                  // Apply special styling for first and last buttons in the group
+                  const position = 
+                    type === 'all' ? 'rounded-l-md' :
+                    type === 'negative' ? 'rounded-r-md' : '';
+                    
+                  return (
+                    <button
+                      key={type}
+                      onClick={() => {
+                        setFilter(type);
+                        setDisplayCount(LOAD_INCREMENT);
+                      }}
+                      className={`px-4 py-1.5 text-sm font-medium ${getBgColor()} ${getTextColor()} ${position} border border-gray-200 transition-all duration-300 shadow-sm transform hover:scale-105`}
+                    >
+                      {type.charAt(0).toUpperCase() + type.slice(1)}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             {/* Cryptocurrency Filter */}
@@ -367,7 +401,7 @@ export default function NewsDashboard() {
                   setCryptoFilter(e.target.value);
                   setDisplayCount(LOAD_INCREMENT);
                 }}
-                className="px-3 py-1 text-sm font-medium bg-white border rounded-md"
+                className="px-3 py-1.5 text-sm font-medium bg-white border rounded-md shadow-sm hover:border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-300 transition-all duration-300"
               >
                 <option value="all">All Cryptocurrencies</option>
                 {cryptocurrencies.map(crypto => (
@@ -385,7 +419,7 @@ export default function NewsDashboard() {
                   setSourceFilter(e.target.value);
                   setDisplayCount(LOAD_INCREMENT);
                 }}
-                className="px-3 py-1 text-sm font-medium bg-white border rounded-md"
+                className="px-3 py-1.5 text-sm font-medium bg-white border rounded-md shadow-sm hover:border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-300 transition-all duration-300"
               >
                 <option value="all">All Sources</option>
                 {newsSources.map(source => (
@@ -399,7 +433,7 @@ export default function NewsDashboard() {
         {/* Loader */}
         {loading ? (
           <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+            <div className="animate-spin rounded-full h-16 w-16 border-4 border-indigo-200 border-t-4 border-t-indigo-600"></div>
           </div>
         ) : (
           <>
@@ -410,41 +444,43 @@ export default function NewsDashboard() {
                   {displayItems.map((item, idx) => {
                     const sentimentColor = getSentimentColor(item.sentiment_label);
                     const isLastElement = idx === displayItems.length - 1;
+                    const cardId = item.id || idx.toString();
                     
                     return (
                       <div
-                        key={item.id || idx}
+                        key={cardId}
                         ref={isLastElement ? lastNewsElementRef : null}
-                        className="bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition"
+                        className={`bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-xl transition-all duration-300 transform ${hoveredCard === cardId ? 'scale-102' : ''}`}
+                        onMouseEnter={() => setHoveredCard(cardId)} 
+                        onMouseLeave={() => setHoveredCard(null)}
                       >
                         <div className="px-6 py-4">
                           <div className="flex justify-between items-start mb-2">
-                            <h2 className="font-bold text-xl text-gray-800">{item.title}</h2>
-                            <span className="text-xs bg-gray-100 px-2 py-1 rounded-full text-gray-700">{item.source}</span>
+                            <h2 className="font-bold text-xl text-gray-800 group-hover:text-indigo-600 transition-colors duration-300">{item.title}</h2>
+                            <span className="text-xs bg-gray-100 px-2 py-1 rounded-full text-gray-700 shadow-sm">{item.source}</span>
                           </div>
                           <p className="text-gray-600 mb-3 line-clamp-3">{item.content}</p>
 
                           <div className="flex flex-wrap gap-2 mb-3 text-sm">
-                          {item.sentiment_label && (
-  <span className={`bg-${sentimentColor}-100 text-${sentimentColor}-800 px-2 py-1 rounded-full`}>
-    {item.sentiment_label}
-  </span>
-)}
+                            {item.sentiment_label && (
+                              <span className={`${sentimentColor.bg} ${sentimentColor.text} px-2 py-1 rounded-full shadow-sm`}>
+                                {item.sentiment_label}
+                              </span>
+                            )}
 
-{item.sentiment_score != null && !isNaN(item.sentiment_score) && (
-  <span className={`bg-${sentimentColor}-200 text-${sentimentColor}-900 px-2 py-1 rounded-full`}>
-    Score: {item.sentiment_score.toFixed(2)}
-  </span>
-)}
-
+                            {item.sentiment_score != null && !isNaN(item.sentiment_score) && (
+                              <span className={`${sentimentColor.dark} ${sentimentColor.text} px-2 py-1 rounded-full shadow-sm`}>
+                                Score: {item.sentiment_score.toFixed(2)}
+                              </span>
+                            )}
 
                             {item.aspect && (
-                              <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded-full">
+                              <span className="bg-violet-100 text-violet-800 px-2 py-1 rounded-full shadow-sm">
                                 {item.aspect}
                               </span>
                             )}
                             {item.cryptocurrency && (
-                              <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                              <span className="bg-cyan-100 text-cyan-800 px-2 py-1 rounded-full shadow-sm">
                                 {item.cryptocurrency}
                               </span>
                             )}
@@ -453,27 +489,50 @@ export default function NewsDashboard() {
                           {/* Explanation toggle */}
                           {item.explanation && (
                             <button
-                              onClick={() => toggleExpanded(item.id || idx.toString())}
-                              className="text-sm text-blue-600 hover:underline"
+                              onClick={() => toggleExpanded(cardId)}
+                              className={`text-sm hover:underline flex items-center gap-1 transition-all duration-300 ${
+                                expanded.has(cardId) 
+                                ? "text-indigo-700" 
+                                : "text-indigo-600"
+                              }`}
                             >
-                              {expanded.has(item.id || idx.toString()) ? "Hide Explanation" : "Show Explanation"}
+                              {expanded.has(cardId) ? (
+                                <>
+                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                  </svg>
+                                  Hide Explanation
+                                </>
+                              ) : (
+                                <>
+                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                  </svg>
+                                  Show Explanation
+                                </>
+                              )}
                             </button>
                           )}
-                          {expanded.has(item.id || idx.toString()) && (
-                            <p className="text-sm text-gray-700 mt-2 italic">{item.explanation}</p>
+                          {expanded.has(cardId) && (
+                            <div className="animate-fadeIn">
+                              <p className="text-sm text-gray-700 mt-2 italic bg-gray-50 p-3 rounded-lg border-l-2 border-indigo-300 shadow-sm">{item.explanation}</p>
+                            </div>
                           )}
                         </div>
 
-                        <div className="bg-gray-50 px-6 py-3 flex justify-between items-center border-t">
+                        <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-3 flex justify-between items-center border-t rounded-b-xl">
                           <span className="text-xs text-gray-500">{formatDate(item.date)}</span>
                           {item.url && (
                             <a
                               href={item.url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-blue-600 text-sm hover:underline"
+                              className="text-indigo-600 text-sm hover:text-indigo-800 hover:underline flex items-center gap-1 transition-colors duration-300 group"
                             >
-                              Read more →
+                              Read more
+                              <svg className="w-4 h-4 transform group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                              </svg>
                             </a>
                           )}
                         </div>
@@ -485,25 +544,36 @@ export default function NewsDashboard() {
                 {/* Loading indicator for infinite scroll */}
                 {displayCount < filtered.length && (
                   <div className="flex justify-center my-6">
-                    <div className="animate-pulse text-gray-500">Loading more...</div>
+                    <div className="animate-pulse text-indigo-500 font-medium">Loading more articles...</div>
                   </div>
                 )}
                 
                 {/* No results message */}
                 {filtered.length === 0 && (
-                  <div className="text-center py-10">
+                  <div className="text-center py-10 bg-white rounded-xl shadow-md">
                     <p className="text-gray-500 text-xl">No news items match your current filters</p>
+                    <button 
+                      onClick={() => {
+                        setFilter('all');
+                        setCryptoFilter('all');
+                        setSourceFilter('all');
+                        setSearch('');
+                      }}
+                      className="mt-4 px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 transition-colors duration-300"
+                    >
+                      Clear all filters
+                    </button>
                   </div>
                 )}
               </>
             ) : (
               /* Analytics View */
-              <div className="bg-white rounded-xl shadow-md p-6">
-                <h2 className="text-2xl font-bold text-gray-800 mb-6">Sentiment Analysis</h2>
+              <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+                <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 mb-6">Sentiment Analysis</h2>
                 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                   {/* Pie Chart */}
-                  <div className="bg-gray-50 p-4 rounded-lg">
+                  <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-6 rounded-lg shadow-md border border-gray-100">
                     <h3 className="text-lg font-medium text-gray-700 mb-4">Sentiment Distribution</h3>
                     <div className="h-64">
                       <Pie 
@@ -512,6 +582,12 @@ export default function NewsDashboard() {
                           plugins: {
                             legend: {
                               position: 'right',
+                              labels: {
+                                font: {
+                                  weight: 'bold'
+                                },
+                                padding: 20
+                              }
                             },
                             tooltip: {
                               callbacks: {
@@ -521,17 +597,30 @@ export default function NewsDashboard() {
                                   const percentage = Math.round((value / total) * 100);
                                   return `${tooltipItem.label}: ${value} (${percentage}%)`;
                                 }
-                              }
+                              },
+                              backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                              titleColor: '#1f2937',
+                              bodyColor: '#4f46e5',
+                              borderColor: '#e5e7eb',
+                              borderWidth: 1,
+                              padding: 12,
+                              displayColors: true,
+                              boxPadding: 6
                             }
                           },
                           maintainAspectRatio: false,
+                          animation: {
+                            animateScale: true,
+                            animateRotate: true,
+                            duration: 2000
+                          }
                         }}
                       />
                     </div>
                   </div>
                   
                   {/* Trend Chart */}
-                  <div className="bg-gray-50 p-4 rounded-lg">
+                  <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-6 rounded-lg shadow-md border border-gray-100">
                     <h3 className="text-lg font-medium text-gray-700 mb-4">Sentiment Trends Over Time</h3>
                     <div className="h-64">
                       <Line 
@@ -540,14 +629,44 @@ export default function NewsDashboard() {
                           plugins: {
                             legend: {
                               position: 'top',
+                              labels: {
+                                font: {
+                                  weight: 'bold'
+                                },
+                                padding: 20
+                              }
                             },
+                            tooltip: {
+                              backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                              titleColor: '#1f2937',
+                              bodyColor: '#4f46e5',
+                              borderColor: '#e5e7eb',
+                              borderWidth: 1
+                            }
                           },
                           scales: {
                             y: {
-                              beginAtZero: true
+                              beginAtZero: true,
+                              grid: {
+                                color: 'rgba(156, 163, 175, 0.1)'
+                              }
+                            },
+                            x: {
+                              grid: {
+                                display: false
+                              }
                             }
                           },
                           maintainAspectRatio: false,
+                          animation: {
+                            duration: 2000
+                          },
+                          elements: {
+                            point: {
+                              radius: 3,
+                              hoverRadius: 6
+                            }
+                          }
                         }}
                       />
                     </div>
@@ -558,8 +677,8 @@ export default function NewsDashboard() {
                     <h3 className="text-lg font-medium text-gray-700 mb-4">Summary Statistics</h3>
                     
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="bg-green-50 p-4 rounded-lg border border-green-100">
-                        <h4 className="text-green-800 font-medium">Positive News</h4>
+                      <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 p-4 rounded-lg border border-indigo-200 shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105">
+                        <h4 className="font-medium text-indigo-800">Positive News</h4>
                         <p className="text-3xl font-bold text-green-600">{sentimentCounts.positive}</p>
                         <p className="text-sm text-green-700">
                           {Math.round(sentimentCounts.positive / filtered.length * 100) || 0}% of total

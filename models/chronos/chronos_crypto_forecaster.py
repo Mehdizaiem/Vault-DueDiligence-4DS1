@@ -2,17 +2,9 @@
 # -*- coding: utf-8 -*-
 
 """
-Universal Cryptocurrency Forecaster with Chronos
-
-This script can forecast any cryptocurrency pair using Amazon's Chronos model,
-automatically adapting to different coins, data formats, and price scales.
-
-Features:
-- Works with any cryptocurrency (BTC, ETH, ADA, SOL, etc.)
-- Handles different price denominations (USD, BTC, USDT, etc.)
-- Automatically detects and adapts to various CSV formats from exchanges
-- Provides appropriate visualization and scaling based on the coin
-- Stores forecasts in Weaviate for future analysis
+Chronos Cryptocurrency Forecaster
+This script uses the Chronos forecasting model to predict cryptocurrency prices.
+It loads historical data, trains the model, and generates forecasts with visualizations.
 """
 
 import os
@@ -23,25 +15,52 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
-import time
 import torch
 import re
-from pathlib import Path
+import glob
+from typing import Dict, Any, List, Optional, Union, Tuple
+import requests
+import time
 
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler("crypto_forecast.log"),
-        logging.StreamHandler()
-    ]
+    format='%(asctime)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
 
+def find_project_root():
+    """Find the project root directory that contains the data folder."""
+    current_dir = os.path.abspath(os.path.dirname(__file__))
+    test_dirs = [
+        current_dir,
+        os.path.dirname(current_dir),
+        os.path.dirname(os.path.dirname(current_dir))
+    ]
+    
+    for directory in test_dirs:
+        data_dir = os.path.join(directory, 'data')
+        if os.path.exists(data_dir) and os.path.isdir(data_dir):
+            return directory
+    
+    return current_dir
+
+# Find project root
+PROJECT_ROOT = find_project_root()
+logger.info(f"Using project root: {PROJECT_ROOT}")
+
 # Add project root to path
-project_root = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(project_root)
+if PROJECT_ROOT not in sys.path:
+    sys.path.append(PROJECT_ROOT)
+
+# Import storage manager if available
+try:
+    from Sample_Data.vector_store.storage_manager import StorageManager
+    STORAGE_AVAILABLE = True
+    logger.info("StorageManager successfully imported")
+except ImportError:
+    logger.warning("StorageManager not available - results will not be stored in Weaviate")
+    STORAGE_AVAILABLE = False
 
 def check_chronos_availability():
     """Check if Chronos package is installed and install if needed."""
@@ -65,145 +84,302 @@ def check_cuda_availability():
     if torch.cuda.is_available():
         logger.info(f"CUDA is available. Found {torch.cuda.device_count()} devices.")
         logger.info(f"Using device: {torch.cuda.get_device_name(0)}")
-        return True
+        return "cuda"
     elif hasattr(torch.backends, 'mps') and torch.backends.mps.is_available():
         logger.info("Apple Silicon GPU (MPS) is available.")
-        return True
+        return "mps"
     else:
         logger.warning("No GPU acceleration available. Using CPU.")
-        return False
+        return "cpu"
 
-def detect_data_type(df, filename=""):
+def convert_symbol_for_api(symbol):
     """
-    Detect data type, price denomination, and appropriate scaling.
+    Convert internal symbol format to API-compatible format.
     
     Args:
-        df (pd.DataFrame): DataFrame with price data
-        filename (str): Original filename
+        symbol (str): Internal symbol format (e.g., "BTC_USD")
         
     Returns:
-        dict: Data type information including denomination and scaling
+        tuple: (coin_id, base_symbol, quote_currency)
     """
-    # Check price column exists
-    price_col = None
-    for col_name in ['price', 'close', 'Close', 'last', 'Last', 'lastPrice']:
-        if col_name in df.columns:
-            price_col = col_name
-            break
-    
-    if price_col is None:
-        logger.warning("No price column found, using first numeric column")
-        numeric_cols = df.select_dtypes(include=[np.number]).columns
-        if len(numeric_cols) > 0:
-            price_col = numeric_cols[0]
-            df['price'] = df[price_col]
-        else:
-            logger.error("No numeric columns found in data")
-            return {"type": "unknown", "denomination": "unknown", "scale": 1.0, "symbol": "$"}
-    elif price_col != 'price':
-        df['price'] = df[price_col]
-    
-    # Extract base and quote currency from filename
-    base_currency = "UNKNOWN"
-    quote_currency = "UNKNOWN"
-    
-    # Parse filename for currency info
-    if filename:
-        # Common patterns: BASE_QUOTE, BASE-QUOTE, BASEvsQUOTE
-        currency_patterns = [
-            r'([A-Z]+)[-_/]([A-Z]+)',  # Matches BASE_QUOTE or BASE-QUOTE
-            r'([A-Z]+)vs([A-Z]+)',     # Matches BASEvsQUOTE
-            r'([A-Z]+)([A-Z]{3,4})$'   # Matches BASEUSD or BASEUSDT with no separator
-        ]
-        
-        for pattern in currency_patterns:
-            match = re.search(pattern, filename)
-            if match:
-                base_currency = match.group(1)
-                quote_currency = match.group(2)
-                break
-    
-    # If still unknown, try to detect from data
-    if quote_currency == "UNKNOWN":
-        # Check for common quote currencies in filename
-        for quote in ["USD", "USDT", "USDC", "BTC", "ETH"]:
-            if quote in filename:
-                quote_currency = quote
-                # Extract base (everything before quote)
-                base_parts = filename.split(quote)[0].strip('_-/')
-                # Take the last part (in case there are directory names)
-                base_currency = base_parts.split('/')[-1]
-                break
-    
-    # Get mean price to help with detection
-    mean_price = df['price'].mean()
-    median_price = df['price'].median()
-    max_price = df['price'].max()
-    
-    # Determine price denomination based on values and filename
-    if 'BTC' in quote_currency or (mean_price < 0.1 and 'BTC' in filename):
-        logger.info(f"Detected BTC denomination (mean price: {mean_price:.6f} BTC)")
-        price_denomination = "BTC"
-        price_symbol = "₿"
-        price_scale = 1.0
-    elif any(quote in quote_currency for quote in ['USD', 'USDT', 'USDC']):
-        logger.info(f"Detected USD denomination (mean price: ${mean_price:.2f})")
-        price_denomination = "USD"
-        price_symbol = "$"
-        price_scale = 1.0
+    # Extract base and quote
+    if "_" in symbol:
+        parts = symbol.split("_")
+        base_symbol = parts[0].upper()
+        quote_currency = parts[1].lower() if len(parts) > 1 else "usd"
     else:
-        # Default to USD if unclear
-        logger.info(f"Defaulting to USD denomination (mean price: ${mean_price:.2f})")
-        price_denomination = "USD"
-        price_symbol = "$"
-        price_scale = 1.0
+        # Handle symbols without separator
+        matches = re.match(r"([A-Z]+)([A-Z]{3,4})$", symbol)
+        if matches:
+            base_symbol = matches.group(1).upper()
+            quote_currency = matches.group(2).lower()
+        else:
+            # Default assumption
+            base_symbol = symbol.replace("USD", "").replace("USDT", "").upper()
+            quote_currency = "usd"
     
-    return {
-        "type": f"{base_currency}/{quote_currency}",
-        "base_currency": base_currency,
-        "quote_currency": quote_currency,
-        "denomination": price_denomination,
-        "scale": price_scale,
-        "symbol": price_symbol,
-        "mean_price": mean_price,
-        "median_price": median_price,
-        "max_price": max_price
+    # Map common symbols to CoinGecko IDs
+    coin_id_map = {
+        "BTC": "bitcoin",
+        "ETH": "ethereum",
+        "SOL": "solana",
+        "XRP": "ripple",
+        "BNB": "binancecoin",
+        "ADA": "cardano",
+        "DOT": "polkadot",
+        "DOGE": "dogecoin",
+        "AVAX": "avalanche-2",
+        "MATIC": "matic-network",
+        "LTC": "litecoin"
     }
+    
+    coin_id = coin_id_map.get(base_symbol, base_symbol.lower())
+    
+    return coin_id, base_symbol, quote_currency
 
-def find_csv_file(symbol, data_dir="data/time series cryptos"):
+def format_symbol_for_storage(symbol):
     """
-    Find a CSV file for the given symbol.
+    Format symbol for storage in Weaviate.
+    Converts any symbol format to the standard format used in the database.
+    
+    Args:
+        symbol (str): Symbol in any format (e.g. "BTC", "BTC_USD", "BTCUSD")
+        
+    Returns:
+        str: Formatted symbol for storage (e.g. "BTCUSD")
+    """
+    # Get base and quote parts
+    _, base_symbol, quote_currency = convert_symbol_for_api(symbol)
+    
+    # Format quote currency
+    if quote_currency.lower() in ["usd", "usdt", "usdc"]:
+        quote_formatted = "USD"
+    else:
+        quote_formatted = quote_currency.upper()
+    
+    # Combine into standard format
+    return f"{base_symbol}{quote_formatted}"
+
+def fetch_api_data(symbol, days=365, retries=3, delay=1):
+    """
+    Fetch cryptocurrency data from CoinGecko API.
+    
+    Args:
+        symbol (str): Symbol to fetch (e.g. "BTC_USD")
+        days (int): Number of days of data to fetch
+        retries (int): Number of retry attempts
+        delay (int): Delay between retries in seconds
+        
+    Returns:
+        pd.DataFrame: DataFrame with price data
+    """
+    logger.info(f"Fetching {days} days of data for {symbol} from CoinGecko API")
+    
+    # Convert symbol to API format
+    coin_id, base_symbol, quote_currency = convert_symbol_for_api(symbol)
+    
+    # CoinGecko has limits on number of days for free tier
+    if days > 90:
+        logger.warning(f"CoinGecko may limit historical data to 90 days for free tier. Requested: {days} days")
+    
+    for attempt in range(retries):
+        try:
+            # Get market data including historical prices
+            url = f"https://api.coingecko.com/api/v3/coins/{coin_id}/market_chart"
+            params = {
+                "vs_currency": quote_currency,
+                "days": str(min(days, 365)),  # CoinGecko has limits on days
+                "interval": "daily"
+            }
+            
+            # Add user agent to reduce chance of being blocked
+            headers = {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+                "Accept": "application/json"
+            }
+            
+            response = requests.get(url, params=params, headers=headers, timeout=15)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Process price data (format: [timestamp, price])
+                if "prices" in data and data["prices"]:
+                    price_data = data["prices"]
+                    
+                    # Get volume data if available
+                    volume_data = data.get("total_volumes", [])
+                    has_volume = len(volume_data) == len(price_data)
+                    
+                    # Convert to DataFrame
+                    df = pd.DataFrame(price_data, columns=["timestamp", "price"])
+                    
+                    # Add volume if available
+                    if has_volume:
+                        df["volume"] = [v[1] for v in volume_data]
+                    
+                    # Convert timestamp (milliseconds) to datetime
+                    df["timestamp"] = pd.to_datetime(df["timestamp"], unit="ms")
+                    
+                    # Set timestamp as index
+                    df = df.set_index("timestamp")
+                    
+                    # Sort by date
+                    df = df.sort_index()
+                    
+                    # Fill missing data using forward and backward fill
+                    df = df.ffill().bfill()
+                    
+                    logger.info(f"Successfully fetched {len(df)} days of data from CoinGecko API")
+                    return df
+                
+                logger.warning(f"No price data found in API response for {coin_id}")
+                
+            elif response.status_code == 429:
+                # Rate limit hit, wait longer before retry
+                wait_time = delay * (attempt + 1) * 2
+                logger.warning(f"Rate limit hit (429). Waiting {wait_time} seconds before retry {attempt+1}/{retries}")
+                time.sleep(wait_time)
+                continue
+                
+            else:
+                logger.warning(f"Failed to fetch data from CoinGecko (status: {response.status_code})")
+                
+            # Wait before retry
+            if attempt < retries - 1:
+                time.sleep(delay)
+                
+        except Exception as e:
+            logger.error(f"Error fetching API data (attempt {attempt+1}/{retries}): {e}")
+            if attempt < retries - 1:
+                time.sleep(delay)
+    
+    # If all attempts failed, try alternative API provider
+    logger.warning("Failed to fetch data from CoinGecko, trying alternative API...")
+    return fetch_alternative_api_data(symbol, days)
+
+def fetch_alternative_api_data(symbol, days=365):
+    """
+    Fetch cryptocurrency data from an alternative API (CryptoCompare).
+    
+    Args:
+        symbol (str): Symbol to fetch (e.g. "BTC_USD")
+        days (int): Number of days of data to fetch
+        
+    Returns:
+        pd.DataFrame: DataFrame with latest price data
+    """
+    try:
+        # Convert symbol to API format
+        _, base_symbol, quote_currency = convert_symbol_for_api(symbol)
+        
+        # Format for CryptoCompare
+        base_sym = base_symbol.upper()
+        quote_sym = quote_currency.upper()
+        
+        # Get daily historical data (OHLCV)
+        url = "https://min-api.cryptocompare.com/data/v2/histoday"
+        params = {
+            "fsym": base_sym,
+            "tsym": quote_sym,
+            "limit": min(days, 2000),  # Maximum limit is 2000
+            "aggregate": 1
+        }
+        
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+        }
+        
+        response = requests.get(url, params=params, headers=headers, timeout=15)
+        
+        if response.status_code == 200:
+            data = response.json()
+            
+            if data.get("Response") == "Success" and "Data" in data:
+                price_data = data["Data"]["Data"]
+                
+                # Convert to DataFrame
+                df = pd.DataFrame(price_data)
+                
+                if "time" in df.columns:
+                    # Convert Unix timestamp to datetime
+                    df["timestamp"] = pd.to_datetime(df["time"], unit="s")
+                    df = df.set_index("timestamp")
+                    
+                    # Use close price as the main price
+                    if "close" in df.columns:
+                        df["price"] = df["close"]
+                    
+                    # Sort by date
+                    df = df.sort_index()
+                    
+                    # Fill missing data
+                    df = df.fillna(method="ffill").fillna(method="bfill")
+                    
+                    logger.info(f"Successfully fetched {len(df)} days of data from CryptoCompare API")
+                    return df
+        
+        logger.warning(f"Failed to fetch data from alternative API (status: {response.status_code})")
+        return None
+        
+    except Exception as e:
+        logger.error(f"Error fetching from alternative API: {e}")
+        return None
+
+def find_csv_file(symbol):
+    """
+    Find a CSV file for the given symbol using a robust approach.
     
     Args:
         symbol (str): Trading symbol (e.g., "BTC", "ETH")
-        data_dir (str): Directory containing CSV files
         
     Returns:
         str: Path to the CSV file or None if not found
     """
-    # Normalize path
-    data_dir = os.path.join(project_root, data_dir)
-    
-    # Make sure directory exists
-    if not os.path.exists(data_dir):
-        logger.error(f"Data directory not found: {data_dir}")
-        return None
-    
-    # Normalize symbol to uppercase
     symbol = symbol.upper()
     
-    # Look for exact match first
-    for filename in os.listdir(data_dir):
-        if filename.endswith('.csv'):
-            if symbol in filename.upper():
-                return os.path.join(data_dir, filename)
+    # Try all possible data directories
+    possible_dirs = [
+        os.path.join(PROJECT_ROOT, "data", "time series cryptos"),
+        os.path.join(PROJECT_ROOT, "data", "time_series_cryptos"),
+        os.path.join(PROJECT_ROOT, "Sample_Data", "data", "time_series"),
+        os.path.join(PROJECT_ROOT, "data")
+    ]
     
-    # If no exact match, look for partial match
-    base_symbol = symbol.replace("USDT", "").replace("USD", "")
-    for filename in os.listdir(data_dir):
-        if filename.endswith('.csv'):
-            if base_symbol in filename.upper():
-                return os.path.join(data_dir, filename)
+    # Search for CSV files in all directories
+    for data_dir in possible_dirs:
+        if not os.path.exists(data_dir):
+            continue
+            
+        logger.info(f"Searching for {symbol} in {data_dir}")
+        
+        # Search pattern based on symbol
+        patterns = [
+            f"*{symbol}*.csv",
+            f"*{symbol.replace('USDT', '')}*.csv",
+            f"*{symbol.replace('USD', '')}*.csv"
+        ]
+        
+        for pattern in patterns:
+            matching_files = glob.glob(os.path.join(data_dir, pattern))
+            if matching_files:
+                logger.info(f"Found matching files: {matching_files}")
+                return matching_files[0]
+    
+    # Use a more aggressive search approach if needed
+    for data_dir in possible_dirs:
+        if not os.path.exists(data_dir):
+            continue
+            
+        all_csv_files = glob.glob(os.path.join(data_dir, "*.csv"))
+        
+        # Try to find partial matches
+        for csv_file in all_csv_files:
+            filename = os.path.basename(csv_file).upper()
+            base_symbol = symbol.replace("USDT", "").replace("USD", "")
+            if base_symbol in filename:
+                logger.info(f"Found partial match: {csv_file}")
+                return csv_file
     
     logger.error(f"No CSV file found for symbol: {symbol}")
     return None
@@ -214,10 +390,10 @@ def load_csv_data(file_path, lookback_days=365):
     
     Args:
         file_path (str): Path to CSV file
-        lookback_days (int): Number of days of historical data to use
+        lookback_days (int): Number of days to look back
         
     Returns:
-        tuple: (DataFrame, data_type_info)
+        pd.DataFrame: DataFrame with price data
     """
     logger.info(f"Loading data from: {file_path}")
     filename = os.path.basename(file_path)
@@ -277,340 +453,407 @@ def load_csv_data(file_path, lookback_days=365):
         # Set timestamp as index
         df = df.set_index('timestamp')
         
+        # Look for price columns
+        price_columns = ['price', 'close', 'Close', 'last', 'Last', 'Price', 'value', 'Value']
+        price_col = None
+        
+        for col in price_columns:
+            if col in df.columns:
+                price_col = col
+                break
+        
+        if price_col is None:
+            # Try to find a column that might contain price data
+            numeric_cols = df.select_dtypes(include=[np.number]).columns
+            if len(numeric_cols) > 0:
+                price_col = numeric_cols[0]
+                logger.warning(f"No clear price column found, using first numeric column: {price_col}")
+            else:
+                logger.error("No numeric columns found for price data")
+                return None
+        
+        # Create a standardized 'price' column
+        if price_col != 'price':
+            # Convert price column to numeric, handling comma-separated numbers
+            df['price'] = pd.to_numeric(df[price_col].astype(str).str.replace(',', ''), errors='coerce')
+        
+        # Fill any NaNs using forward and backward fill
+        df['price'] = df['price'].ffill().bfill()
+        
+        # Detect if this is USD or BTC denominated
+        mean_price = df['price'].mean()
+        
+        if 'BTC' in filename or mean_price < 0.1:
+            logger.info(f"Detected BTC denomination (mean price: {mean_price:.6f} BTC)")
+            price_denomination = "BTC"
+            currency_symbol = "₿"
+        else:
+            logger.info(f"Detected USD denomination (mean price: ${mean_price:.2f})")
+            price_denomination = "USD"
+            currency_symbol = "$"
+        
         # Sort by index
         df = df.sort_index()
-        
-        # Detect data type and price format
-        data_type_info = detect_data_type(df, filename)
         
         # Extract the lookback period
         if len(df) > lookback_days:
             df = df.iloc[-lookback_days:]
         
+        # Add metadata to DataFrame
+        df.attrs['currency_symbol'] = currency_symbol
+        df.attrs['price_denomination'] = price_denomination
+        df.attrs['mean_price'] = mean_price
+        df.attrs['median_price'] = df['price'].median()
+        df.attrs['filename'] = filename
+        
+        # Log the first and last row for verification
+        logger.info(f"First row: {df.iloc[0]['price']} at {df.index[0]}")
+        logger.info(f"Last row: {df.iloc[-1]['price']} at {df.index[-1]}")
         logger.info(f"Loaded {len(df)} data points from CSV")
-        return df, data_type_info
+        
+        return df
         
     except Exception as e:
         logger.error(f"Error loading CSV file: {e}")
         import traceback
         logger.error(traceback.format_exc())
-        return None, None
+        return None
 
-def load_time_series_data(symbol, lookback_days=365, use_csv=True):
+def load_historical_data(symbol, lookback_days=365, api_days=90):
     """
-    Load cryptocurrency data from either CSV files or Weaviate.
+    Load historical data from API and/or CSV.
     
     Args:
-        symbol (str): Trading symbol (e.g., "BTC", "ETH")
-        lookback_days (int): Number of days of historical data to use
-        use_csv (bool): Whether to load from CSV (True) or Weaviate (False)
+        symbol (str): Trading symbol (e.g., "BTC_USD")
+        lookback_days (int): Total days of historical data to use
+        api_days (int): Days of API data to fetch
         
     Returns:
-        tuple: (DataFrame, data_type_info)
+        pd.DataFrame: DataFrame with price data
     """
     logger.info(f"Loading historical data for {symbol}")
     
-    if use_csv:
-        # Find a CSV file for this symbol
-        csv_file = find_csv_file(symbol)
-        if csv_file:
-            return load_csv_data(csv_file, lookback_days)
+    # First try to find a CSV file
+    csv_file = find_csv_file(symbol)
     
-    # If CSV loading failed or not requested, try Weaviate
-    try:
-        from Sample_Data.vector_store.storage_manager import StorageManager
+    if csv_file:
+        # Load data from CSV
+        data = load_csv_data(csv_file, lookback_days)
         
-        storage = StorageManager()
-        try:
-            # Retrieve time series data
-            data = storage.retrieve_time_series(symbol, limit=lookback_days)
-            
-            if not data or len(data) == 0:
-                logger.error(f"No data found for {symbol} in Weaviate")
-                return None, None
-                
-            # Convert to DataFrame and prepare
-            df = pd.DataFrame(data)
-            
-            # Create timestamp index
-            df['timestamp'] = pd.to_datetime(df['timestamp'])
-            df = df.set_index('timestamp')
-            
-            # Create 'price' column if needed
-            if 'price' not in df.columns:
-                if 'close' in df.columns:
-                    df['price'] = df['close']
-                else:
-                    logger.warning("No price or close column found in Weaviate data")
-                    return None, None
-            
-            # Sort by timestamp
-            df = df.sort_index()
-            
-            # Detect data type
-            data_type_info = detect_data_type(df, symbol)
-            
-            logger.info(f"Loaded {len(df)} data points from Weaviate")
-            return df, data_type_info
-            
-        finally:
-            storage.close()
-            
-    except Exception as e:
-        logger.error(f"Error loading data from Weaviate: {e}")
-        return None, None
+        if data is not None:
+            logger.info(f"Loaded {len(data)} data points for {symbol}")
+            return data
+    
+    # If CSV file not found or loading failed, try API
+    logger.info(f"No CSV data available, fetching from API...")
+    api_data = fetch_api_data(symbol, days=min(lookback_days, 365))
+    
+    if api_data is not None:
+        logger.info(f"Loaded {len(api_data)} data points for {symbol}")
+        
+        # Add metadata to DataFrame
+        _, base_symbol, quote_currency = convert_symbol_for_api(symbol)
+        price_denomination = "BTC" if "BTC" in quote_currency.upper() else "USD"
+        currency_symbol = "₿" if price_denomination == "BTC" else "$"
+        
+        mean_price = api_data['price'].mean()
+        
+        api_data.attrs['currency_symbol'] = currency_symbol
+        api_data.attrs['price_denomination'] = price_denomination
+        api_data.attrs['mean_price'] = mean_price
+        api_data.attrs['median_price'] = api_data['price'].median()
+        api_data.attrs['filename'] = f"{symbol}_API_Data"
+        
+        return api_data
+    
+    logger.error(f"Failed to load any data for {symbol}")
+    return None
 
-def generate_forecast(data, data_info, model_name, days_ahead, num_samples=100):
+def initialize_chronos_model(model_name="amazon/chronos-t5-small", device="cpu"):
     """
-    Generate cryptocurrency forecasts using Amazon's Chronos model.
+    Initialize Chronos model.
     
     Args:
-        data (pd.DataFrame): Historical price data
-        data_info (dict): Information about the data type and format
-        model_name (str): Chronos model to use
-        days_ahead (int): Number of days to forecast
-        num_samples (int): Number of samples for uncertainty quantification
+        model_name (str): Name of the Chronos model to use
+        device (str): Device to use for inference
         
     Returns:
-        tuple: (forecast_results, market_insights, plot_path)
+        model: Initialized Chronos model
     """
+    logger.info(f"Initializing Chronos forecaster with model: {model_name}")
+    
     try:
-        # Import the ChronosForecaster
-        from models.chronos.chronos_crypto_forecaster import ChronosForecaster
+        from chronos import BaseChronosPipeline
         
-        # Check for GPU availability and set appropriate device
-        use_gpu = check_cuda_availability()
+        # Determine torch dtype
+        if device == "cuda" and torch.cuda.is_available():
+            torch_dtype = torch.bfloat16 if hasattr(torch, 'bfloat16') else torch.float16
+        else:
+            torch_dtype = torch.float32
         
-        # Initialize the forecaster
-        logger.info(f"Initializing Chronos forecaster with model: {model_name}")
-        forecaster = ChronosForecaster(
-            model_name=model_name,
-            use_gpu=use_gpu
+        logger.info(f"Loading Chronos model: {model_name}")
+        model = BaseChronosPipeline.from_pretrained(
+            model_name,
+            device_map="auto" if device == "cuda" else device,
+            torch_dtype=torch_dtype
         )
+        
+        return model
+        
+    except Exception as e:
+        logger.error(f"Error initializing Chronos model: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
+        return None
+
+def generate_forecast(model, data, days_ahead=7, num_samples=10):
+    """
+    Generate forecast using Chronos model.
+    
+    Args:
+        model: Chronos model
+        data (pd.DataFrame): Historical price data
+        days_ahead (int): Number of days to forecast
+        num_samples (int): Number of samples to generate
+        
+    Returns:
+        dict: Forecast results
+    """
+    logger.info(f"Generating {days_ahead}-day forecast for {data.attrs['filename']}")
+    
+    try:
+        # Prepare input data
+        prices = data['price'].values
+        
+        # Use the last 90 days of data as context
+        context_length = min(90, len(prices))
+        context = prices[-context_length:]
+        
+        # Normalize context
+        context_mean = np.mean(context)
+        context_std = np.std(context)
+        
+        if context_std > 0:
+            normalized_context = (context - context_mean) / context_std
+        else:
+            # Handle zero variance case
+            normalized_context = context - context_mean
+            logger.warning("Zero standard deviation in context data, using mean subtraction only")
+        
+        # Convert to torch tensor
+        context_tensor = torch.tensor(normalized_context, dtype=torch.float32).unsqueeze(0)
         
         # Generate forecast
-        symbol = data_info['type']
-        logger.info(f"Generating {days_ahead}-day forecast for {symbol}")
-        forecast_results = forecaster.forecast(
-            data,
+        samples = model.predict(
+            context=context_tensor,
             prediction_length=days_ahead,
-            num_samples=num_samples,
-            quantile_levels=[0.1, 0.5, 0.9]  # 80% prediction interval
+            num_samples=num_samples
         )
         
-        # Create visualization with custom formatting for this data type
-        logger.info("Creating forecast visualization")
+        # Get quantiles
+        quantiles, mean = model.predict_quantiles(
+            context=context_tensor,
+            prediction_length=days_ahead,
+            quantile_levels=[0.1, 0.5, 0.9]
+        )
+        
+        # Convert predictions back to original scale
+        def denormalize(norm_values):
+            if isinstance(norm_values, torch.Tensor):
+                return norm_values.cpu().numpy() * context_std + context_mean
+            return norm_values * context_std + context_mean
+        
+        # Extract predictions
+        median_forecast = quantiles[0, :, 1].cpu().numpy()  # 0.5 quantile (median)
+        mean_forecast = mean[0].cpu().numpy()
+        lower_bound = quantiles[0, :, 0].cpu().numpy()  # 0.1 quantile
+        upper_bound = quantiles[0, :, 2].cpu().numpy()  # 0.9 quantile
+        
+        # Denormalize predictions
+        median_forecast_denorm = denormalize(median_forecast)
+        mean_forecast_denorm = denormalize(mean_forecast)
+        lower_bound_denorm = denormalize(lower_bound)
+        upper_bound_denorm = denormalize(upper_bound)
+        
+        # Generate forecast dates
+        last_date = data.index[-1]
+        forecast_dates = [last_date + timedelta(days=i+1) for i in range(days_ahead)]
+        
+        # Create forecast visualization
         plot_path = create_forecast_visualization(
-            data,
-            forecast_results,
-            data_info,
-            days_ahead
+            data, 
+            forecast_dates, 
+            median_forecast_denorm, 
+            lower_bound_denorm, 
+            upper_bound_denorm
         )
         
         # Generate market insights
-        logger.info("Generating market insights")
         market_insights = generate_market_insights(
-            data,
-            forecast_results,
-            data_info
+            data, 
+            median_forecast_denorm, 
+            quantiles.cpu().numpy(),
+            samples.cpu().numpy(),
+            context_std,
+            context_mean
         )
         
-        return forecast_results, market_insights, plot_path
+        # Prepare results
+        forecast_results = {
+            'symbol': data.attrs.get('filename', 'Unknown').split('.')[0],
+            'dates': forecast_dates,
+            'median_forecast': median_forecast_denorm.tolist(),
+            'mean_forecast': mean_forecast_denorm.tolist(),
+            'lower_bound': lower_bound_denorm.tolist(),
+            'upper_bound': upper_bound_denorm.tolist(),
+            'current_price': float(data['price'].iloc[-1]),
+            'forecast_price': float(median_forecast_denorm[-1]),
+            'change_pct': float(market_insights['change_pct']),
+            'market_insights': market_insights,
+            'plot_path': plot_path
+        }
+        
+        return forecast_results
         
     except Exception as e:
         logger.error(f"Error generating forecast: {e}")
         import traceback
         logger.error(traceback.format_exc())
-        return None, None, None
+        return None
 
-def create_forecast_visualization(data, forecast_results, data_info, days_ahead):
+def create_forecast_visualization(data, forecast_dates, forecast, lower_bound, upper_bound):
     """
-    Create visualization of forecast results with proper formatting.
+    Create visualization of forecast.
     
     Args:
         data (pd.DataFrame): Historical price data
-        forecast_results (dict): Results from forecast
-        data_info (dict): Information about the data type
-        days_ahead (int): Number of days in forecast
+        forecast_dates (list): List of dates for forecast period
+        forecast (np.array): Median forecast values
+        lower_bound (np.array): Lower bound of forecast (10th percentile)
+        upper_bound (np.array): Upper bound of forecast (90th percentile)
         
     Returns:
-        str: Path to saved visualization
+        str: Path to saved plot
     """
-    # Create output directory
-    os.makedirs("plots", exist_ok=True)
+    logger.info("Creating forecast visualization")
     
-    # Extract symbol and pricing information
-    symbol = data_info['type']
-    price_symbol = data_info['symbol']
-    base_currency = data_info['base_currency']
-    quote_currency = data_info['quote_currency']
-    
-    # Extract forecast components
-    dates = forecast_results['dates']
-    
-    # Get quantiles and mean
-    quantiles = forecast_results['quantiles'][0]
-    quantile_levels = forecast_results['quantile_levels']
-    mean = forecast_results['mean'][0]
-    
-    # Find index of median or closest to median
-    if 0.5 in quantile_levels:
-        median_idx = quantile_levels.index(0.5)
-    else:
-        median_idx = len(quantile_levels) // 2
+    try:
+        # Create output directory
+        os.makedirs("plots", exist_ok=True)
         
-    # Get lower, median, and upper bounds
-    low_idx = 0  # Lowest quantile
-    high_idx = len(quantile_levels) - 1  # Highest quantile
-    
-    median_forecast = quantiles[:, median_idx]
-    lower_bound = quantiles[:, low_idx]
-    upper_bound = quantiles[:, high_idx]
-    
-    # Create the plot
-    plt.figure(figsize=(12, 6))
-    plt.style.use('seaborn-v0_8-whitegrid')
-    
-    # Plot historical data (last 120 days or all if less)
-    history_len = min(120, len(data))
-    recent_data = data.iloc[-history_len:]
-    plt.plot(recent_data.index, recent_data['price'], 'b-', linewidth=2, label='Historical Price')
-    
-    # Plot forecast
-    plt.plot(dates, median_forecast, 'r-', linewidth=2, label='Median Forecast')
-    
-    # Plot prediction interval
-    plt.fill_between(
-        dates,
-        lower_bound,
-        upper_bound,
-        color='red',
-        alpha=0.2,
-        label=f'{int((max(quantile_levels) - min(quantile_levels)) * 100)}% Prediction Interval'
-    )
-    
-    # Add some sample paths from the full distribution
-    samples = forecast_results['samples'][0]
-    num_paths = min(10, samples.shape[0])
-    for i in range(num_paths):
-        plt.plot(dates, samples[i], 'r-', linewidth=0.5, alpha=0.3)
-    
-    # Get current price and final forecast for annotations
-    current_price = data['price'].iloc[-1]
-    final_forecast = median_forecast[-1]
-    change_pct = ((final_forecast / current_price) - 1) * 100
-    
-    # Format plot
-    title = f"{base_currency}/{quote_currency} Price Forecast (Chronos)"
-    plt.title(title, fontsize=16, fontweight='bold')
-    plt.xlabel('Date', fontsize=12)
-    
-    if data_info['denomination'] == 'BTC':
-        plt.ylabel('Price (BTC)', fontsize=12)
-    else:
-        plt.ylabel('Price (USD)', fontsize=12)
+        # Get metadata from DataFrame
+        symbol = data.attrs.get('filename', 'Unknown').split('.')[0]
+        currency_symbol = data.attrs.get('currency_symbol', '$')
+        price_denomination = data.attrs.get('price_denomination', 'USD')
         
-    plt.legend(loc='best', fontsize=10)
-    plt.grid(True, alpha=0.3)
-    
-    # Format y-axis as currency
-    from matplotlib.ticker import FuncFormatter
-    
-    if data_info['denomination'] == 'BTC':
-        plt.gca().yaxis.set_major_formatter(FuncFormatter(lambda x, p: f'₿{x:.6f}'))
-    else:
-        # Determine appropriate format based on price range
-        if data_info['median_price'] < 0.1:
-            plt.gca().yaxis.set_major_formatter(FuncFormatter(lambda x, p: f'${x:.4f}'))
-        elif data_info['median_price'] < 1.0:
-            plt.gca().yaxis.set_major_formatter(FuncFormatter(lambda x, p: f'${x:.2f}'))
+        # Create plot
+        plt.figure(figsize=(12, 6))
+        
+        # Plot historical data (last 90 days to keep it readable)
+        history_len = min(90, len(data))
+        recent_data = data.iloc[-history_len:]
+        plt.plot(recent_data.index, recent_data['price'], 'b-', linewidth=2, label='Historical Price')
+        
+        # Plot forecast
+        plt.plot(forecast_dates, forecast, 'g-', linewidth=2, label='Forecast (Median)')
+        
+        # Plot uncertainty bands
+        plt.fill_between(forecast_dates, lower_bound, upper_bound, color='g', alpha=0.2, label='80% Confidence Interval')
+        
+        # Format plot
+        plt.title(f"{symbol} Price Forecast", fontsize=16, fontweight='bold')
+        plt.xlabel('Date', fontsize=12)
+        plt.ylabel(f'Price ({price_denomination})', fontsize=12)
+        plt.legend(loc='best')
+        plt.grid(True, alpha=0.3)
+        
+        # Format y-axis based on price denomination
+        from matplotlib.ticker import FuncFormatter
+        
+        if price_denomination == 'BTC':
+            plt.gca().yaxis.set_major_formatter(FuncFormatter(lambda x, p: f'₿{x:.6f}'))
         else:
-            plt.gca().yaxis.set_major_formatter(FuncFormatter(lambda x, p: f'${x:,.2f}'))
-    
-    # Add annotations for forecast starting point
-    plt.annotate(
-        f"Last observed: {price_symbol}{current_price:.2f}" if current_price >= 1 else f"Last observed: {price_symbol}{current_price:.6f}",
-        (data.index[-1], current_price),
-        textcoords="offset points",
-        xytext=(0, 10),
-        ha='center',
-        fontsize=9,
-        bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="gray", alpha=0.8)
-    )
-    
-    # Add annotation for median forecast endpoint
-    plt.annotate(
-        f"Forecast: {price_symbol}{final_forecast:.2f}" if final_forecast >= 1 else f"Forecast: {price_symbol}{final_forecast:.6f}",
-        (dates[-1], final_forecast),
-        textcoords="offset points",
-        xytext=(0, 10),
-        ha='center',
-        fontsize=9,
-        bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="gray", alpha=0.8)
-    )
-    
-    # Rotate date labels
-    plt.gcf().autofmt_xdate()
-    
-    # Tight layout
-    plt.tight_layout()
-    
-    # Save plot
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    filename = f"plots/{base_currency}_{quote_currency}_forecast_{timestamp}.png"
-    plt.savefig(filename, dpi=300, bbox_inches='tight')
-    logger.info(f"Forecast plot saved to {filename}")
-    plt.close()
-    
-    return filename
+            mean_price = data.attrs.get('mean_price', 0)
+            if mean_price < 0.1:
+                plt.gca().yaxis.set_major_formatter(FuncFormatter(lambda x, p: f'${x:.4f}'))
+            elif mean_price < 1.0:
+                plt.gca().yaxis.set_major_formatter(FuncFormatter(lambda x, p: f'${x:.2f}'))
+            else:
+                plt.gca().yaxis.set_major_formatter(FuncFormatter(lambda x, p: f'${x:,.2f}'))
+        
+        # Rotate date labels
+        plt.gcf().autofmt_xdate()
+        
+        # Save plot
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        filename = f"plots/{symbol}_forecast_{timestamp}.png"
+        plt.savefig(filename, dpi=300, bbox_inches='tight')
+        logger.info(f"Forecast plot saved to {filename}")
+        plt.close()
+        
+        return filename
+        
+    except Exception as e:
+        logger.error(f"Error creating visualization: {e}")
+        return None
 
-def generate_market_insights(data, forecast_results, data_info):
+def generate_market_insights(data, forecast, quantiles, samples, context_std, context_mean):
     """
-    Generate market insights from forecast results.
+    Generate market insights from forecast.
     
     Args:
         data (pd.DataFrame): Historical price data
-        forecast_results (dict): Results from forecast
-        data_info (dict): Information about the data type
+        forecast (np.array): Median forecast values
+        quantiles (np.array): Quantile forecasts
+        samples (np.array): Sample forecasts
+        context_std (float): Standard deviation of context data
+        context_mean (float): Mean of context data
         
     Returns:
         dict: Market insights
     """
-    # Extract necessary information
-    symbol = data_info['type']
-    price_symbol = data_info['symbol']
-    base_currency = data_info['base_currency']
-    quote_currency = data_info['quote_currency']
-    
-    # Get current price
+    # Get current price and forecast final price
     current_price = data['price'].iloc[-1]
+    final_forecast = forecast[-1]
     
-    # Extract forecast components
-    quantiles = forecast_results['quantiles'][0]
-    quantile_levels = forecast_results['quantile_levels']
-    mean = forecast_results['mean'][0]
-    
-    # Find index of median or closest to median
-    if 0.5 in quantile_levels:
-        median_idx = quantile_levels.index(0.5)
-    else:
-        median_idx = len(quantile_levels) // 2
-        
-    # Get lower, median, and upper bounds
-    low_idx = 0  # Lowest quantile
-    high_idx = len(quantile_levels) - 1  # Highest quantile
-    
-    median_forecast = quantiles[:, median_idx]
-    final_forecast = median_forecast[-1]
+    # Calculate percent change
     change_pct = ((final_forecast / current_price) - 1) * 100
     
-    # Calculate uncertainty
-    uncertainty = (quantiles[:, high_idx] - quantiles[:, low_idx]) / median_forecast * 100
-    avg_uncertainty = np.mean(uncertainty)
+    # Calculate uncertainty (using numpy operations)
+    # Fix for the error: Handle the quantiles shape correctly
+    if len(quantiles.shape) == 3:
+        # Assuming shape is (batch, time, quantile)
+        lower_values = quantiles[0, :, 0] * context_std + context_mean  # 0.1 quantile
+        upper_values = quantiles[0, :, 2] * context_std + context_mean  # 0.9 quantile
+        median_values = quantiles[0, :, 1] * context_std + context_mean  # 0.5 quantile
+        
+        # Calculate uncertainty as percentage of median
+        uncertainty_values = np.zeros(len(median_values))
+        for i in range(len(median_values)):
+            if median_values[i] != 0:  # Avoid division by zero
+                uncertainty_values[i] = ((upper_values[i] - lower_values[i]) / median_values[i]) * 100
+            else:
+                uncertainty_values[i] = 0
+        
+        # Calculate average uncertainty
+        avg_uncertainty = float(np.mean(uncertainty_values))
+    else:
+        # Fallback if the shape is unexpected
+        avg_uncertainty = 10.0  # Default value
+        logger.warning(f"Unexpected quantiles shape: {quantiles.shape}, using default uncertainty")
     
-    # Get samples for probability calculation
-    samples = forecast_results['samples'][0]
-    prob_increase = np.mean(samples[:, -1] > current_price) * 100
+    # Calculate probability of increase
+    # Fix for potential shape issues with samples
+    if isinstance(samples, np.ndarray) and len(samples.shape) >= 2:
+        # Get the last prediction point from each sample
+        final_samples = samples[:, -1] if len(samples.shape) == 2 else samples[:, 0, -1]
+        # Denormalize
+        final_samples = final_samples * context_std + context_mean
+        # Calculate probability of increase
+        prob_increase = float(np.mean(final_samples > current_price) * 100)
+    else:
+        prob_increase = 50.0  # Default value
+        logger.warning(f"Unexpected samples shape: {type(samples)}, using default probability")
     
     # Determine trend
     if change_pct > 5:
@@ -624,13 +867,23 @@ def generate_market_insights(data, forecast_results, data_info):
     else:
         trend = "neutral"
     
+    # Format coin name
+    symbol = data.attrs.get('filename', 'Unknown').split('.')[0]
+    if "_" in symbol:
+        parts = symbol.split("_")
+        base_symbol = parts[0].upper()
+        quote_currency = parts[1].upper()
+    else:
+        base_symbol = symbol.replace("USD", "").replace("USDT", "").upper()
+        quote_currency = "USD"
+    
     # Generate insight text
     if trend in ["strongly bullish", "bullish"]:
-        insight = f"Chronos forecasts a {trend} outlook for {base_currency}/{quote_currency} with a projected increase of {change_pct:.2f}% over the next {len(median_forecast)} days."
+        insight = f"Chronos forecasts a {trend} outlook for {base_symbol}/{quote_currency} with a projected increase of {change_pct:.2f}% in the forecast period."
     elif trend in ["strongly bearish", "bearish"]:
-        insight = f"Chronos forecasts a {trend} outlook for {base_currency}/{quote_currency} with a projected decrease of {abs(change_pct):.2f}% over the next {len(median_forecast)} days."
+        insight = f"Chronos forecasts a {trend} outlook for {base_symbol}/{quote_currency} with a projected decrease of {abs(change_pct):.2f}% in the forecast period."
     else:
-        insight = f"Chronos forecasts a {trend} outlook for {base_currency}/{quote_currency} with minimal price movement (expected change: {change_pct:.2f}%) over the next {len(median_forecast)} days."
+        insight = f"Chronos forecasts a {trend} outlook for {base_symbol}/{quote_currency} with minimal price movement (expected change: {change_pct:.2f}%) in the forecast period."
         
     # Add probability context
     if prob_increase > 75:
@@ -652,276 +905,90 @@ def generate_market_insights(data, forecast_results, data_info):
     else:
         insight += f" The forecast shows relatively low uncertainty (±{avg_uncertainty:.1f}% on average)."
     
-    # Compile insights
-    results = {
-        "symbol": symbol,
-        "base_currency": base_currency,
-        "quote_currency": quote_currency,
-        "current_price": float(current_price),
-        "final_forecast": float(final_forecast),
-        "change_pct": float(change_pct),
-        "trend": trend,
-        "probability_increase": float(prob_increase),
-        "average_uncertainty": float(avg_uncertainty),
-        "insight": insight,
-        "generated_at": datetime.now().isoformat()
+    # Return market insights
+    return {
+        'trend': trend,
+        'change_pct': change_pct,
+        'prob_increase': prob_increase,
+        'avg_uncertainty': avg_uncertainty,
+        'insight': insight
     }
-    
-    return results
 
-def store_forecast(forecast_results, market_insights, data_info, model_name, days_ahead, plot_path):
+def store_forecast_results(forecast_data):
     """
     Store forecast results in Weaviate.
     
     Args:
-        forecast_results (dict): Results from Chronos forecast
-        market_insights (dict): Market insights generated from forecast
-        data_info (dict): Information about the data type and format
-        model_name (str): Name of the model used
-        days_ahead (int): Number of days in forecast horizon
-        plot_path (str): Path to saved visualization
+        forecast_data (dict): Forecast data
         
     Returns:
-        bool: Success status
+        bool: Success or failure
     """
+    if not STORAGE_AVAILABLE:
+        logger.warning("StorageManager not available - forecast not stored")
+        return False
+        
+    storage_manager = None
     try:
-        #from Sample_Data.vector_store.forecast_storage import store_chronos_forecast
+        # Initialize storage manager
+        storage_manager = StorageManager()
+        storage_manager.connect()
+        logger.info("Connected to Weaviate for storage")
         
-        base_currency = data_info['base_currency']
-        quote_currency = data_info['quote_currency']
-        symbol = f"{base_currency}{quote_currency}"
+        # Prepare forecast data for storage
+        formatted_symbol = format_symbol_for_storage(forecast_data['symbol'])
         
-        logger.info(f"Storing forecast for {symbol} in Weaviate")
-        success = store_chronos_forecast(
-            forecast_results=forecast_results,
-            market_insights=market_insights,
-            symbol=symbol,
-            model_name=model_name,
-            days_ahead=days_ahead,
-            plot_path=plot_path
-        )
+        storage_data = {
+            "symbol": formatted_symbol,
+            "forecast_timestamp": datetime.now().isoformat(),
+            "model_name": "chronos",
+            "model_type": "transformer",
+            "days_ahead": len(forecast_data['dates']),
+            "current_price": forecast_data['current_price'],
+            "forecast_dates": [d.isoformat() for d in forecast_data['dates']],
+            "forecast_values": forecast_data['median_forecast'],
+            "lower_bounds": forecast_data['lower_bound'],
+            "upper_bounds": forecast_data['upper_bound'],
+            "final_forecast": forecast_data['forecast_price'],
+            "change_pct": forecast_data['change_pct'],
+            "trend": forecast_data['market_insights']['trend'],
+            "probability_increase": forecast_data['market_insights']['prob_increase'],
+            "average_uncertainty": forecast_data['market_insights']['avg_uncertainty'],
+            "insight": forecast_data['market_insights']['insight']
+        }
+        
+        # Store the forecast
+        success = storage_manager.store_forecast(storage_data)
         
         if success:
-            logger.info("Forecast successfully stored")
+            logger.info(f"Successfully stored forecast for {formatted_symbol}")
         else:
-            logger.error("Failed to store forecast")
+            logger.error(f"Failed to store forecast for {formatted_symbol}")
             
         return success
         
     except Exception as e:
         logger.error(f"Error storing forecast: {e}")
         return False
-
-def analyze_forecast_history(symbol, date_range=30):
-    """
-    Analyze forecast history and performance for a symbol.
-    
-    Args:
-        symbol (str): Trading symbol
-        date_range (int): Number of days to look back
-        
-    Returns:
-        dict: Forecast comparison analysis
-    """
-    try:
-        from Sample_Data.vector_store.forecast_storage import compare_forecasts
-        
-        logger.info(f"Analyzing forecast history for {symbol}")
-        results = compare_forecasts(symbol, date_range)
-        
-        return results
-        
-    except Exception as e:
-        logger.error(f"Error analyzing forecast history: {e}")
-        return {"error": str(e)}
-
-def list_available_coins():
-    """
-    List available cryptocurrency data files.
-    
-    Returns:
-        list: List of available cryptocurrencies
-    """
-    data_dir = os.path.join(project_root, "data", "time series cryptos")
-    
-    if not os.path.exists(data_dir):
-        logger.error(f"Data directory not found: {data_dir}")
-        return []
-    
-    available_coins = []
-    
-    for filename in os.listdir(data_dir):
-        if not filename.endswith('.csv'):
-            continue
-            
-        # Try to extract base currency from filename
-        base_currency = "UNKNOWN"
-        quote_currency = "UNKNOWN"
-        
-        # Common patterns: BASE_QUOTE, BASE-QUOTE, BASEvsQUOTE
-        currency_patterns = [
-            r'([A-Z]+)[-_/]([A-Z]+)',  # Matches BASE_QUOTE or BASE-QUOTE
-            r'([A-Z]+)vs([A-Z]+)',     # Matches BASEvsQUOTE
-            r'([A-Z]+)([A-Z]{3,4})$'   # Matches BASEUSD or BASEUSDT with no separator
-        ]
-        
-        for pattern in currency_patterns:
-            match = re.search(pattern, filename.upper())
-            if match:
-                base_currency = match.group(1)
-                quote_currency = match.group(2)
-                break
-        
-        # If still unknown, check for common quote currencies
-        if base_currency == "UNKNOWN":
-            for quote in ["USD", "USDT", "USDC", "BTC", "ETH"]:
-                if quote in filename.upper():
-                    quote_currency = quote
-                    # Extract base (everything before quote)
-                    parts = filename.upper().split(quote)[0]
-                    base_currency = parts.strip('_-/')
-                    break
-        
-        # Add to list if we found a valid currency
-        if base_currency != "UNKNOWN":
-            coin_info = {
-                "symbol": f"{base_currency}/{quote_currency}",
-                "base": base_currency,
-                "quote": quote_currency,
-                "filename": filename
-            }
-            available_coins.append(coin_info)
-    
-    return available_coins
-
-def run_demo(args):
-    """
-    Run the complete forecasting demo.
-    
-    Args:
-        args: Command line arguments
-        
-    Returns:
-        int: Exit code (0 for success, 1 for error)
-    """
-    # Check Chronos availability
-    if not check_chronos_availability():
-        logger.error("Chronos package is required but could not be installed")
-        return 1
-    
-    # Create output directories
-    os.makedirs("plots", exist_ok=True)
-    
-    # List available coins if requested
-    if args.list_coins:
-        coins = list_available_coins()
-        print("\nAvailable cryptocurrencies:\n")
-        
-        if not coins:
-            print("No cryptocurrency data files found!")
-            return 1
-            
-        print(f"{'Symbol':<15} {'Base':<8} {'Quote':<8} {'File'}")
-        print("-" * 50)
-        
-        for coin in coins:
-            print(f"{coin['symbol']:<15} {coin['base']:<8} {coin['quote']:<8} {coin['filename']}")
-            
-        return 0
-    
-    # Load historical data
-    data, data_info = load_time_series_data(args.symbol, args.lookback, not args.use_weaviate)
-    
-    if data is None or data_info is None:
-        logger.error(f"Failed to load historical data for {args.symbol}")
-        return 1
-    
-    logger.info(f"Loaded {len(data)} data points for {args.symbol}")
-    
-    # Generate forecast
-    forecast_results, market_insights, plot_path = generate_forecast(
-        data,
-        data_info,
-        args.model,
-        args.days_ahead,
-        args.samples
-    )
-    
-    if forecast_results is None:
-        logger.error("Failed to generate forecast")
-        return 1
-    
-    # Store forecast if requested
-    if args.store:
-        success = store_forecast(
-            forecast_results,
-            market_insights,
-            data_info,
-            args.model,
-            args.days_ahead,
-            plot_path
-        )
-        if not success:
-            logger.warning("Failed to store forecast in Weaviate")
-    
-    # Analyze forecast history if requested
-    if args.analyze_history:
-        symbol = f"{data_info['base_currency']}{data_info['quote_currency']}"
-        forecast_history = analyze_forecast_history(symbol, args.history_days)
-        
-        if "error" not in forecast_history:
-            # Print analysis summary
-            print("\n===== FORECAST HISTORY ANALYSIS =====")
-            print(f"Symbol: {symbol}")
-            print(f"Total forecasts analyzed: {forecast_history.get('forecasts_count', 0)}")
-            print(f"Most common trend: {forecast_history.get('most_common_trend', 'unknown')}")
-            print(f"Trend consistency: {forecast_history.get('trend_consistency', 0):.1f}%")
-            print(f"Average forecasted change: {forecast_history.get('avg_forecasted_change', 0):.2f}%")
-            print(f"Direction changes: {forecast_history.get('direction_changes', 0)}")
-            print("=====================================\n")
-    
-    # Print forecast summary
-    print("\n===== CHRONOS FORECAST SUMMARY =====")
-    print(f"Symbol: {data_info['base_currency']}/{data_info['quote_currency']}")
-    print(f"Model: {args.model}")
-    print(f"Forecast horizon: {args.days_ahead} days")
-    
-    # Format price based on denomination
-    if data_info['denomination'] == 'BTC':
-        current_price_str = f"₿{market_insights['current_price']:.6f}"
-        final_forecast_str = f"₿{market_insights['final_forecast']:.6f}"
-    else:
-        # Use appropriate precision based on price magnitude
-        if market_insights['current_price'] < 0.01:
-            current_price_str = f"${market_insights['current_price']:.6f}"
-            final_forecast_str = f"${market_insights['final_forecast']:.6f}"
-        elif market_insights['current_price'] < 1.0:
-            current_price_str = f"${market_insights['current_price']:.4f}"
-            final_forecast_str = f"${market_insights['final_forecast']:.4f}"
-        else:
-            current_price_str = f"${market_insights['current_price']:.2f}"
-            final_forecast_str = f"${market_insights['final_forecast']:.2f}"
-    
-    print(f"Current price: {current_price_str}")
-    print(f"Final forecast: {final_forecast_str} ({market_insights['change_pct']:+.2f}%)")
-    print(f"Forecast trend: {market_insights['trend']}")
-    print(f"Probability of increase: {market_insights['probability_increase']:.1f}%")
-    print(f"Average uncertainty: ±{market_insights['average_uncertainty']:.1f}%")
-    print(f"Forecast visualization: {plot_path}")
-    print("\nInsight:")
-    print(market_insights['insight'])
-    print("===================================\n")
-    
-    return 0
+    finally:
+        if storage_manager is not None:
+            try:
+                storage_manager.close()
+                logger.info("Closed Weaviate connection after storage")
+            except Exception as e:
+                logger.error(f"Error closing Weaviate connection: {e}")
 
 def main():
-    """Entry point for the script."""
-    parser = argparse.ArgumentParser(description="Universal Cryptocurrency Forecaster")
+    """Main function."""
+    parser = argparse.ArgumentParser(description="Chronos Cryptocurrency Forecaster")
     
     # Basic options
-    parser.add_argument("--symbol", type=str, default="BTCUSD", help="Cryptocurrency symbol to forecast")
-    parser.add_argument("--days-ahead", type=int, default=14, help="Number of days to forecast")
-    parser.add_argument("--lookback", type=int, default=365, help="Days of historical data to use")
+    parser.add_argument("--symbol", type=str, default="BTC_USD", 
+                      help="Cryptocurrency symbol to forecast (e.g., BTC_USD)")
+    parser.add_argument("--days-ahead", type=int, default=7, 
+                      help="Number of days to forecast")
+    parser.add_argument("--lookback", type=int, default=3650, 
+                      help="Days of historical data to use")
     
     # Model options
     parser.add_argument("--model", type=str, default="amazon/chronos-t5-small",
@@ -935,23 +1002,82 @@ def main():
                           "amazon/chronos-bolt-small"
                       ],
                       help="Chronos model to use")
-    parser.add_argument("--samples", type=int, default=100, help="Number of samples for uncertainty quantification")
     
-    # Storage and data options
-    parser.add_argument("--store", action="store_true", help="Store forecast in Weaviate")
-    parser.add_argument("--use-weaviate", action="store_true", help="Load data from Weaviate instead of CSV")
+    # Forecast options
+    parser.add_argument("--samples", type=int, default=10, 
+                      help="Number of samples to generate for uncertainty estimation")
     
-    # Analysis options
-    parser.add_argument("--analyze-history", action="store_true", help="Analyze forecast history")
-    parser.add_argument("--history-days", type=int, default=30, help="Days of forecast history to analyze")
-    
-    # Utility options
-    parser.add_argument("--list-coins", action="store_true", help="List available cryptocurrency data files")
+    # Storage options
+    parser.add_argument("--no-store", action="store_true", 
+                      help="Disable storage of results in Weaviate")
     
     args = parser.parse_args()
     
+    # Override storage availability if requested
+    if args.no_store:
+        global STORAGE_AVAILABLE
+        STORAGE_AVAILABLE = False
+        logger.info("Storage has been disabled via --no-store flag")
+    
     try:
-        return run_demo(args)
+        # Check Chronos availability
+        if not check_chronos_availability():
+            logger.error("Chronos package is required but could not be installed")
+            return 1
+        
+        # Check GPU availability and get device
+        device = check_cuda_availability()
+        
+        # Load historical data
+        data = load_historical_data(args.symbol, lookback_days=args.lookback)
+        
+        if data is None:
+            logger.error(f"Failed to load data for {args.symbol}")
+            return 1
+            
+        # Initialize Chronos model
+        model = initialize_chronos_model(args.model, device)
+        
+        if model is None:
+            logger.error("Failed to initialize Chronos model")
+            return 1
+            
+        # Generate forecast
+        forecast = generate_forecast(
+            model, 
+            data, 
+            days_ahead=args.days_ahead, 
+            num_samples=args.samples
+        )
+        
+        if forecast is None:
+            logger.error("Failed to generate forecast")
+            return 1
+            
+        # Store forecast results if enabled
+        if STORAGE_AVAILABLE:
+            success = store_forecast_results(forecast)
+            storage_status = "successfully stored" if success else "not stored"
+        else:
+            storage_status = "storage disabled"
+        
+        # Print results
+        print("\n===== FORECAST RESULTS =====")
+        print(f"Symbol: {args.symbol}")
+        print(f"Model: {args.model}")
+        print(f"Current price: {forecast['current_price']:.2f}")
+        print(f"Forecast price: {forecast['forecast_price']:.2f}")
+        print(f"Change: {forecast['change_pct']:.2f}%")
+        print(f"Trend: {forecast['market_insights']['trend']}")
+        print(f"Probability of increase: {forecast['market_insights']['prob_increase']:.1f}%")
+        print(f"Average uncertainty: {forecast['market_insights']['avg_uncertainty']:.1f}%")
+        print(f"\nInsight: {forecast['market_insights']['insight']}")
+        print(f"\nForecast visualization: {forecast['plot_path']}")
+        print(f"Forecast {storage_status} in Weaviate database")
+        print("=============================\n")
+        
+        return 0
+        
     except Exception as e:
         logger.error(f"Unhandled exception: {e}")
         import traceback

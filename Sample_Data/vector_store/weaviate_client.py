@@ -1,23 +1,35 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import weaviate
 from weaviate.classes.init import AdditionalConfig, Timeout
 import os
 import sys
 from dotenv import load_dotenv
+import atexit
 
 # Add project root to path if needed
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 if project_root not in sys.path:
     sys.path.append(project_root)
 
+# Global client instance
+_client = None
+
 def get_weaviate_client():
     """Create and return a Weaviate client with improved error handling and connection options"""
+    global _client
+    
+    if _client is not None:
+        return _client
+        
     load_dotenv()
     
-    WEAVIATE_URL = os.getenv("WEAVIATE_URL", "http://localhost:9090")
+    WEAVIATE_URL = os.getenv("WEAVIATE_URL", "http://localhost:9090")  # Updated port to 9090
     WEAVIATE_GRPC_PORT = int(os.getenv("WEAVIATE_GRPC_PORT", "50051"))
     
     try:
-        client = weaviate.WeaviateClient(
+        _client = weaviate.WeaviateClient(
             connection_params=weaviate.connect.ConnectionParams.from_url(
                 url=WEAVIATE_URL,
                 grpc_port=WEAVIATE_GRPC_PORT
@@ -29,18 +41,34 @@ def get_weaviate_client():
         )
         
         # Explicitly connect to Weaviate
-        client.connect()
+        _client.connect()
         
-        if not client.is_live():
+        if not _client.is_live():
             raise ConnectionError("Failed to connect to Weaviate. Check server status.")
         
         print("Weaviate client is connected.")
-        return client
+        
+        # Register cleanup function
+        atexit.register(cleanup_weaviate_client)
+        
+        return _client
     except Exception as e:
         print(f"Error connecting to Weaviate: {str(e)}")
         print("Please ensure Weaviate is running, accessible, and your network connection is stable.")
         raise
-    
+
+def cleanup_weaviate_client():
+    """Cleanup function to close Weaviate connection"""
+    global _client
+    if _client is not None:
+        try:
+            _client.close()
+            print("Weaviate connection closed properly.")
+        except Exception as e:
+            print(f"Error closing Weaviate connection: {str(e)}")
+        finally:
+            _client = None
+
 def check_weaviate_connection(client):
     """Utility function to test Weaviate connection"""
     try:
@@ -67,4 +95,4 @@ if __name__ == "__main__":
         else:
             print("❌ Connection test failed: Weaviate is not responding")
     finally:
-        client.close()
+        cleanup_weaviate_client()

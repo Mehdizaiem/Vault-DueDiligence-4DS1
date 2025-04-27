@@ -27,7 +27,7 @@ from tqdm import tqdm
 import copy
 import requests
 import time
-from typing import Dict, Any
+from typing import Dict, Any, List, Optional, Union, Tuple
 
 # Configure logging
 logging.basicConfig(
@@ -38,10 +38,7 @@ logger = logging.getLogger(__name__)
 
 def find_project_root():
     """Find the project root directory that contains the data folder."""
-    # Start from the current directory
     current_dir = os.path.abspath(os.path.dirname(__file__))
-    
-    # Look up the directory tree for the data folder
     test_dirs = [
         current_dir,
         os.path.dirname(current_dir),
@@ -49,12 +46,10 @@ def find_project_root():
     ]
     
     for directory in test_dirs:
-        # Check if 'data' exists in this directory
         data_dir = os.path.join(directory, 'data')
         if os.path.exists(data_dir) and os.path.isdir(data_dir):
             return directory
     
-    # If we didn't find it, default to the current directory
     return current_dir
 
 # Find project root
@@ -175,15 +170,6 @@ def format_symbol_for_storage(symbol):
 def fetch_api_data(symbol, days=365, retries=3, delay=1):
     """
     Fetch cryptocurrency data from CoinGecko API.
-    
-    Args:
-        symbol (str): Symbol to fetch (e.g. "BTC_USD")
-        days (int): Number of days of data to fetch
-        retries (int): Number of retry attempts
-        delay (float): Delay between retries in seconds
-        
-    Returns:
-        pd.DataFrame: DataFrame with latest price data
     """
     logger.info(f"Fetching {days} days of data for {symbol} from CoinGecko API")
     
@@ -239,8 +225,8 @@ def fetch_api_data(symbol, days=365, retries=3, delay=1):
                     # Sort by date
                     df = df.sort_index()
                     
-                    # Fill missing data
-                    df = df.fillna(method="ffill").fillna(method="bfill")
+                    # Fill missing data using forward and backward fill
+                    df = df.ffill().bfill()
                     
                     logger.info(f"Successfully fetched {len(df)} days of data from CoinGecko API")
                     return df
@@ -256,7 +242,6 @@ def fetch_api_data(symbol, days=365, retries=3, delay=1):
                 
             else:
                 logger.warning(f"Failed to fetch data from CoinGecko (status: {response.status_code})")
-                # Try alternative API provider if this fails
                 
             # Wait before retry
             if attempt < retries - 1:
@@ -400,13 +385,6 @@ def find_csv_file(symbol):
 def load_csv_data(file_path, lookback_days=365):
     """
     Load cryptocurrency data from a CSV file with automatic format detection.
-    
-    Args:
-        file_path (str): Path to CSV file
-        lookback_days (int): Number of days of historical data to use
-        
-    Returns:
-        pd.DataFrame: Processed DataFrame with price data
     """
     logger.info(f"Loading data from: {file_path}")
     filename = os.path.basename(file_path)
@@ -490,7 +468,7 @@ def load_csv_data(file_path, lookback_days=365):
             # Convert price column to numeric, handling comma-separated numbers
             df['price'] = pd.to_numeric(df[price_col].astype(str).str.replace(',', ''), errors='coerce')
         
-        # Fill any NaNs
+        # Fill any NaNs using forward and backward fill
         df['price'] = df['price'].ffill().bfill()
         
         # Extract base and quote currency from filename
@@ -543,21 +521,203 @@ def load_csv_data(file_path, lookback_days=365):
         logger.error(traceback.format_exc())
         return None
 
-def load_combined_data(symbol, lookback_days=3650, api_days=365):
+def get_sentiment_data(symbol: str, days: int = 365) -> pd.DataFrame:
+    """
+    Fetch sentiment data from Weaviate for a specific symbol.
+    Only fetches the latest 10 articles for efficiency.
+    """
+    if not STORAGE_AVAILABLE:
+        logger.warning("Storage manager not available - cannot fetch sentiment data")
+        return pd.DataFrame()
+    
+    logger.info(f"Attempting to fetch sentiment data for {symbol} over the last {days} days")
+    
+    try:
+        # Initialize storage manager with retry logic
+        max_retries = 3
+        retry_delay = 2  # seconds
+        
+        for attempt in range(max_retries):
+            try:
+                storage_manager = StorageManager()
+                storage_manager.connect()
+                logger.info("Successfully connected to Weaviate")
+                break
+            except Exception as e:
+                if attempt < max_retries - 1:
+                    logger.warning(f"Connection attempt {attempt + 1} failed: {e}. Retrying in {retry_delay} seconds...")
+                    time.sleep(retry_delay)
+                    retry_delay *= 2  # Exponential backoff
+                else:
+                    logger.error(f"Failed to connect to Weaviate after {max_retries} attempts")
+                    return pd.DataFrame()
+        
+        # Extract base symbol
+        base_symbol = symbol.split('_')[0] if '_' in symbol else symbol
+        base_symbol = base_symbol.replace("USD", "").replace("USDT", "")
+        logger.info(f"Looking for sentiment data for base symbol: {base_symbol}")
+        
+        try:
+            # Get collection and fetch latest articles
+            collection = storage_manager.client.collections.get("CryptoNewsSentiment")
+            logger.info("Successfully accessed CryptoNewsSentiment collection")
+            
+            # Query latest 10 articles mentioning the symbol
+            logger.info("Querying Weaviate for latest 10 articles...")
+            response = collection.query.fetch_objects(
+                limit=10,
+                return_properties=["title", "date", "sentiment_label", "sentiment_score", "content"]
+            )
+            
+            if not response.objects:
+                logger.warning(f"No sentiment data found for {symbol}")
+                return pd.DataFrame()
+            
+            logger.info(f"Retrieved {len(response.objects)} articles from Weaviate")
+            
+            # Process articles into DataFrame
+            articles_data = []
+            symbol_lower = base_symbol.lower()
+            
+            for article in response.objects:
+                props = article.properties
+                content = str(props.get("content", "")).lower()
+                
+                # Only include articles that mention the symbol
+                if symbol_lower in content:
+                    articles_data.append({
+                        "date": pd.to_datetime(props.get("date")),
+                        "sentiment_score": float(props.get("sentiment_score", 0.5)),
+                        "sentiment_label": str(props.get("sentiment_label", "NEUTRAL")),
+                        "article_count": 1
+                    })
+            
+            if not articles_data:
+                logger.warning(f"No relevant articles found mentioning {symbol}")
+                return pd.DataFrame()
+            
+            logger.info(f"Found {len(articles_data)} relevant articles mentioning {symbol}")
+            
+            # Create DataFrame and set date as index
+            df = pd.DataFrame(articles_data)
+            df.set_index("date", inplace=True)
+            df.sort_index(inplace=True)
+            
+            # Aggregate by day
+            daily_sentiment = df.resample("D").agg({
+                "sentiment_score": "mean",
+                "sentiment_label": lambda x: x.mode().iloc[0] if not x.empty else "NEUTRAL",
+                "article_count": "sum"
+            })
+            
+            # Fill missing values
+            daily_sentiment["sentiment_score"] = daily_sentiment["sentiment_score"].fillna(0.5)
+            daily_sentiment["sentiment_label"] = daily_sentiment["sentiment_label"].fillna("NEUTRAL")
+            daily_sentiment["article_count"] = daily_sentiment["article_count"].fillna(0)
+            
+            # Calculate momentum and 7-day average
+            daily_sentiment["sentiment_momentum"] = daily_sentiment["sentiment_score"].diff().fillna(0)
+            daily_sentiment["sentiment_7d_avg"] = daily_sentiment["sentiment_score"].rolling(7, min_periods=1).mean()
+            
+            logger.info(f"Processed {len(daily_sentiment)} days of sentiment data for {symbol}")
+            logger.info(f"Average sentiment score: {daily_sentiment['sentiment_score'].mean():.3f}")
+            logger.info(f"Total articles: {int(daily_sentiment['article_count'].sum())}")
+            logger.info("Successfully fetched and processed sentiment data")
+            
+            return daily_sentiment
+            
+        except Exception as e:
+            logger.error(f"Error querying articles: {e}")
+            return pd.DataFrame()
+        
+    except Exception as e:
+        logger.error(f"Error fetching sentiment data: {e}")
+        return pd.DataFrame()
+
+def combine_price_and_sentiment(price_data: pd.DataFrame, sentiment_data: pd.DataFrame) -> pd.DataFrame:
+    """
+    Combine price and sentiment data for model input.
+    
+    Args:
+        price_data (pd.DataFrame): DataFrame with price data indexed by date
+        sentiment_data (pd.DataFrame): DataFrame with sentiment data indexed by date
+        
+    Returns:
+        pd.DataFrame: Combined DataFrame with price and sentiment features
+    """
+    logger.info("Combining price and sentiment data")
+    
+    if sentiment_data.empty:
+        logger.warning("No sentiment data available, returning price data only")
+        return price_data
+    
+    # Ensure both DataFrames have datetime index
+    if not isinstance(price_data.index, pd.DatetimeIndex):
+        price_data.index = pd.to_datetime(price_data.index)
+    
+    if not isinstance(sentiment_data.index, pd.DatetimeIndex):
+        sentiment_data.index = pd.to_datetime(sentiment_data.index)
+    
+    # Make both indices timezone-naive
+    price_data.index = price_data.index.tz_localize(None)
+    sentiment_data.index = sentiment_data.index.tz_localize(None)
+    
+    # Merge dataframes on date index
+    combined_df = pd.merge(
+        price_data,
+        sentiment_data,
+        left_index=True,
+        right_index=True,
+        how='left'
+    )
+    
+    # Fill any missing sentiment values
+    # For scores, use 0.5 (neutral)
+    if "sentiment_score" in combined_df.columns:
+        combined_df["sentiment_score"].fillna(0.5, inplace=True)
+    if "sentiment_7d_avg" in combined_df.columns:
+        combined_df["sentiment_7d_avg"].fillna(0.5, inplace=True)
+    if "sentiment_14d_avg" in combined_df.columns:
+        combined_df["sentiment_14d_avg"].fillna(0.5, inplace=True)
+    if "sentiment_momentum" in combined_df.columns:
+        combined_df["sentiment_momentum"].fillna(0, inplace=True)
+    if "sentiment_numeric" in combined_df.columns:
+        combined_df["sentiment_numeric"].fillna(0, inplace=True)  # Neutral
+    if "sentiment_volatility" in combined_df.columns:
+        combined_df["sentiment_volatility"].fillna(0, inplace=True)
+    
+    # Article count should be 0 if missing
+    if "article_count" in combined_df.columns:
+        combined_df["article_count"].fillna(0, inplace=True)
+    
+    # Preserve original price data attributes
+    for attr_name in price_data.attrs:
+        combined_df.attrs[attr_name] = price_data.attrs[attr_name]
+    
+    # Add new attribute to indicate sentiment is included
+    combined_df.attrs["includes_sentiment"] = True
+    
+    return combined_df
+
+def load_combined_data(symbol, lookback_days=3650, api_days=365, include_sentiment=True):
     """
     Load and combine historical CSV data with latest API data.
+    Now optionally includes sentiment data from Weaviate.
     
     Args:
         symbol (str): Trading symbol
         lookback_days (int): Total days of historical data to use
         api_days (int): Days of API data to fetch
+        include_sentiment (bool): Whether to include sentiment data
         
     Returns:
         pd.DataFrame: Combined DataFrame
     """
-    logger.info(f"Loading combined data for {symbol} with {api_days} days from API and up to {lookback_days} days total")
+    logger.info(f"Loading combined data for {symbol}")
+    logger.info(f"Parameters: lookback_days={lookback_days}, api_days={api_days}, include_sentiment={include_sentiment}")
     
     # Fetch latest data from API first
+    logger.info(f"Fetching {api_days} days of data from API...")
     api_data = fetch_api_data(symbol, days=api_days)
     
     # Try to find and load CSV file
@@ -588,119 +748,168 @@ def load_combined_data(symbol, lookback_days=3650, api_days=365):
         # Take the most recent lookback_days
         if len(api_data) > lookback_days:
             api_data = api_data.iloc[-lookback_days:]
+            logger.info(f"Trimmed API data to last {lookback_days} days")
         
-        return api_data
+        price_data = api_data
+        logger.info("Successfully prepared API data")
     
     # If we couldn't get API data, try to use CSV data only
-    if api_data is None or api_data.empty:
+    elif api_data is None or api_data.empty:
         if csv_file is None:
             logger.error(f"No data available for {symbol} from either API or CSV")
             return None
             
         logger.warning("Could not fetch API data, using CSV data only")
-        return load_csv_data(csv_file, lookback_days)
+        price_data = load_csv_data(csv_file, lookback_days)
+        if price_data is not None:
+            logger.info(f"Successfully loaded {len(price_data)} days from CSV")
     
     # If we need to combine CSV and API data
-    if csv_file is not None:
-        # Load CSV data
-        csv_data = load_csv_data(csv_file, lookback_days=lookback_days)
-        
-        if csv_data is None:
-            logger.error(f"Failed to load CSV data for {symbol}")
+    else:
+        if csv_file is not None:
+            # Load CSV data
+            logger.info("Loading CSV data to combine with API data...")
+            csv_data = load_csv_data(csv_file, lookback_days=lookback_days)
             
-            # Use API data only if CSV loading failed
+            if csv_data is None:
+                logger.error(f"Failed to load CSV data for {symbol}")
+                
+                # Use API data only if CSV loading failed
+                price_mean = api_data['price'].mean()
+                price_std = api_data['price'].std()
+                api_data['normalized_price'] = (api_data['price'] - price_mean) / price_std
+                
+                api_data.attrs['price_mean'] = price_mean
+                api_data.attrs['price_std'] = price_std
+                
+                price_data = api_data
+                logger.info("Using API data only due to CSV loading failure")
+            else:
+                # Check if we need to combine (might already have up-to-date data)
+                csv_last_date = csv_data.index[-1].date()
+                api_last_date = api_data.index[-1].date()
+                
+                logger.info(f"CSV data last date: {csv_last_date}")
+                logger.info(f"API data last date: {api_last_date}")
+                
+                if csv_last_date >= api_last_date:
+                    logger.info("CSV data is already up-to-date, no need to combine with API data")
+                    price_data = csv_data
+                else:
+                    # Check for overlap to align data
+                    api_first_date = api_data.index[0].date()
+                    
+                    if api_first_date <= csv_last_date:
+                        # We have overlap, find the cutoff point
+                        logger.info(f"Data overlap found from {api_first_date} to {csv_last_date}")
+                        
+                        # Remove overlapping days from CSV data to avoid duplicates
+                        csv_data = csv_data[csv_data.index.date < api_first_date]
+                        logger.info(f"Removed overlapping data from CSV, now has {len(csv_data)} days")
+                    
+                    # Now combine the datasets
+                    logger.info(f"Combining CSV data (until {csv_last_date}) with API data (from {api_first_date} to {api_last_date})")
+                    
+                    # Ensure API data has normalized_price column
+                    price_mean = csv_data.attrs['price_mean']
+                    price_std = csv_data.attrs['price_std']
+                    api_data['normalized_price'] = (api_data['price'] - price_mean) / price_std
+                    
+                    # Combine the dataframes
+                    combined_data = pd.concat([csv_data, api_data])
+                    
+                    # Copy attributes from CSV data
+                    for attr_name in csv_data.attrs:
+                        combined_data.attrs[attr_name] = csv_data.attrs[attr_name]
+                    
+                    # Take the most recent lookback_days
+                    if len(combined_data) > lookback_days:
+                        combined_data = combined_data.iloc[-lookback_days:]
+                        logger.info(f"Trimmed combined data to last {lookback_days} days")
+                    
+                    logger.info(f"Created combined dataset with {len(combined_data)} data points")
+                    price_data = combined_data
+        else:
+            # If we only have API data and no CSV
+            logger.warning("No CSV data found, using API data only")
+            
+            # Normalize the data
             price_mean = api_data['price'].mean()
             price_std = api_data['price'].std()
             api_data['normalized_price'] = (api_data['price'] - price_mean) / price_std
             
+            # Add metadata to DataFrame
+            _, base_symbol, quote_currency = convert_symbol_for_api(symbol)
+            price_denomination = "BTC" if "BTC" in quote_currency.upper() else "USD"
+            currency_symbol = "₿" if price_denomination == "BTC" else "$"
+            
+            api_data.attrs['currency_symbol'] = currency_symbol
+            api_data.attrs['price_denomination'] = price_denomination
+            api_data.attrs['mean_price'] = price_mean
+            api_data.attrs['median_price'] = api_data['price'].median()
+            api_data.attrs['filename'] = f"{symbol}_API_Data"
             api_data.attrs['price_mean'] = price_mean
             api_data.attrs['price_std'] = price_std
             
-            return api_data
-        
-        # Check if we need to combine (might already have up-to-date data)
-        csv_last_date = csv_data.index[-1].date()
-        api_last_date = api_data.index[-1].date()
-        
-        if csv_last_date >= api_last_date:
-            logger.info("CSV data is already up-to-date, no need to combine with API data")
-            return csv_data
-        
-        # Check for overlap to align data
-        api_first_date = api_data.index[0].date()
-        
-        if api_first_date <= csv_last_date:
-            # We have overlap, find the cutoff point
-            logger.info(f"Data overlap found from {api_first_date} to {csv_last_date}")
-            
-            # Remove overlapping days from CSV data to avoid duplicates
-            csv_data = csv_data[csv_data.index.date < api_first_date]
-        
-        # Now combine the datasets
-        logger.info(f"Combining CSV data (until {csv_last_date}) with API data (from {api_first_date} to {api_last_date})")
-        
-        # Ensure API data has normalized_price column
-        price_mean = csv_data.attrs['price_mean']
-        price_std = csv_data.attrs['price_std']
-        api_data['normalized_price'] = (api_data['price'] - price_mean) / price_std
-        
-        # Combine the dataframes
-        combined_data = pd.concat([csv_data, api_data])
-        
-        # Copy attributes from CSV data
-        for attr_name in csv_data.attrs:
-            combined_data.attrs[attr_name] = csv_data.attrs[attr_name]
-        
-        # Take the most recent lookback_days
-        if len(combined_data) > lookback_days:
-            combined_data = combined_data.iloc[-lookback_days:]
-        
-        logger.info(f"Created combined dataset with {len(combined_data)} data points")
-        return combined_data
+            price_data = api_data
     
-    # If we only have API data and no CSV
-    logger.warning("No CSV data found, using API data only")
+    # Now fetch and integrate sentiment data if requested
+    if include_sentiment and STORAGE_AVAILABLE:
+        logger.info("Fetching sentiment data from Weaviate...")
+        sentiment_data = get_sentiment_data(symbol, days=lookback_days)
+        
+        if not sentiment_data.empty:
+            # Combine price and sentiment data
+            logger.info("Combining price and sentiment data...")
+            combined_data = combine_price_and_sentiment(price_data, sentiment_data)
+            logger.info(f"Successfully added sentiment data covering {len(sentiment_data)} days")
+            return combined_data
+        else:
+            logger.warning("No sentiment data available, returning price data only")
     
-    # Normalize the data
-    price_mean = api_data['price'].mean()
-    price_std = api_data['price'].std()
-    api_data['normalized_price'] = (api_data['price'] - price_mean) / price_std
-    
-    # Add metadata to DataFrame
-    _, base_symbol, quote_currency = convert_symbol_for_api(symbol)
-    price_denomination = "BTC" if "BTC" in quote_currency.upper() else "USD"
-    currency_symbol = "₿" if price_denomination == "BTC" else "$"
-    
-    api_data.attrs['currency_symbol'] = currency_symbol
-    api_data.attrs['price_denomination'] = price_denomination
-    api_data.attrs['mean_price'] = price_mean
-    api_data.attrs['median_price'] = api_data['price'].median()
-    api_data.attrs['filename'] = f"{symbol}_API_Data"
-    api_data.attrs['price_mean'] = price_mean
-    api_data.attrs['price_std'] = price_std
-    
-    return api_data
+    # Return price data only if sentiment is not available or not requested
+    return price_data
 
-def prepare_datasets(data, context_length=30, prediction_length=14, test_size=0.2):
+def prepare_datasets(data, context_length=30, prediction_length=14, test_size=0.2, use_sentiment=True):
     """
     Prepare train and test datasets for time series forecasting.
+    Now with optional sentiment features.
     
     Args:
-        data (pd.DataFrame): Historical price data with 'normalized_price' column
+        data (pd.DataFrame): Historical price data with 'normalized_price' column and optional sentiment
         context_length (int): Number of days to use as context
         prediction_length (int): Number of days to predict
         test_size (float): Proportion of data to use for testing
+        use_sentiment (bool): Whether to include sentiment features
         
     Returns:
         tuple: (train_loader, test_loader, val_data)
     """
     logger.info(f"Preparing datasets with context_length={context_length}, prediction_length={prediction_length}")
     
+    # Check if sentiment data is available
+    has_sentiment = use_sentiment and "sentiment_score" in data.columns
+    
     # Get normalized price series
     price_series = data['normalized_price'].values
     
-    # Create sliding windows for training data
-    X, y = [], []
+    # Get sentiment features if available
+    sentiment_features = None
+    if has_sentiment:
+        sentiment_columns = [
+            "sentiment_score", 
+            "sentiment_7d_avg", 
+            "sentiment_momentum", 
+            "sentiment_numeric", 
+            "sentiment_volatility"
+        ]
+        
+        # Only use columns that actually exist in the data
+        sentiment_cols_to_use = [col for col in sentiment_columns if col in data.columns]
+        
+        if sentiment_cols_to_use:
+            sentiment_features = data[sentiment_cols_to_use].values
+            logger.info(f"Using sentiment features: {sentiment_cols_to_use}")
     
     # We need at least context_length + prediction_length data points
     total_len = len(price_series)
@@ -709,8 +918,41 @@ def prepare_datasets(data, context_length=30, prediction_length=14, test_size=0.
         logger.error(f"Not enough data: have {total_len} points, need at least {context_length + prediction_length}")
         return None, None, None
     
+    # Create datasets with or without sentiment
+    if has_sentiment and sentiment_features is not None:
+        return prepare_datasets_with_sentiment(
+            price_series, 
+            sentiment_features, 
+            context_length, 
+            prediction_length, 
+            test_size
+        )
+    else:
+        return prepare_datasets_without_sentiment(
+            price_series, 
+            context_length, 
+            prediction_length, 
+            test_size
+        )
+
+def prepare_datasets_without_sentiment(price_series, context_length, prediction_length, test_size):
+    """
+    Prepare datasets without sentiment features (original method).
+    
+    Args:
+        price_series (np.array): Price series data
+        context_length (int): Number of days to use as context
+        prediction_length (int): Number of days to predict
+        test_size (float): Proportion of data to use for testing
+        
+    Returns:
+        tuple: (train_loader, test_loader, val_data)
+    """
+    # Create sliding windows for training data
+    X, y = [], []
+    
     # Create sliding windows
-    for i in range(total_len - context_length - prediction_length + 1):
+    for i in range(len(price_series) - context_length - prediction_length + 1):
         X.append(price_series[i:i + context_length])
         y.append(price_series[i + context_length:i + context_length + prediction_length])
     
@@ -738,7 +980,65 @@ def prepare_datasets(data, context_length=30, prediction_length=14, test_size=0.
     val_input = torch.tensor(price_series[-context_length:], dtype=torch.float32).reshape(1, -1)
     val_data = {
         'context': val_input,
-        'actual_future': price_series[-prediction_length:] if total_len >= context_length + prediction_length else None
+        'actual_future': price_series[-prediction_length:] if len(price_series) >= context_length + prediction_length else None
+    }
+    
+    return train_loader, test_loader, val_data
+
+def prepare_datasets_with_sentiment(price_series, sentiment_features, context_length, prediction_length, test_size):
+    """
+    Prepare datasets with both price and sentiment features.
+    
+    Args:
+        price_series (np.array): Price series data
+        sentiment_features (np.array): Sentiment features data
+        context_length (int): Number of days to use as context
+        prediction_length (int): Number of days to predict
+        test_size (float): Proportion of data to use for testing
+        
+    Returns:
+        tuple: (train_loader, test_loader, val_data)
+    """
+    # Create sliding windows for training data
+    X_price, X_sentiment, y = [], [], []
+    
+    # We need at least context_length + prediction_length data points
+    total_len = len(price_series)
+    
+    # Create sliding windows
+    for i in range(total_len - context_length - prediction_length + 1):
+        X_price.append(price_series[i:i + context_length])
+        X_sentiment.append(sentiment_features[i:i + context_length])
+        y.append(price_series[i + context_length:i + context_length + prediction_length])
+    
+    # Convert to tensors
+    X_price = torch.tensor(np.array(X_price), dtype=torch.float32)
+    X_sentiment = torch.tensor(np.array(X_sentiment), dtype=torch.float32)
+    y = torch.tensor(np.array(y), dtype=torch.float32)
+    
+    # Split into train and test
+    split_idx = int(len(X_price) * (1 - test_size))
+    
+    X_price_train, X_price_test = X_price[:split_idx], X_price[split_idx:]
+    X_sentiment_train, X_sentiment_test = X_sentiment[:split_idx], X_sentiment[split_idx:]
+    y_train, y_test = y[:split_idx], y[split_idx:]
+    
+    logger.info(f"Created {len(X_price_train)} training samples and {len(X_price_test)} testing samples with sentiment")
+    
+    # Create dataloaders
+    train_dataset = TensorDataset(X_price_train, X_sentiment_train, y_train)
+    test_dataset = TensorDataset(X_price_test, X_sentiment_test, y_test)
+    
+    train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+    test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
+    
+    # Create validation data for Chronos comparison
+    # For validation, we'll only use price data for now since Chronos doesn't support multi-feature input directly
+    val_input = torch.tensor(price_series[-context_length:], dtype=torch.float32).reshape(1, -1)
+    val_data = {
+        'context': val_input,
+        'actual_future': price_series[-prediction_length:] if total_len >= context_length + prediction_length else None,
+        'sentiment_context': torch.tensor(sentiment_features[-context_length:], dtype=torch.float32).reshape(1, context_length, -1)
     }
     
     return train_loader, test_loader, val_data
@@ -894,6 +1194,9 @@ def create_comparison_plot(data, evaluation_results, prediction_length):
     currency_symbol = data.attrs.get('currency_symbol', '$')
     price_denomination = data.attrs.get('price_denomination', 'USD')
     
+    # Check if we have sentiment data
+    has_sentiment = "sentiment_score" in data.columns
+    
     # Create plot
     plt.figure(figsize=(12, 6))
     
@@ -914,7 +1217,7 @@ def create_comparison_plot(data, evaluation_results, prediction_length):
     # Plot fine-tuned forecast
     finetuned_forecast = evaluation_results.get('finetuned_forecast')
     if finetuned_forecast is not None:
-        plt.plot(forecast_dates, finetuned_forecast, 'g-', linewidth=2, label='Fine-tuned Model')
+        plt.plot(forecast_dates, finetuned_forecast, 'g-', linewidth=2, label='Sentiment-Enhanced Model' if has_sentiment else 'Fine-tuned Model')
     
     # Plot actual future values if available
     actual_future = evaluation_results.get('actual_future')
@@ -925,7 +1228,7 @@ def create_comparison_plot(data, evaluation_results, prediction_length):
     if 'original_mae' in evaluation_results and 'finetuned_mae' in evaluation_results:
         metrics_text = (
             f"Original MAE: {evaluation_results['original_mae']:.2f}\n"
-            f"Fine-tuned MAE: {evaluation_results['finetuned_mae']:.2f}\n"
+            f"{'Sentiment-Enhanced' if has_sentiment else 'Fine-tuned'} MAE: {evaluation_results['finetuned_mae']:.2f}\n"
             f"Improvement: {evaluation_results['mae_improvement']:.2f}%"
         )
         
@@ -933,7 +1236,7 @@ def create_comparison_plot(data, evaluation_results, prediction_length):
                   bbox=dict(facecolor='white', alpha=0.8, boxstyle='round,pad=0.5'))
     
     # Format plot
-    title = f"{symbol} Forecast Comparison"
+    title = f"{symbol} Forecast Comparison" + (" with Sentiment Analysis" if has_sentiment else "")
     plt.title(title, fontsize=16, fontweight='bold')
     plt.xlabel('Date', fontsize=12)
     plt.ylabel(f'Price ({price_denomination})', fontsize=12)
@@ -959,7 +1262,7 @@ def create_comparison_plot(data, evaluation_results, prediction_length):
     
     # Save plot
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    filename = f"plots/{symbol}_finetuned_comparison_{timestamp}.png"
+    filename = f"plots/{symbol}_{'sentiment_enhanced' if has_sentiment else 'finetuned'}_comparison_{timestamp}.png"
     plt.savefig(filename, dpi=300, bbox_inches='tight')
     logger.info(f"Comparison plot saved to {filename}")
     plt.close()
@@ -991,7 +1294,15 @@ def fine_tune_simplified(original_model, train_loader, epochs=10, device="cpu"):
         
         # Process each batch
         progress_bar = tqdm(train_loader, desc=f"Epoch {epoch+1}/{epochs}")
-        for batch_idx, (context, targets) in enumerate(progress_bar):
+        for batch_idx, batch_data in enumerate(progress_bar):
+            # Check if we have sentiment data
+            has_sentiment = len(batch_data) == 3
+            
+            if has_sentiment:
+                context, sentiment_context, targets = batch_data
+            else:
+                context, targets = batch_data
+            
             batch_size = context.shape[0]
             total_loss = 0.0
             
@@ -1040,19 +1351,45 @@ def fine_tune_simplified(original_model, train_loader, epochs=10, device="cpu"):
     logger.info("Fine-tuning complete")
     return fine_tuned_model
 
+def store_forecast_results(forecast_data: Dict[str, Any], plot_path: str = None) -> bool:
+    """
+    Store forecast results using the StorageManager.
+    """
+    if not STORAGE_AVAILABLE:
+        logger.warning("StorageManager not available - forecast not stored")
+        return False
+        
+    storage_manager = None
+    try:
+        # Initialize storage manager
+        storage_manager = StorageManager()
+        storage_manager.connect()
+        logger.info("Connected to Weaviate for storage")
+        
+        # Store the forecast
+        success = storage_manager.store_forecast(forecast_data)
+        
+        if success:
+            logger.info(f"Successfully stored forecast for {forecast_data['symbol']}")
+        else:
+            logger.error(f"Failed to store forecast for {forecast_data['symbol']}")
+            
+        return success
+        
+    except Exception as e:
+        logger.error(f"Error storing forecast: {e}")
+        return False
+    finally:
+        if storage_manager is not None:
+            try:
+                storage_manager.close()
+                logger.info("Closed Weaviate connection after storage")
+            except Exception as e:
+                logger.error(f"Error closing Weaviate connection: {e}")
+
 def prepare_forecast_results(finetuned_model, data, val_data, prediction_length, symbol):
     """
     Prepare forecast results in the format expected by store_forecast.
-    
-    Args:
-        finetuned_model: Fine-tuned Chronos model
-        data (pd.DataFrame): Historical price data
-        val_data (dict): Validation data dictionary
-        prediction_length (int): Number of days to predict
-        symbol (str): Cryptocurrency symbol
-        
-    Returns:
-        tuple: (forecast_results, market_insights)
     """
     # Get the context and price scaling info
     context = val_data['context']
@@ -1164,46 +1501,6 @@ def prepare_forecast_results(finetuned_model, data, val_data, prediction_length,
     
     return forecast_data
 
-def store_forecast_results(forecast_data: Dict[str, Any], plot_path: str = None) -> bool:
-    """
-    Store forecast results using the StorageManager.
-    
-    Args:
-        forecast_data (Dict): Forecast data prepared by prepare_forecast_results
-        plot_path (str): Path to the forecast plot image
-        
-    Returns:
-        bool: Success status
-    """
-    if not STORAGE_AVAILABLE:
-        logger.warning("StorageManager not available - forecast not stored")
-        return False
-        
-    try:
-        # Add plot path if provided
-        if plot_path:
-            forecast_data["plot_path"] = plot_path
-            
-        # Initialize storage manager
-        storage_manager = StorageManager()
-        
-        # Store the forecast
-        success = storage_manager.store_forecast(forecast_data)
-        
-        # Close connection
-        storage_manager.close()
-        
-        if success:
-            logger.info(f"Successfully stored forecast for {forecast_data['symbol']}")
-        else:
-            logger.error(f"Failed to store forecast for {forecast_data['symbol']}")
-            
-        return success
-        
-    except Exception as e:
-        logger.error(f"Error storing forecast: {e}")
-        return False
-
 def main():
     """Entry point for the script."""
     parser = argparse.ArgumentParser(description="Fine-tune Chronos Model for Crypto Forecasting")
@@ -1236,6 +1533,10 @@ def main():
     parser.add_argument("--no-store", action="store_true", 
                       help="Disable storage of results in Weaviate")
     
+    # Sentiment options
+    parser.add_argument("--use-sentiment", action="store_true",
+                      help="Use sentiment analysis data in forecasting")
+    
     args = parser.parse_args()
     
     # Override storage availability if requested
@@ -1244,6 +1545,7 @@ def main():
         STORAGE_AVAILABLE = False
         logger.info("Storage has been disabled via --no-store flag")
     
+    storage_manager = None
     try:
         # Check Chronos availability
         if not check_chronos_availability():
@@ -1253,12 +1555,35 @@ def main():
         # Check GPU availability and get device
         device = check_cuda_availability()
         
-        # Load combined data from CSV and API
-        data = load_combined_data(args.symbol, lookback_days=args.lookback, api_days=365)
+        # Initialize storage manager if needed
+        if STORAGE_AVAILABLE:
+            storage_manager = StorageManager()
+            storage_manager.connect()
+            logger.info("Connected to Weaviate for data operations")
+        
+        # Load combined data from CSV and API with sentiment if requested
+        data = load_combined_data(args.symbol, lookback_days=args.lookback, api_days=365, include_sentiment=args.use_sentiment)
         
         if data is None:
             logger.error(f"Failed to load data for {args.symbol}")
             return 1
+        
+        # If sentiment data is requested but not already included, try to add it
+        if args.use_sentiment and STORAGE_AVAILABLE and "sentiment_score" not in data.columns:
+            logger.info("Adding sentiment data to price data...")
+            sentiment_data = get_sentiment_data(args.symbol, days=args.lookback)
+            if not sentiment_data.empty:
+                data = combine_price_and_sentiment(data, sentiment_data)
+                logger.info("Successfully added sentiment data")
+            else:
+                logger.warning("No sentiment data found, continuing with price data only")
+        
+        # Log whether we're using sentiment data
+        has_sentiment = "sentiment_score" in data.columns
+        if has_sentiment:
+            logger.info("Using price data with sentiment features")
+        else:
+            logger.info("Using price data only (no sentiment features)")
         
         logger.info(f"Preparing datasets for {args.symbol}")
         
@@ -1266,7 +1591,8 @@ def main():
         train_loader, test_loader, val_data = prepare_datasets(
             data, 
             context_length=args.context_length,
-            prediction_length=args.days_ahead
+            prediction_length=args.days_ahead,
+            use_sentiment=args.use_sentiment
         )
         
         if train_loader is None:
@@ -1335,12 +1661,15 @@ def main():
             )
             
             # Store the forecast if storage is available
-            if STORAGE_AVAILABLE:
+            if STORAGE_AVAILABLE and storage_manager is not None:
                 logger.info("Storing forecast in Weaviate")
-                storage_success = store_forecast_results(forecast_data, plot_path)
+                success = storage_manager.store_forecast(forecast_data)
+                if success:
+                    logger.info(f"Successfully stored forecast for {forecast_data['symbol']}")
+                else:
+                    logger.error(f"Failed to store forecast for {forecast_data['symbol']}")
             else:
                 logger.warning("Storage functionality not available - forecast not stored")
-                storage_success = False
             
             # Print results
             print("\n===== FINE-TUNING RESULTS =====")
@@ -1348,6 +1677,7 @@ def main():
             print(f"Model: {args.model}")
             print(f"Epochs: {args.epochs}")
             print(f"Frozen weights: {args.freeze_percentage}%")
+            print(f"Using sentiment data: {'Yes' if has_sentiment else 'No'}")
             print(f"API data: Latest {365} days")
             print(f"CSV data: Additional historical data up to {args.lookback} days total")
             
@@ -1365,8 +1695,8 @@ def main():
             print(f"\nComparison plot: {plot_path}")
             
             # Print storage status
-            if STORAGE_AVAILABLE:
-                print(f"Forecast {'successfully stored' if storage_success else 'not stored'} in Weaviate database")
+            if STORAGE_AVAILABLE and storage_manager is not None:
+                print(f"Forecast {'successfully stored' if success else 'not stored'} in Weaviate database")
             else:
                 print("Storage functionality not available - forecast not stored in database")
                 
@@ -1385,6 +1715,13 @@ def main():
         import traceback
         logger.error(traceback.format_exc())
         return 1
+    finally:
+        if storage_manager is not None:
+            try:
+                storage_manager.close()
+                logger.info("Closed Weaviate connection")
+            except Exception as e:
+                logger.error(f"Error closing Weaviate connection: {e}")
 
 if __name__ == "__main__":
     sys.exit(main())

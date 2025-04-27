@@ -148,7 +148,7 @@ class DataCollector:
             api_key = self.api_keys["coingecko"]
             if api_key and api_key.startswith("CG-"):  # Pro API keys start with CG-
                 # Using Pro API - change URL and add key
-                url = "https://pro-api.coingecko.com/api/v3/simple/price"
+                #url = "https://pro-api.coingecko.com/api/v3/simple/price"
                 params["x_cg_pro_api_key"] = api_key
                 
             # Make request

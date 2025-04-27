@@ -1,4 +1,5 @@
 id,source,title,url,content,date,authors,image_url,scraped_at
+<<<<<<< HEAD
 633c1b9e2081ca78dcd00ecced4d7e4c,Cointelegraph,BlackRock Bitcoin fund wins best new ETF on $643M inflow day,https://cointelegraph.com/news/blackrock-ishare-bitcoin-etf-wins-best-etf-massive-inflow-day-crypto," ETF analyst Eric Balchunas said he is “pretty sure this is how I voted,” amid the spot Bitcoin ETF posting a “massive” inflow day not seen since late January. 
 BlackRock’s spot Bitcoin exchange-traded fund has been named the best new ETF product by etf.com, as it recorded its highest inflows since Jan. 21. 
 On April 23, BlackRock’s iShare Bitcoin ETF (IBIT) was awarded the “Best New ETF” at the annual etf.com ETF awards. In an X post shortly after, Bloomberg ETF analyst Eric Balchunas said it “feels right to me.”
@@ -193,3 +194,213 @@ Bitwise executive Jeff Park voiced a similar prediction in February, focused on 
 The analyst wrote that the tumult from the ongoing trade war would cause worldwide inflation, which would cause individuals to seek alternative stores of value like Bitcoin, driving its price much higher in the long term.
 Magazine: Bitcoin payments are being undermined by centralized stablecoins
 ",1745443587233,[],,2025-04-23T21:26:27.233081
+=======
+b2e86ead374aa36828498796cee2b07f,Cointelegraph,Bitcoin rebounds as bulls eye $100K and bears scramble to cover short positions,https://cointelegraph.com/news/bitcoin-rallies-as-bulls-eye-100-k-and-bears-rush-to-cover-shorts," Bitcoin bears are at risk of deep losses as soaring inflows to the spot BTC ETFs highlight the return of institutional investor demand. 
+Key takeaways: 
+Bearish Bitcoin traders were caught off guard by BTC’s rally above $90,000.
+Spot volumes are driving the Bitcoin price rally.
+Derivatives positions with a bearish bias remain at risk of liquidation.
+Bitcoin (BTC) held above the $93,000 mark on April 24, suggesting a potential conclusion to the 52-day bear market that bottomed at $74,400. Although Bitcoin is beginning to show signs of decoupling from the stock market, professional traders have not altered their strategies, as indicated by BTC futures and margin market data.
+A higher long-to-short ratio reflects a preference for long (buy) positions, while a lower ratio indicates a tilt toward short (sell) contracts. Currently, the top traders’ long-to-short ratio on Binance stands at 1.5x, a notable decrease from the 2x level observed ten days earlier. At OKX, the ratio peaked near 1.1x on April 17 but has since lost momentum and now sits at 0.9x.
+Bitcoin’s 10% rally between April 20 and April 24 coincided with a more conciliatory stance from US President Donald Trump regarding import tariffs and his criticism of Federal Reserve Chair Jerome Powell, who has faced scrutiny for maintaining high interest rates. On April 24, Trump stated he had “no intention” of firing Powell, marking a notable shift from his previous rhetoric.
+Amid economic uncertainty, Deutsche Bank strategists have reduced their year-end S&P 500 target by 12% to 6,150. Meanwhile, the US dollar has weakened against other major currencies, pushing the DXY index below 99 for the first time in three years. Despite a modest 6% gain over the past 30 days, Bitcoin’s performance has secured it a place among the world’s top eight tradable assets, with a market capitalization of $1.84 trillion.
+The sharp move above $90,000 caught Bitcoin bears off guard, resulting in over $390 million in leveraged short (sell) futures liquidations between April 21 and April 22. More significantly, aggregate open interest in BTC futures remains just 5% below its all-time high, indicating that bearish traders have not fully exited their positions.
+If Bitcoin’s price maintains its upward momentum and breaks above $95,000, an additional $700 million in short (sell) futures positions could be liquidated, according to CoinGlass data. This potential short squeeze may prove especially challenging for bears, given the robust inflows into spot Bitcoin exchange-traded funds (ETFs), which totaled over $2.2 billion between April 21 and April 23.
+A newly announced joint venture involving SoftBank, Cantor Fitzgerald, and Tether aims to accumulate Bitcoin through convertible bonds and equity financing, which could further strengthen the bullish case. Named “Twenty One Capital,” the Bitcoin treasury company is led by Strike founder Jack Mallers and plans to launch with 42,000 BTC.
+Related: Sovereign wealth funds piling into BTC as retail exits — Coinbase exec
+The muted response from top traders in BTC margin and futures markets suggests that the recent buying pressure has originated mainly from spot markets, which is generally considered a positive indicator for a sustainable bull run.
+The longer Bitcoin consolidates above $90,000, the greater the pressure on bears to cover their shorts, as this level reinforces the narrative that Bitcoin is decoupling from the stock market. This could provide the confidence needed to challenge the $100,000 psychological threshold.
+This article is for general information purposes and is not intended to be and should not be taken as legal or investment advice. The views, thoughts, and opinions expressed here are the author’s alone and do not necessarily reflect or represent the views and opinions of Cointelegraph.
+",1745519906359,[],,2025-04-24T18:38:26.359484
+a1d34ef0840cbb053f3c7d3771b0bcb1,Cointelegraph,Bitcoin supply on exchanges is falling ‘due to public company purchases’ — Fidelity,https://cointelegraph.com/news/bitcoin-supply-exchanges-falling-public-company-purchases-fidelity," BTC reserves on cryptocurrency exchanges have fallen to the lowest level since November 2018. 
+Bitcoin reserves on cryptocurrency exchanges have dropped to their lowest level in more than six years, as publicly traded companies ramp up their accumulation of the digital asset following the US presidential election, according to Fidelity Digital Assets. 
+“We have seen Bitcoin supply on exchanges dropping due to public company purchases — something we anticipate accelerating in the near future,” Fidelity reported on the X social media platform.
+Fidelity said the supply of Bitcoin (BTC) on exchanges had fallen to roughly 2.6 million BTC, the lowest since November 2018. More than 425,000 BTC have moved off exchanges since November, a trend often viewed as a signal of long-term investment rather than short-term trading.
+Over the same period, publicly-traded companies acquired nearly 350,000 BTC, Fidelity said.
+Fidelity Digital Assets is a subsidiary of Fidelity Investments, the $5.8 trillion asset manager headquartered in Boston, Massachusetts. The Fidelity Digital subsidiary was established in 2018, long before cryptocurrency was considered an institutional asset class. 
+Fidelity is the issuer of the Fidelity Wise Origin Bitcoin Fund, one of the first 11 spot Bitcoin exchange-traded funds approved in the United States.
+Related: Bitcoin exchange buying is back as 'Spoofy the Whale' lifts $90K asks
+While Fidelity noted significant corporate Bitcoin purchases, most of the accumulation has been driven by Strategy, the business intelligence firm-turned-Bitcoin bank co-founded by Michael Saylor.
+Since November, Strategy has acquired 285,980 BTC, accounting for 81% of the approximately 350,000 BTC purchased by publicly traded companies.
+Strategy’s latest purchase of 6,556 BTC was disclosed on April 21. 
+Outside the United States, publicly traded companies in Asia have adopted a similar Bitcoin treasury strategy, with Japan’s Metaplanet and Hong Kong’s HK Asia Holdings increasing their Bitcoin allocations. 
+Metaplanet currently holds 5,000 BTC, with CEO Simon Gerovich saying his goal is to double that amount this year.
+Meanwhile, HK Asia Holdings announced plans to raise roughly $8.35 million to potentially increase its Bitcoin reserves. 
+Magazine: Altcoin season to hit in Q2? Mantra’s plan to win trust: Hodler’s Digest, April 13 – 19
+",1745519909821,[],,2025-04-24T18:38:29.821637
+b208085932c4715f39885a1547edc622,Cointelegraph,Bitcoin 'short squeeze' or $87K dip next? BTC price predictions vary,https://cointelegraph.com/news/bitcoin-short-squeeze-87k-dip-btc-price-predictions-vary," Bitcoin could liquidate a large block of leveraged shorts with a trip above its yearly open, but BTC price dip expectations are building as traders eye $87,000. 
+Bitcoin is setting up a showdown with leveraged shorts immediately above its yearly open price.
+That key level near $93,500 is the main target for traders hoping that BTC/USD will cement its latest breakout.
+The next support retest could involve $87,000, analysis suggests.
+Bitcoin (BTC) consolidated below a key resistance target on April 24 as a BTC price forecast brought sub-$90,000 levels into play.
+Data from Cointelegraph Markets Pro and TradingView showed BTC/USD retesting $92,000 as support overnight.
+The pair broadly maintained six-week highs while global markets remained at a loss over the trajectory of the ongoing US trade war.
+“The market is now up over +1% on the day on no news at all,” trading resource The Kobeissi Letter summarized alongside a chart of the S&P 500 in part of its latest analysis on X.
+Bitcoin continued to brush off news events, leaving volatility to equities, while gold attempted to stabilize after slipping from record highs earlier in the week.
+“Fairly normal to have a slight correction here on Bitcoin as it's just had a massive breakout,” crypto trader, analyst and entrepreneur Michaël van de Poppe told X followers on the day.
+Others increasingly entertained the idea of a deeper correction following brisk gains for BTC/USD, potentially taking the market back below the $90,000 mark.
+“A dip to 88k would be lovely,” popular trader Inmortal argued. 
+A dip to 88k would be lovely.If the market gives it, I will probably play one of these two setups, or both.$BTC pic.twitter.com/ysqiheds7X
+Trader and analyst Rekt Capital had a similar conception of the potential support retest move.
+BTC price action, he observed, was closely copying behavior from the middle of its previous bull market in 2021.
+“Part of Bitcoin continuing to repeat mid-2021 price tendencies relative to the Bull Market EMAs would be a dip into the $87000 (green EMA) level for a post-breakout retest, if at all needed,” he commented on a weekly chart showing two exponential moving averages (EMAs).
+The main target for bulls thus remained the yearly open level just above $93,000, one which remained intact as resistance at the time of writing.
+Related: Bitcoin exchange outflows mimic 2023 as whales buy retail 'panic'
+This coincided with a block of potential liquidation levels on exchange order books, providing fertile conditions for a “short squeeze” should price attack them.
+$BTC Liquidation heatmap shows that liquidity of leveraged positions is building up on both sides. Leveraged longs mainly around $91,400.Leveraged shorts around $93,500-$94,500. pic.twitter.com/d2jCyO2FdC
+The latest data from monitoring resource CoinGlass showed the largest concentration of liquidation leverage centered around $93,600.
+Earlier, Cointelegraph reported on a large trading entity dubbed “Spoofy the Whale” removing a wall of asks at $90,000.
+This article does not contain investment advice or recommendations. Every investment and trading move involves risk, and readers should conduct their own research when making a decision.
+
+",1745519913661,[],,2025-04-24T18:38:33.661779
+db2bd407cb66185cf1ad8c71ce31c1da,Cointelegraph,The hidden risk of updatable firmware,https://cointelegraph.com/news/the-hidden-risk-of-updatable-firmware," Crypto’s hidden threat: firmware updates in hardware wallets can be ticking time bombs, introducing vulnerabilities and backdoors. 
+Opinion by: Igor Zemtsov, chief technology officer at TBCC
+Crypto security is a ticking time bomb. Updatable firmware might just be the match that lights the fuse.
+Hardware wallets have become the holy grail of self-custody, the ultimate safeguard against hackers, scammers and even government overreach. There’s an inconvenient truth, however, that most people ignore: Firmware updates aren’t just security patches. 
+They’re potential backdoors, waiting for someone — whether a hacker, a rogue developer or a shady third party — to kick them wide open.
+Every time a hardware wallet manufacturer pushes an update, users are forced to make a choice. Hit that update button and hope for the best, or refuse to update and risk using outdated software with unknown vulnerabilities. Either way, it’s a gamble. 
+In crypto, a bad gamble can mean waking up to an empty wallet.
+Updating firmware sounds like common sense. More security! Fewer bugs! Better user experience!
+Here’s the thing: Every update is also an opportunity not just for the wallet provider but for anyone with the power, or motivation, to tamper with the process.
+Hackers dream of firmware vulnerabilities. A rushed or poorly audited update can introduce tiny, almost imperceptible flaws — ones that sit in the background, waiting for the right moment to drain funds. And the best part? Users will never know what hit them.
+Then there’s the more unsettling possibility: deliberate backdoors.
+Recent: Hardware wallet Ledger helps competitor Trezor resolve security vulnerability
+Tech companies have been forced to include government-mandated surveillance tools before. What makes anyone think hardware wallet makers are exempt? If a regulatory agency — or worse, a criminal organization — wants access to private keys, firmware updates are the perfect attack vector. One hidden function. One disguised line of code. 
+That’s all it takes. Still think firmware updates are harmless? 
+This isn’t some far-fetched, doomsday scenario. It has already happened.
+Ledger, one of the biggest names in crypto security, had a major security crisis in 2018 when security researcher Saleem Rashid exposed a vulnerability that allowed attackers to replace Ledger Nano S firmware and hijack private keys. Nearly 1 million devices were at risk before a fix was rolled out. The scary part? There was no way for users to know if their devices had already been compromised.
+In 2023, OneKey suffered a similar nightmare. White hat hackers demonstrated that its firmware could be cracked in mere seconds. No crypto was lost — this time. But what if real attackers had found the flaw first?
+Then came the “Dark Skippy” exploit, taking firmware-based attacks to an entirely new level. With just two signed transactions, hackers could extract a user’s entire seed phrase — without setting off a single alarm. If firmware updates can be manipulated this easily, how can anyone be sure their assets are safe?
+To be fair, not all firmware updates are security disasters. Ledger uses a proprietary operating system and secure element chips for added protection now. Trezor takes an open-source approach, allowing the community to scrutinize its firmware. Coldcard and BitBox02 give users manual control over updates, reducing — but not eliminating — risk.
+Here’s the real question: Can users ever be 100% sure that an update won’t introduce a fatal flaw?
+Some wallets have decided to eliminate the risk altogether. Tangem ships with fixed, non-updatable firmware, meaning that its code can never be altered once the device leaves the factory. No updates. No patches. 
+Of course, this approach has its trade-offs. If a vulnerability is discovered, there’s no way to fix it. But in security, predictability matters. 
+The crypto market was worth $2.79 trillion as of March 2025. With that much money on the table, cybercriminals, rogue insiders and overreaching governments are always looking for weak points. Hardware wallet makers should be laser-focused on security.
+Choosing a hardware wallet shouldn’t feel like gambling with private keys. It shouldn’t involve blind trust in a corporation’s ability to push updates responsibly. Users deserve more than vague reassurances. They deserve security models that put control where it belongs — with them.
+Security isn’t about convenience. It’s about control. Any system that requires trusting unknown developers, opaque update processes or firmware that can be changed at will? That’s not control. That’s a liability.
+The only real way to keep a hardware wallet safe? Remove the guesswork. Strip away the blind trust. Always research the developers’ backgrounds, check their track record for security incidents, and see how they’ve handled past vulnerabilities. Stick to verifiable facts — security should never be based on assumptions.
+Opinion by: Igor Zemtsov, chief technology officer at TBCC.
+This article is for general information purposes and is not intended to be and should not be taken as legal or investment advice. The views, thoughts, and opinions expressed here are the author’s alone and do not necessarily reflect or represent the views and opinions of Cointelegraph.
+",1745511573043,[],,2025-04-24T16:19:33.043545
+c43f72eb84509cddc953e82486627eca,Cointelegraph,Here’s what happened in crypto today,https://cointelegraph.com/news/what-happened-in-crypto-today," Need to know what happened in crypto today? Here is the latest news on daily trends and events impacting Bitcoin price, blockchain, DeFi, NFTs, Web3 and crypto regulation. 
+Today in crypto, the Chicago Mercantile Exchange (CME) Group announced the launch of Solana futures contracts in March. Meanwhile, global trade concerns continue pressuring investor sentiment, risking a potential Bitcoin correction below the key $75,000 support level. In addition, the US Securities and Exchange Commission has released a statement saying it does not view memecoins as securities.
+The Chicago Mercantile Exchange (CME) Group, a globally recognized derivatives exchange, announced it will launch Solana (SOL) futures contracts on March 17, pending a review by United States financial regulators.
+According to the Feb. 28 announcement, market participants will have access to micro contracts of 25 SOL or standard contract sizes of 500 SOL, and all contracts will be cash-settled. CME Group already provides futures and options contracts for Bitcoin (BTC) and Ether (ETH) to investors looking to hedge against the highly volatile nature of these digital assets.
+The addition of Solana futures contracts gives traditional finance investors additional exposure to the crypto markets and provides the crypto markets with fresh capital injections that should support prices.
+CME open interest on derivatives contracts quarter-by-quarter 2024. Source: CME Group
+Bitcoin risks more downside if it loses a “key” $75,000 support amid growing concerns over a potential trade war between the United States and China.
+Bitcoin’s (BTC) price has fallen more than 6.5% during the past 24 hours to sink below a low of $78,197, which was last seen on Nov. 10, 2024, Cointelegraph Markets Pro data shows.
+Analysts attribute the current decline to macroeconomic concerns related to a potential trade war between the US and China caused by US President Donald Trump’s decision to impose import tariffs.
+BTC/USD, 1-year chart. Source: Cointelegraph
+These macroeconomic concerns were the main reason for Bitcoin losing the $80,000 support, according to Ryan Lee, chief analyst at Bitget Research.
+The analyst told Cointelegraph:
+Still, some analysts are concerned that Bitcoin’s correction may see the world’s first cryptocurrency revisit $70,000.
+Based on its correlation with the global liquidity index, Bitcoin’s right-hand side (RHS), which marks the lowest bid price someone is willing to sell the currency for, may fall below $70,000 around the end of February, after it peaked near $110,000 in January.
+The US Securities and Exchange Commission says it does not view memecoins as securities but warned any fraudulent tokens could still be subject to enforcement actions by other regulators.
+The agency’s Division of Corporation Finance said in a Feb. 27 statement that, in its view, memecoins “do not involve the offer and sale of securities under the federal securities laws” and “are akin to collectibles.”
+Source: David Sacks
+“As such, persons who participate in the offer and sale of meme coins do not need to register their transactions with the Commission,” the SEC said.
+It added that memecoin buyers and holders wouldn’t be protected by US securities laws but said the fraudulent offer and sale of memecoins “may be subject to enforcement action or prosecution by other federal or state agencies.”
+",1740780816989,[],,2025-02-28T22:13:36.989672
+bc538c546eb2fa8a3ec91be30f6077ba,Cointelegraph,"Serbia’s Prince Filip says Bitcoin is being stifled, expects huge rally",https://cointelegraph.com/news/serbia-prince-filip-bitcoin-stifled-huge-rally," Bitcoiner Prince Filip expects a BTC “omega candle” due to Bitcoin’s economic properties, but warns that the price may be suppressed by market participants. 
+Bitcoin’s price trajectory may be suppressed ahead of its upcoming “omega candle” rally, according to Prince Filip Karađorđević, the hereditary prince of Serbia and Yugoslavia.
+In an April 24 interview with Simply Bitcoin, Filip said some market participants may be limiting Bitcoin (BTC) price action.
+“People are able to control the market to some extent,” he said. “Maybe that’s what acted on the 2021 market that suppressed its price from jumping high up. We could get that again in 2025, but there will be one point where [Bitcoin price] will run away.”
+Filip added that Bitcoin remains a fundamentally deflationary asset and said its value is “always going to rise over time.”
+He referenced the concept of the “omega candle,” made popular by Bitcoin advocate and Jan3 CEO Samson Mow. The theory predicts Bitcoin’s growth trajectory will explode after it hits the $100,000 mark.
+Related: Bitcoin acting ‘less Nasdaq,’ more like gold, despite 60% recession odds
+“You’ll start to go up by 10,000 a day or drop by 10,000 a day. And this is the God candle. After that, we’ll start to see omega candles, which are 100,000 increments daily,” said Mow in an exclusive interview with Cointelegraph in November 2024.
+Factors contributing to Bitcoin’s growth include the growing distrust in the traditional financial system, according to Mow.
+Related: Bitcoin ETFs log $912M inflows in ‘dramatic’ investor sentiment boost
+Bitcoin price saw an over 9% recovery over the past week as the US spot Bitcoin exchange-traded funds (ETFs) accumulated over $2.2 billion worth of Bitcoin in the three days leading up to April 23, Farside Investors’ data shows.
+The price action is in line “with our Bitcoin relative strength expectations with respect to equities and the dollar,” analysts from Bitfinex exchange told Cointelegraph, adding:
+Bitcoin may continue to see more upside if “equities continue higher during earnings week,” but the “still-elevated macro uncertainty could limit broad-based upside,” the analysts added.
+Stock and cryptocurrency investors are also concerned about a potential recession in the US. JPMorgan estimates a 60% probability for a recession in 2025, citing US President Donald Trump’s 145% tariffs on China as a “material threat to growth” that increases the odds of an economic downturn.
+Magazine: Bitcoin’s odds of June highs, SOL’s $485M outflows, and more: Hodler’s Digest, March 2 – 8
+",1745511576855,[],,2025-04-24T16:19:36.855246
+12dffdc428639b44180193803018498a,Cointelegraph,How crypto payments can become the new ‘tap-and-go’ — Pulsar co-founder,https://cointelegraph.com/news/how-crypto-payments-can-become-the-new-tap-and-go-pulsar-co-founder," This episode of the Clear Crypto Podcast breaks down how social payments and crypto giveaways on X can make blockchain-based transactions fast, fun and finally mainstream. 
+What if paying with crypto was as easy and as fun as sending a meme on X?
+In the latest episode of The Clear Crypto Podcast, StarkWare’s Nathan Jeffay and Cointelegraph’s Gareth Jenkinson sit down with Stefana Banciu, growth lead at Pulsar Money, to explore how blockchain is bringing payments into the digital age, with speed, transparency and a dash of playfulness.
+Banciu lays out how Pulsar is pushing the frontier of Web3 payments with features like social transfers that allow users to send crypto directly through X, simply by tagging a handle. 
+The episode cuts through the crypto jargon to tackle a question with mainstream resonance: Why aren’t we using crypto for everyday transactions yet?
+“I wish I could say yes, but that wouldn’t be a true reflection of the state of affairs,” Jenkinson admits when asked if crypto is widely used for payments. He points to Mastercard-linked crypto cards as a stopgap, but says the real revolution hasn’t yet reached the coffee shop counter.
+Related: Luxury app Dorsia taps MoonPay for crypto payments
+For Banciu, the path forward lies in bridging fun and fundamentals. While crypto’s founding ideals include borderless, permissionless transfers and low fees, she says onboarding the next wave of users will require experiences that are intuitive, social and entertaining.
+Their platform includes a “social payments module” that lets users send crypto directly through X by tagging a handle, a small but powerful step toward making transactions feel more like communication than banking.
+“You can actually send funds directly on Twitter,” Banciu says.
+But convenience alone isn’t enough. Banciu says making crypto fun is key to onboarding the next wave of users. 
+“We all know within the crypto space, the whole community that is here for perhaps something else than payments, which is quite boring, right?” she adds. “So we said, OK, why not think of a way to onboard users, make them do payments in a fun way?”
+For Jenkinson, making crypto usable as a true “medium of exchange” is essential to its legitimacy.
+To hear the full conversation on The Clear Crypto Podcast,  listen to the full episode on Cointelegraph’s Podcasts page, Apple Podcasts or Spotify. And don’t forget to check out Cointelegraph’s full lineup of other shows! 
+Magazine: SEC’s U-turn on crypto leaves key questions unanswered
+",1745511580383,[],,2025-04-24T16:19:40.383472
+5548915a06eb634979bce4f89f1acb89,Cointelegraph,New Hampshire Bitcoin reserve bill heads to full Senate vote,https://cointelegraph.com/news/new-hampshire-bitcoin-reserve-bill-clears-senate-committee," New Hampshire’s House Bill 302 would allow the state treasurer to invest in cryptocurrencies with a market cap of over $500 billion. 
+A bill that would allow New Hampshire to invest a portion of its state funds in digital assets and precious metals has advanced to a full Senate vote after passing a second committee.
+On April 23, House Bill 302 (HB 302) was reviewed in the second Senate committee and passed in a 4-1 vote.
+The legislation, introduced in January, cleared the New Hampshire House earlier this month in a 192–179 vote. It now faces a vote by the full Senate and, if approved, will require the governor’s signature to become law.
+Once enacted, it would allow the New Hampshire treasury to use 10% of the state’s general funds to invest in crypto with a market cap of over $500 billion — a threshold currently met only by Bitcoin (BTC).
+During a debate before the full House vote, Democratic Representative Terry Spahr argued that the bill is unnecessary. 
+The lawmaker said it could undermine the future security of the state’s digital asset stockpile. Spahr argued that the state treasurer already has the authority to manage investments without the bill.
+Others said that it could earn the state good returns for its investment. Republican Representative Jordan Ulery said the investments could net the state a “large amount of money.”
+Related: US federal agencies to report crypto holdings to Treasury by April 7
+Bitcoin Laws, which tracks the progress of digital asset legislation, shows that New Hampshire also has two more blockchain-related bills going through its legislature. 
+HB 639 addresses blockchain dispute resolution and regulatory frameworks, while HB 310 focuses on real-world asset tokenization and stablecoin usage.
+New Hampshire’s progress comes as Arizona pursues a more aggressive approach by exploring the creation of a strategic Bitcoin reserve, aiming to become the first US state to implement the policy.
+Magazine: Ethereum maxis should become ‘assholes’ to win TradFi tokenization race
+",1745511583781,[],,2025-04-24T16:19:43.781958
+87a176f28d8ea1f22a53b07f7d0d2420,Cointelegraph,"Asian firms ramp up Bitcoin buys: Metaplanet, HK Asia lead charge",https://cointelegraph.com/news/asian-firms-bitcoin-accumulation-metaplanet-hk-asia-strategy," Metaplanet has reached 50% of its goal to accumulate 10,000 BTC by the end of 2025 following its latest purchase. 
+Asian investment firms are stepping up their Bitcoin accumulation strategies, with Japan’s Metaplanet and Hong Kong’s HK Asia Holdings leading the way.
+Tokyo-based Metaplanet disclosed on April 24 that it acquired an additional 145 Bitcoin (BTC) for 1.9 billion Japanese yen (around $13.4 million), boosting its total holdings to 5,000 BTC.
+Metaplanet CEO Simon Gerovich confirmed the company had reached 50% of its initial goal of amassing 10,000 BTC by the end of 2025.
+The firm has been aggressive in its Bitcoin treasury operations, using bond issuances and Bitcoin income strategies such as selling cash-secured BTC put options to finance its acquisitions.
+Since initiating its Bitcoin strategy, Metaplanet’s stock has surged over 3,000%. The company aims to hold 21,000 BTC by the close of 2026.
+Related: Strike’s Mallers to head firm seeking superior Bitcoin play to MSTR
+HK Asia Holdings has also announced plans to raise about $65 million Hong Kong dollars ($8.35 million) by issuing new shares and convertible notes to potentially buy more BTC.
+According to an April 23 filing, the company entered into share subscription and convertible note (CN) subscription agreements after trading hours.
+The deal includes issuing 3,272,000 new shares at a subscription price of HK$4.01 per share, alongside convertible notes valued at HK$52.38 million in aggregate principal amount. The newly issued shares will represent about 0.82% of HK Asia Holdings’ total shares in circulation.
+While the filing does not mention that HK Asia Holdings intends to use the funds to buy Bitcoin, many in the crypto community speculated that the capital raise is expected to fund further Bitcoin acquisitions.
+The speculation follows HK Asia’s February decision to step into Bitcoin markets. After buying its first BTC on Feb. 16, the firm doubled its share price within a day.
+By Feb. 20, HK Asia expanded its holdings by purchasing an additional 7.88 BTC, bringing its total to nearly 9 BTC at an average price of $97,021 per coin.
+Shares in HK Asia were up by around 5.4% on April 24 at the Hong Kong stock market closing, according to Google Finance.
+Related: Bitcoin exchange buying is back as ‘Spoofy the Whale’ lifts $90K asks
+Michael Saylor’s Strategy, the world’s largest publicly listed corporate Bitcoin holder, has championed the Bitcoin accumulation strategy by consistently issuing convertible notes and at-the-market (ATM) equity offerings to fund aggressive Bitcoin purchases.
+In February, Strategy announced plans to raise another $2 billion through 0% senior convertible notes to purchase more Bitcoin.
+As of April 20, Strategy held 538,200 BTC on its balance sheet. The figure includes the company’s most recent acquisition of 6,556 BTC for about $555.8 million.
+Magazine: Bitcoin ATH sooner than expected? XRP may drop 40%, and more: Hodler’s Digest, March 23–29
+",1745511594723,[],,2025-04-24T16:19:54.723197
+aa0dd8d87acf52650886bfff44f66cae,Cointelegraph,Bitcoin's next big resistance is $95K— What will trigger the breakout?,https://cointelegraph.com/news/bitcoin-next-big-resistance-is-95k-what-will-trigger-breakout," Decreasing Bitcoin exchange inflows, resurgent ETF demand and other bullish factors could push BTC price above the next big hurdle at $95,000. 
+Spot Bitcoin ETF inflows are at their highest since January 2025.
+Inflows to exchanges down to levels last seen in December 2016.
+Bitcoin’s negative funding rates could set up a short squeeze.
+BTC price is above major moving averages, which can now provide support.
+Bitcoin’s (BTC) price rose to a new range high at $94,700 on April 23, its highest value since March 2.
+Several analysts said the next psychological resistance remains at $95,000, and the price might drop to test support levels below.
+“The $94K–$95K zone is clearly the resistance to beat,” said Swissblock in an April 24 post on X. 
+The onchain data provider asserted that the next logical move for Bitcoin would be a pullback toward the $90,000 zone to gain momentum for a move higher.
+Popular Bitcoin analyst AlphaBTC opined that the asset will likely consolidate in the $93,000-$95,000 range “before pushing higher to take liquidity above 100K.”
+Several bullish signs suggest that BTC is well-positioned to break above $95,000 in the following days or weeks.
+One factor supporting the Bitcoin bull argument is resurgent institutional demand, reflected by significant inflows into spot Bitcoin exchange-traded funds (ETFs).
+On April 22 and April 23, spot Bitcoin ETFs saw a net flow totaling $936 million and $917 million, respectively, as per data from SoSoValue.
+As Cointelegraph reported, these inflows have been the highest since January 2025 and more than 500 times the 2025 daily average.
+This trend reflects growing confidence among traditional finance players, as observed by market analysts like Jamie Coutts, who noted global liquidity hitting new all-time highs, historically fueling asset price rallies. 
+Institutional buying creates sustained upward pressure on Bitcoin’s price by absorbing the available supply.
+The trend of decreasing Bitcoin exchange inflows continues, suggesting a potential reduction in sell pressure. 
+The total amount of coins transferred to the exchanges has dropped from a year-to-date high of 97,940 BTC per day on Feb. 25 to 45,000 BTC on April 23, as per data from CryptoQuant. 
+This is reinforced by a reduction in the number of addresses depositing Bitcoin to exchanges, which has been “steadily declining since 2022,” according to CryptoQuant analyst Axel Adler Jr. 
+He highlights that this metric’s 30-day moving average has dropped to 52,000 BTC, a level last seen in December 2016. 
+“This trend is bullish in itself,” as it represents a fourfold reduction in coin sales over the last three years, the analyst said, adding:
+Bitcoin price has rebounded to levels last seen in early March, but futures trades are not entirely on board yet. 
+Bitcoin’s perpetual futures funding rates remained negative between April 22 and April 23, despite the price rising by 11% over the same period, data from Glassnode shows.
+Negative funding rates imply that shorts are paying longs, reflecting a bearish sentiment that can fuel a short squeeze as prices rise.
+Related: Bitcoin is the ‘cleanest shirt in the dirty laundry’ — Bitfinex
+In an April 22 post on X, CryptoQuant contributor Darkfost highlighted a similar divergence in Bitcoin’s price and Binance funding rates. 
+“Whereas BTC continues to climb, funding rates on Binance have turned negative, currently sitting at around -0.006 at the time of writing,” Darkfost explained.
+He added that this is a rare occurrence, which has historically been followed by significant rallies, like Bitcoin’s surge from $28,000 to $73,000 in October 2023, and from $57,000 to $108,000 in September 2024.
+If history repeats itself, Bitcoin may rally from the current levels, breaking above the resistance at $95,000 toward $100,000.
+On April 22, Bitcoin price rose above a key level: the 200-day simple moving average (SMA) currently at $88,690, fueling a marketwide recovery.
+The last time the BTC price broke above the 200-day SMA, it experienced a parabolic move, rallying 80% from $66,000 on Oct. 14, 2024, to its previous all-time high of $108,000 on Dec. 17. 
+This level should provide significant support as Bitcoin trades above this key trendline. But if it doesn’t hold, the following levels to watch will likely be $84,379, the 50-day SMA, and the $80,000 psychological level.
+For the bulls, the resistance levels at $95,000 and $100,000 are the primary ones to watch. Rising above that would pave the way for a run toward the Jan. 20 all-time high above $109,000.
+This article does not contain investment advice or recommendations. Every investment and trading move involves risk, and readers should conduct their own research when making a decision.
+",1745511597931,[],,2025-04-24T16:19:57.931452
+>>>>>>> 734ebd2f769d2aa851d0d202616235a27d0d439e

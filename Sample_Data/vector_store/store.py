@@ -328,6 +328,12 @@ def store_document(client, text, filename, document_type=None, title=None, date=
         properties["has_recommendations"] = features.get("has_recommendations", False)
     
     try:
+
+        # Add before the final insert call
+        logger.debug(f"Storing document with properties: {list(properties.keys())}")
+        logger.debug(f"Content length: {len(properties.get('content', ''))}")
+        logger.debug(f"Keywords: {properties.get('keywords', [])}")
+
         # Insert the object with all properties and the BERT embedding vector
         collection.data.insert(
             properties=properties,

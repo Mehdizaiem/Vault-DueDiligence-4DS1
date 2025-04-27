@@ -91,3 +91,4 @@ Sample_Data/risk_model/risk_plots
 models/finbert-tone/pytorch_model.bin
 package-lock.json
 package.json
+*.gexf

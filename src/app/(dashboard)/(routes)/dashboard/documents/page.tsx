@@ -5,6 +5,9 @@ import { Upload, FileText, Search, Trash2, ExternalLink, Clock, AlertTriangle, C
 import { useDropzone } from 'react-dropzone';
 import axios, { AxiosError, AxiosProgressEvent } from 'axios'; // Import AxiosProgressEvent
 import { useRouter } from 'next/navigation';
+/**/import { RiskDetailsModal } from "@/components/RiskDetailsModel";
+import { fetchDocumentRisk } from "@/services/fetchDocumentRisk"; // Import
+
 
 interface Document {
   id: string;
@@ -34,6 +37,15 @@ export default function DocumentsPage() {
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [uploadNotes, setUploadNotes] = useState('');
   const [isPublic, setIsPublic] = useState(false);
+  //
+  const [riskModalOpen, setRiskModalOpen] = useState(false);
+  const [riskDetails, setRiskDetails] = useState({
+  score: 0,
+  category: "",
+  factors: [] as string[],
+  title: ""
+  });
+  // 
   const router = useRouter();
 
   // Fetch documents when component mounts
@@ -343,6 +355,31 @@ export default function DocumentsPage() {
 
                 {/* Actions */}
                 <div className="flex gap-2 mt-auto pt-3 border-t border-gray-100">
+                  {/**/}
+                  <button
+                    onClick={async () => {
+                      try {
+                        const data = await fetchDocumentRisk(doc.id); // Use the new function
+
+                        setRiskDetails({
+                          score: data.risk_score,
+                          category: data.risk_category,
+                          factors: data.risk_factors,
+                          title: data.title
+                        });
+
+                        setRiskModalOpen(true);
+                      } catch (error) {
+                        console.error("Could not fetch risk data:", error);
+                        alert("Could not fetch risk data. Please check server logs.");
+                      }
+                    }}
+                    className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800"
+
+                  >
+                    📊 View Risk
+                  </button>
+                   {/**/ }
                   <button
                     onClick={() => openInQA(doc.id)}
                     className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -498,6 +535,17 @@ export default function DocumentsPage() {
           </div>
         </div>
       )}
+      <RiskDetailsModal
+        isOpen={riskModalOpen}
+        onClose={() => setRiskModalOpen(false)}
+        riskScore={riskDetails.score}
+        riskCategory={riskDetails.category}
+        riskFactors={riskDetails.factors}
+        title={riskDetails.title}
+      />
+
+      {riskModalOpen && <div className="fixed top-10 left-10 bg-red-500 text-white p-4 z-50">Risk Modal is open</div>}
+
     </div>
   );
 }

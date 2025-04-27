@@ -77,6 +77,7 @@ Sample_Data/data_ingestion/processed/crypto_news.csv
 Code/document_processing/tfidf_corpus.pkl
 output/processed_documents.json
 
+Sample_Data/risk_model/risk_plots
 *.pyc
 *.png
 *.jpg

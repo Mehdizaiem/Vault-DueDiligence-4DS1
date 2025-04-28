@@ -1,3 +1,4 @@
+import os
 import re
 import logging
 import numpy as np
@@ -971,6 +972,10 @@ class DocumentProcessor:
             True if successful, False otherwise
         """
         try:
+            # Make sure the output directory exists
+            output_dir = os.path.dirname(output_file)
+            os.makedirs(output_dir, exist_ok=True)
+            
             if format == 'gexf':
                 nx.write_gexf(self.entity_graph, output_file)
             elif format == 'graphml':

@@ -561,6 +561,11 @@ class RetrievalEngine:
         """
         results = {}
         
+        # Ensure storage connection is active
+        if not self.storage.connect():
+            logger.error("Failed to connect to Weaviate storage")
+            return {"error": "Database connection failed"}
+        
         # Get the prioritized collections
         collections = analysis["collections_to_search"]
         
@@ -570,19 +575,19 @@ class RetrievalEngine:
         
         # Handle specific retrieval strategies based on intent and category
         if analysis["primary_category"] == "market_price" or analysis["intent"] == "price":
-            results.update(self._retrieve_market_data(question, analysis))
+            results.update(self._retrieve_market_data(analysis))
         
         if analysis["primary_category"] == "sentiment" or "sentiment" in analysis["secondary_categories"]:
             results.update(self._retrieve_sentiment_data(question, analysis))
         
         if analysis["primary_category"] == "on_chain" or "on_chain" in analysis["secondary_categories"] or analysis["addresses"]:
-            results.update(self._retrieve_onchain_data(question, analysis))
+            results.update(self._retrieve_onchain_data(analysis))
         
         if analysis["is_comparison"]:
-            results.update(self._retrieve_comparison_data(question, analysis))
-            
+            results.update(self._retrieve_comparison_data(analysis))
+                
         if analysis["primary_category"] == "due_diligence" or analysis["intent"] == "due_diligence":
-            results.update(self._retrieve_due_diligence_data(question, analysis))
+            results.update(self._retrieve_due_diligence_data(analysis))
         
         # First, try to retrieve from user documents if a user_id is provided
         if user_id and "UserDocuments" in collections:
@@ -822,7 +827,9 @@ class RetrievalEngine:
         except Exception:
             return 0
     
-    def _retrieve_sentiment_data(self, analysis: Dict) -> Dict[str, List[Dict]]:
+    # Find the _retrieve_sentiment_data method in crypto_qa.py and update its signature:
+
+    def _retrieve_sentiment_data(self, question: str, analysis: Dict) -> Dict[str, List[Dict]]:
         """Specialized retrieval for sentiment analysis questions."""
         results = {}
         
@@ -2165,7 +2172,7 @@ if __name__ == "__main__":
     parser.add_argument("--model", default="llama-3.3-70b-versatile", help="Model to use (default: llama-3.3-70b-versatile)")
     parser.add_argument("--temperature", type=float, default=0.7, help="Temperature (0.0-1.0, default: 0.7)")
     parser.add_argument("--interactive", action="store_true", help="Run in interactive mode")
-
+    parser.add_argument("--user-id", help="User ID for the question")
     args = parser.parse_args()
 
     qa_system = EnhancedCryptoQA(args.api_key, args.model)

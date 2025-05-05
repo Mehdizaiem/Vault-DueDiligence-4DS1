@@ -186,9 +186,11 @@ def create_clustered_graph(nodes, output_path, max_nodes=300):
     return True
 
 if __name__ == "__main__":
-    # Get script directory for relative paths
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    output_dir = os.path.join(script_dir, "output")
+    # Get project root directory for consistent paths
+    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+    
+    # Set the output directory to be under Code/document_processing/output
+    output_dir = os.path.join(project_root, "Code", "document_processing", "output")
     
     # Create output directory if it doesn't exist
     os.makedirs(output_dir, exist_ok=True)

@@ -160,8 +160,12 @@ def main():
             # Initialize processor
             processor = CryptoDocumentProcessor(use_gpu=False)
 
-            # Document tracker
-            tracker_file = Path("Code/document_processing/output/processed_documents.json")
+            # Document tracker - make sure it uses a path relative to project root
+            output_dir = project_root / "Code" / "document_processing" / "output"
+            # Create output directory if it doesn't exist
+            output_dir.mkdir(parents=True, exist_ok=True)
+            tracker_file = output_dir / "processed_documents.json"
+            
             processed = {}
             if tracker_file.exists() and not args.force_all:
                 with tracker_file.open("r") as f:
@@ -226,6 +230,15 @@ def main():
                     logger.error(f"Error saving tracker file: {str(e)}")
 
                 logger.info(f"Remaining documents to process: {len(document_files) - i}")
+            
+            # Export relationship graph
+                if hasattr(processor, 'export_graph'):
+                    graph_file = output_dir / "entity_relationships.gexf"
+                    success = processor.export_graph(str(graph_file), format='gexf')
+                    if success:
+                        logger.info(f"Exported entity relationships to {graph_file}")
+                    else:
+                        logger.error("Failed to export entity relationships")
 
         except KeyboardInterrupt:
             logger.info("Processing interrupted by user")

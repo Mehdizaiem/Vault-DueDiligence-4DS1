@@ -5,6 +5,7 @@ import logging
 import traceback
 from typing import Dict, List, Any, Optional, Union
 from datetime import datetime, timedelta
+import time
 import json
 import base64
 import uuid
@@ -43,18 +44,69 @@ class StorageManager:
         self.client = None
     
     def connect(self):
-        """Connect to Weaviate"""
-        if self.client is None:
-            self.client = get_weaviate_client()
-            
-        return self.client.is_live()
+        """Connect to Weaviate with improved reconnection logic"""
+        return self.ensure_connection()
     
     def close(self):
         """Close the Weaviate connection"""
         if self.client:
             self.client.close()
             self.client = None
-    
+    def ensure_connection(self):
+        """Ensure a live connection to Weaviate before operations"""
+        max_retries = 3
+        retry_count = 0
+        
+        while retry_count < max_retries:
+            try:
+                # If client exists, check if it's live
+                if self.client:
+                    try:
+                        # Try to use the existing client
+                        if self.client.is_live():
+                            return True
+                        
+                        # Try to reconnect the existing client
+                        self.client.connect()
+                        if self.client.is_live():
+                            logger.info("Successfully reconnected to Weaviate")
+                            return True
+                        else:
+                            # Connection failed, need to recreate
+                            logger.warning("Client connection not live after reconnect, recreating client")
+                            self.client.close()
+                            self.client = None
+                    except Exception as e:
+                        logger.warning(f"Error with existing client, recreating: {e}")
+                        # Close and recreate the client
+                        try:
+                            self.client.close()
+                        except:
+                            pass
+                        self.client = None
+                
+                # Create a new client if needed
+                if self.client is None:
+                    self.client = get_weaviate_client()
+                    if self.client and self.client.is_live():
+                        logger.info("Created new Weaviate client successfully")
+                        return True
+                
+                # If we get here without returning True, the connection failed
+                retry_count += 1
+                if retry_count < max_retries:
+                    logger.warning(f"Connection attempt {retry_count} failed, retrying in 2 seconds...")
+                    time.sleep(2)  # Wait before retrying
+            
+            except Exception as e:
+                logger.error(f"Error during connection: {e}")
+                retry_count += 1
+                if retry_count < max_retries:
+                    logger.warning(f"Retrying connection ({retry_count}/{max_retries})...")
+                    time.sleep(2)
+        
+        logger.error("Failed to connect to Weaviate after multiple attempts")
+        return False
     def setup_schemas(self):
         """Set up all required schemas"""
         if not self.connect():

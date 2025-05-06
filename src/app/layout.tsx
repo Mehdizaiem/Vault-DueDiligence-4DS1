@@ -4,18 +4,16 @@ import { ClerkProvider } from '@clerk/nextjs';
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
-
 export const metadata: Metadata = {
-  title: "Vault",
-  description: "Your personal vault for storing and managing sensitive information.",
+  title: "VAULT - Crypto Intelligence Platform",
+  description: "Cryptocurrency intelligence platform for fund monitoring and compliance",
   icons: {
-    icon: "/favicon.ico",
-    shortcut: "/favicon.ico",
-    apple: "/apple-touch-icon.png",
+    icon: "/images/logo.png",
+    shortcut: "/images/logo.png",
+    apple: "/images/logo.png",
   },
-  themeColor: "#1e293b",
+  themeColor: "#1a1a3a", // Updated to match your sidebar dark blue theme
 };
-
 export default function RootLayout({
   children,
 }: Readonly<{

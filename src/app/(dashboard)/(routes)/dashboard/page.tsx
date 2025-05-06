@@ -280,31 +280,37 @@ export default function DashboardPage() {
       {/* Content */}
       <div className="relative z-10 flex-1 flex flex-col">
         <div className="max-w-7xl mx-auto w-full px-8 py-6">
-          {/* Welcome Banner */}
-          <div className="flex flex-col items-center mb-8">
-            <div className="w-full p-6 rounded-2xl bg-gradient-to-r from-gray-900 to-gray-800 text-white shadow-lg">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="p-2 rounded bg-gray-800/50">
-                    <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">VAULT</h1>
-                  </div>
-                  <div>
-                    <p className="text-lg text-gray-200">Cryptocurrency intelligence platform for fund monitoring and compliance</p>
-                  </div>
+        {/* Welcome Banner */}
+        <div className="flex flex-col items-center mb-8">
+          <div className="w-full p-6 rounded-2xl bg-gradient-to-br from-[#1a1a3a] to-[#0f0f2a] text-white shadow-lg">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center">
+                  <h1 className="text-3xl font-bold text-white"
+                    style={{
+                      textShadow: '0 0 10px rgba(76, 107, 255, 0.8), 0 0 20px rgba(76, 107, 255, 0.4)'
+                    }}
+                  >
+                    VAULT
+                  </h1>
                 </div>
-                <div className="hidden md:block">
-                  <div className="flex gap-4">
-                    <div className="p-3 rounded-lg bg-white/10 backdrop-blur-sm">
-                      <Lock className="h-6 w-6 text-white" />
-                    </div>
-                    <div className="p-3 rounded-lg bg-white/10 backdrop-blur-sm">
-                      <ShieldCheck className="h-6 w-6 text-white" />
-                    </div>
+                <div>
+                  <p className="text-lg text-gray-200">Cryptocurrency intelligence platform for fund monitoring and compliance</p>
+                </div>
+              </div>
+              <div className="hidden md:block">
+                <div className="flex gap-4">
+                  <div className="p-3 rounded-lg bg-white/10 backdrop-blur-sm">
+                    <Lock className="h-6 w-6 text-white" />
+                  </div>
+                  <div className="p-3 rounded-lg bg-white/10 backdrop-blur-sm">
+                    <ShieldCheck className="h-6 w-6 text-white" />
                   </div>
                 </div>
               </div>
             </div>
           </div>
+        </div>
 
           {/* Market Pulse - More valuable than generic stats */}
           <div className="mb-8">

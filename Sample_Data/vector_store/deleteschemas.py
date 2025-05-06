@@ -18,7 +18,7 @@ if WEAVIATE_API_KEY:
 # List all the class names you want to delete
 # Add any other classes your application might have created
 CLASS_NAMES_TO_DELETE = [
-    "UserDocuments"
+    "CryptoDueDiligenceDocuments"
     # Add any other class names used by your system here
 ]
 # --- End Configuration ---

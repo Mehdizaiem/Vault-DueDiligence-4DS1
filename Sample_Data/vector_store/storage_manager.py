@@ -44,8 +44,41 @@ class StorageManager:
         self.client = None
     
     def connect(self):
-        """Connect to Weaviate with improved reconnection logic"""
-        return self.ensure_connection()
+        """Connect to Weaviate with improved error handling and reconnection logic"""
+        try:
+            # If client exists but is not connected, try to reconnect
+            if self.client:
+                try:
+                    self.client.connect()
+                    if self.client.is_live():
+                        logger.info("Reconnected to existing Weaviate client")
+                        return True
+                    else:
+                        # If reconnection fails, create a new client
+                        logger.warning("Failed to reconnect to existing client, creating new client")
+                        self.client.close()
+                        self.client = None
+                except Exception as e:
+                    logger.warning(f"Error reconnecting to Weaviate: {e}")
+                    # Reset client to create a new one
+                    self.client = None
+            
+            # Create a new client if needed
+            if self.client is None:
+                self.client = get_weaviate_client()
+                
+                # Verify the connection is live
+                if self.client.is_live():
+                    logger.info("Successfully connected to Weaviate")
+                    return True
+                else:
+                    logger.error("Weaviate client created but connection is not live")
+                    return False
+                
+            return self.client.is_live()
+        except Exception as e:
+            logger.error(f"Failed to connect to Weaviate: {e}")
+            return False
     
     def close(self):
         """Close the Weaviate connection"""
@@ -127,7 +160,18 @@ class StorageManager:
         except Exception as e:
             logger.error(f"Error setting up schemas: {e}")
             return False
-        
+    def ensure_connection(self):
+        """Ensure connection is active before performing operations"""
+        try:
+            # Try to check if client is connected
+            if self.client and self.client.is_live():
+                return True
+                
+            # If not connected or client doesn't exist, try to connect
+            return self.connect()
+        except Exception as e:
+            logger.error(f"Failed to ensure Weaviate connection: {e}")
+            return False    
     def store_due_diligence_document(self, document: Dict) -> bool:
         """
         Store a due diligence document in the CryptoDueDiligenceDocuments collection
@@ -606,7 +650,7 @@ class StorageManager:
         Returns:
             List[Dict]: Retrieved documents
         """
-        if not self.connect():
+        if not self.ensure_connection():
             logger.error("Failed to connect to Weaviate")
             return []
             

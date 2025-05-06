@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import * as THREE from 'three';
 import { 
   FileText, 
@@ -281,11 +282,15 @@ export default function DashboardPage() {
         <div className="max-w-7xl mx-auto w-full px-8 py-6">
           {/* Welcome Banner */}
           <div className="flex flex-col items-center mb-8">
-            <div className="w-full p-6 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg">
+            <div className="w-full p-6 rounded-2xl bg-gradient-to-r from-gray-900 to-gray-800 text-white shadow-lg">
               <div className="flex items-center justify-between">
-                <div>
-                  <h1 className="text-3xl font-bold mb-2">Welcome to VAULT</h1>
-                  <p className="text-blue-100">Cryptocurrency intelligence platform for fund monitoring and compliance</p>
+                <div className="flex items-center gap-4">
+                  <div className="p-2 rounded bg-gray-800/50">
+                    <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">VAULT</h1>
+                  </div>
+                  <div>
+                    <p className="text-lg text-gray-200">Cryptocurrency intelligence platform for fund monitoring and compliance</p>
+                  </div>
                 </div>
                 <div className="hidden md:block">
                   <div className="flex gap-4">

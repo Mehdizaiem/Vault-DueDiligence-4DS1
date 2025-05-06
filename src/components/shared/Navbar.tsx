@@ -1,11 +1,21 @@
 import { UserButton } from "@clerk/nextjs";
 import { Bell, Search, Settings } from "lucide-react";
-
+import Image from "next/image";
+import Link from "next/link";
+import logoImage from '../../components/shared/logo.png';
 const Navbar = () => {
   return (
     <div className="flex items-center p-4 border-b border-gray-200 justify-between bg-white shadow-sm">
       <div>
-        <h1 className="font-semibold text-lg text-gray-800"></h1>
+        <Link href="/dashboard" className="flex items-center">
+          <Image 
+            src={logoImage} 
+            alt="VAULT Logo" 
+            width={50} 
+            height={50} 
+           
+          />
+        </Link>
       </div>
       
       <div className="flex items-center gap-6">

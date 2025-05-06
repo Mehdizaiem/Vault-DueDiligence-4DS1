@@ -1,67 +1,37 @@
 "use client";
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import * as THREE from 'three';
-import { Card } from "@/components/ui/card";
 import { 
   FileText, 
   HelpCircle, 
   AlertTriangle,
-  Users,
-  DollarSign,
-  Shield,
-  Activity,
   TrendingUp,
   BarChart4,
-  Newspaper
+  Newspaper,
+  ShieldCheck,
+  ArrowRight,
+  Zap,
+  Lock,
+  TrendingDown,
 } from "lucide-react";
-
-const stats = [
-  {
-    label: 'Total Funds',
-    value: '28',
-    icon: Users,
-    color: 'text-blue-500',
-    bgColor: 'bg-blue-100'
-  },
-  {
-    label: 'AUM',
-    value: '$2.4B',
-    icon: DollarSign,
-    color: 'text-green-500',
-    bgColor: 'bg-green-100'
-  },
-  {
-    label: 'Risk Score',
-    value: '94%',
-    icon: Shield,
-    color: 'text-violet-500',
-    bgColor: 'bg-violet-100'
-  },
-  {
-    label: 'Active Alerts',
-    value: '7',
-    icon: Activity,
-    color: 'text-pink-500',
-    bgColor: 'bg-pink-100'
-  }
-];
 
 const features = [
   {
     label: 'Document Analysis',
     icon: FileText,
     color: "text-violet-500",
-    bgColor: "bg-violet-100",
-    description: "Upload and analyze fund documentation automatically",
+    bgColor: "bg-violet-50",
+    description: "Analyze fund documentation automatically",
     href: "/dashboard/documents"
   },
   {
     label: 'Q&A System',
     icon: HelpCircle,
     color: "text-pink-500",
-    bgColor: "bg-pink-100",
+    bgColor: "bg-pink-50",
     description: "Get instant answers to due diligence queries",
     href: "/dashboard/qa"
   },
@@ -69,7 +39,7 @@ const features = [
     label: 'Risk Analysis',
     icon: AlertTriangle,
     color: "text-orange-500",
-    bgColor: "bg-orange-100",
+    bgColor: "bg-orange-50",
     description: "Monitor real-time risk metrics and alerts",
     href: "/dashboard/risk"
   },
@@ -77,50 +47,58 @@ const features = [
     label: 'Crypto Forecast',
     icon: TrendingUp,
     color: "text-green-500",
-    bgColor: "bg-green-100",
-    description: "Price predictions and market analysis for cryptocurrencies",
+    bgColor: "bg-green-50",
+    description: "Price predictions and market analysis",
     href: "/dashboard/forecast"
   },
   {
     label: 'Analytics',
     icon: BarChart4,
     color: "text-indigo-500",
-    bgColor: "bg-indigo-100",
-    description: "Comprehensive analytics and insights for crypto portfolios",
+    bgColor: "bg-indigo-50",
+    description: "Crypto portfolio insights",
     href: "/dashboard/analytics"
   },
   {
     label: 'News',
     icon: Newspaper,
     color: "text-yellow-500",
-    bgColor: "bg-yellow-100",
-    description: "Latest news, regulatory updates, and market events",
+    bgColor: "bg-yellow-50",
+    description: "Latest market events and updates",
     href: "/dashboard/news"
   }
 ];
 
-interface BlockData {
-  mesh?: THREE.Mesh;
-  initialPosition: THREE.Vector3;
-  speed: number;
-  angle: number;
-  radius?: number;
-  verticalOffset?: number;
-  particleSystem?: THREE.Points;
-  positions?: Float32Array;
-  initialPositions?: Float32Array;
-}
-
-interface ConnectionData {
-  line: THREE.Line;
-  startBlock: BlockData;
-  endBlock: BlockData;
-}
+// Market pulse data - more valuable than generic stats
+const marketPulse = [
+  {
+    label: 'Bitcoin',
+    value: '$67,245',
+    change: '+2.4%',
+    trend: 'up',
+    icon: TrendingUp
+  },
+  {
+    label: 'Market Sentiment',
+    value: 'Bullish',
+    icon: Zap
+  },
+  {
+    label: 'Risk Rating',
+    value: 'Moderate',
+    icon: ShieldCheck
+  },
+  {
+    label: 'Ethereum',
+    value: '$3,285',
+    change: '-1.2%',
+    trend: 'down',
+    icon: TrendingDown
+  }
+];
 
 export default function DashboardPage() {
   const canvasRef = useRef<HTMLDivElement>(null);
-  const [hoveredStat, setHoveredStat] = useState<number | null>(null);
-  const [hoveredFeature, setHoveredFeature] = useState<number | null>(null);
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -128,8 +106,13 @@ export default function DashboardPage() {
     let scene: THREE.Scene;
     let camera: THREE.PerspectiveCamera;
     let renderer: THREE.WebGLRenderer;
-    const blocks: BlockData[] = [];
-    const connections: ConnectionData[] = [];
+    const blocks: {
+      mesh?: THREE.Mesh;
+      initialPosition: THREE.Vector3;
+      speed: number;
+      angle: number;
+      radius?: number;
+    }[] = [];
     let animationFrameId: number;
     
     // Initialize Three.js
@@ -178,7 +161,7 @@ export default function DashboardPage() {
       animate();
     };
     
-    // Create blockchain blocks and connections
+    // Create blockchain blocks
     const createBlockchain = () => {
       const blockGeometry = new THREE.BoxGeometry(2, 1, 0.5);
       const blockMaterial = new THREE.MeshPhongMaterial({
@@ -189,13 +172,6 @@ export default function DashboardPage() {
         opacity: 0.5,
       });
       
-      const lineMaterial = new THREE.LineBasicMaterial({
-        color: 0x4c6bff,
-        transparent: true,
-        opacity: 0.3,
-      });
-      
-      // Create blockchain structure
       const totalBlocks = 12;
       for (let i = 0; i < totalBlocks; i++) {
         const block = new THREE.Mesh(blockGeometry, blockMaterial.clone());
@@ -223,43 +199,6 @@ export default function DashboardPage() {
         });
         
         scene.add(block);
-        
-        // Create connections between blocks
-        if (i > 0 && blocks[i - 1].mesh) {
-          const points = [];
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          points.push(blocks[i - 1].mesh!.position);
-          points.push(block.position);
-          
-          const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
-          const line = new THREE.Line(lineGeometry, lineMaterial);
-          scene.add(line);
-          
-          connections.push({
-            line: line,
-            startBlock: blocks[i - 1],
-            endBlock: blocks[i]
-          });
-        }
-      }
-      
-      // Connect the last block to the first to complete the chain
-      if (blocks.length > 0 && blocks[0].mesh && blocks[blocks.length - 1].mesh) {
-        const points = [];
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        points.push(blocks[blocks.length - 1].mesh!.position);
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        points.push(blocks[0].mesh!.position);
-        
-        const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
-        const line = new THREE.Line(lineGeometry, lineMaterial);
-        scene.add(line);
-        
-        connections.push({
-          line: line,
-          startBlock: blocks[blocks.length - 1],
-          endBlock: blocks[0]
-        });
       }
     };
     
@@ -281,21 +220,6 @@ export default function DashboardPage() {
           // Subtle rotation
           block.mesh.rotation.x += 0.003;
           block.mesh.rotation.y += 0.002;
-        }
-      });
-      
-      // Update connections
-      connections.forEach(connection => {
-        // Only update connections if both start and end blocks have meshes
-        if (connection.startBlock.mesh && connection.endBlock.mesh) {
-          const points = [];
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          points.push(connection.startBlock.mesh!.position);
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          points.push(connection.endBlock.mesh!.position);
-          
-          connection.line.geometry.setFromPoints(points);
-          connection.line.geometry.attributes.position.needsUpdate = true;
         }
       });
     };
@@ -346,76 +270,123 @@ export default function DashboardPage() {
   }, []);
 
   return (
-    <>
+    <div className="relative min-h-screen flex flex-col overflow-hidden">
       {/* 3D Background Canvas */}
       <div 
         ref={canvasRef} 
-        className="fixed inset-0 pointer-events-none z-0"
-        style={{ opacity: 0.4 }}
+        className="fixed inset-0 pointer-events-none z-0 opacity-60"
       />
       
       {/* Content */}
-      <div className="relative z-10 p-8 pt-6 bg-white">
-        <div className="max-w-7xl mx-auto">
-          {/* Page Header */}
-          <div className="flex flex-col gap-y-4 mb-10 items-center">
-            <h1 className="text-4xl font-bold text-gray-800">
-              Welcome to VAULT
-            </h1>
-            <p className="text-gray-500">
-              Monitor and analyze crypto fund performance and compliance
-            </p>
-          </div>
-
-          {/* Stats Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-            {stats.map((stat, index) => (
-              <Card 
-                key={stat.label} 
-                className={`p-6 shadow-md transition-all duration-300 ${
-                  hoveredStat === index ? 'shadow-lg translate-y-[-5px]' : 'shadow'
-                }`}
-                onMouseEnter={() => setHoveredStat(index)}
-                onMouseLeave={() => setHoveredStat(null)}
-              >
-                <div className="flex items-center gap-4">
-                  <div className={`${stat.bgColor} p-3 rounded-lg`}>
-                    <stat.icon className={`w-6 h-6 ${stat.color}`} />
+      <div className="relative z-10 flex-1 flex flex-col">
+        <div className="max-w-7xl mx-auto w-full px-8 py-6">
+        {/* Welcome Banner */}
+        <div className="flex flex-col items-center mb-8">
+          <div className="w-full p-6 rounded-2xl bg-gradient-to-br from-[#1a1a3a] to-[#0f0f2a] text-white shadow-lg">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center">
+                  <h1 className="text-3xl font-bold text-white"
+                    style={{
+                      textShadow: '0 0 10px rgba(76, 107, 255, 0.8), 0 0 20px rgba(76, 107, 255, 0.4)'
+                    }}
+                  >
+                    VAULT
+                  </h1>
+                </div>
+                <div>
+                  <p className="text-lg text-gray-200">Cryptocurrency intelligence platform for fund monitoring and compliance</p>
+                </div>
+              </div>
+              <div className="hidden md:block">
+                <div className="flex gap-4">
+                  <div className="p-3 rounded-lg bg-white/10 backdrop-blur-sm">
+                    <Lock className="h-6 w-6 text-white" />
                   </div>
-                  <div>
-                    <p className="text-gray-500 text-sm">{stat.label}</p>
-                    <h3 className="text-2xl font-bold">{stat.value}</h3>
+                  <div className="p-3 rounded-lg bg-white/10 backdrop-blur-sm">
+                    <ShieldCheck className="h-6 w-6 text-white" />
                   </div>
                 </div>
-              </Card>
-            ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+          {/* Market Pulse - More valuable than generic stats */}
+          <div className="mb-8">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">Market Pulse</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {marketPulse.map((item, index) => (
+                <div 
+                  key={item.label} 
+                  className="bg-white/70 backdrop-blur-sm rounded-xl border border-gray-100 p-4 shadow-sm hover:shadow-md transition-shadow"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`p-3 rounded-lg ${
+                      index === 0 ? 'bg-green-50' : 
+                      index === 1 ? 'bg-blue-50' : 
+                      index === 2 ? 'bg-purple-50' : 
+                      'bg-red-50'
+                    }`}>
+                      <item.icon className={`h-5 w-5 ${
+                        index === 0 ? 'text-green-500' : 
+                        index === 1 ? 'text-blue-500' : 
+                        index === 2 ? 'text-purple-500' : 
+                        'text-red-500'
+                      }`} />
+                    </div>
+                    <div>
+                      <div className="text-sm text-gray-500">{item.label}</div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xl font-semibold text-gray-800">
+                          {item.value}
+                        </span>
+                        {item.change && (
+                          <span className={`text-xs font-medium ${
+                            item.trend === 'up' ? 'text-green-500' : 'text-red-500'
+                          }`}>
+                            {item.change}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
-          {/* Features Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {features.map((feature, index) => (
+          {/* Features Grid - Minimalist, Professional */}
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">Platform Tools</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {features.map((feature) => (
               <Link
                 key={feature.label}
                 href={feature.href}
+                className="group"
               >
-                <Card 
-                  className={`p-6 hover:shadow-lg transition-all cursor-pointer bg-white ${
-                    hoveredFeature === index ? 'shadow-md translate-y-[-5px]' : 'shadow-sm'
-                  }`}
-                  onMouseEnter={() => setHoveredFeature(index)}
-                  onMouseLeave={() => setHoveredFeature(null)}
-                >
-                  <div className={`${feature.bgColor} w-12 h-12 rounded-lg flex items-center justify-center mb-4`}>
-                    <feature.icon className={`w-6 h-6 ${feature.color}`} />
+                <div className="bg-white/70 backdrop-blur-sm rounded-xl border border-gray-100 p-5 h-full hover:shadow-md transition-all flex flex-col">
+                  <div className="flex items-start gap-4 mb-3">
+                    <div className={`${feature.bgColor} p-3 rounded-xl`}>
+                      <feature.icon className={`h-5 w-5 ${feature.color}`} />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-medium text-gray-800 mb-1">{feature.label}</h3>
+                      <p className="text-gray-500 text-sm">{feature.description}</p>
+                    </div>
                   </div>
-                  <h3 className="text-lg font-semibold mb-2">{feature.label}</h3>
-                  <p className="text-gray-500 text-sm">{feature.description}</p>
-                </Card>
+                  <div className="mt-auto pt-3 flex justify-end">
+                    <div className="text-sm font-medium text-blue-600 group-hover:text-blue-700 flex items-center gap-1">
+                      <span>Open</span>
+                      <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
+                    </div>
+                  </div>
+                </div>
               </Link>
             ))}
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }

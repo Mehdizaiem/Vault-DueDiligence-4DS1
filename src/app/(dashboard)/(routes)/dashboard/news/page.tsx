@@ -136,28 +136,37 @@ export default function NewsDashboard() {
   };
 
   const generateWordFrequencies = () => {
-    const allText = filtered.map((item) => `${item.title} ${item.content}`).join(' ').toLowerCase();
+    const allText = filtered.map(item => `${item.title} ${item.content}`).join(' ').toLowerCase();
+  
     const stopWords = new Set([
-      // Basic English
-      'the', 'and', 'is', 'in', 'to', 'of', 'on', 'for', 'a', 'an', 'as', 'at', 'this', 'with', 'by', 'from','that',
-      // Crypto-specific terms
-      'bitcoin', 'ethereum', 'btc', 'eth', 'crypto', 'cryptocurrency', 'blockchain', 'miners', 'mining', 'exchange', 'wallet',
-      // etc.
+      'the', 'and', 'is', 'in', 'to', 'of', 'for', 'on', 'by', 'with', 'a', 'an', 'as', 'at',
+      'this', 'that', 'these', 'those', 'are', 'was', 'were', 'be', 'been', 'being', 'it',
+      'its', 'you', 'your', 'we', 'us', 'our', 'they', 'them', 'their', 'i', 'me', 'my',
+      'he', 'him', 'his', 'she', 'her', 'hers', 'or', 'but', 'if', 'then', 'so', 'do', 'does',
+      'did', 'doing', 'can', 'could', 'should', 'would', 'will', 'shall', 'may', 'might',
+      'must', 'not', 'no', 'yes', 'too', 'very', 'just', 'also', 'because', 'about', 'from',
+      'than', 'into', 'out', 'over', 'under', 'again', 'more', 'less', 'up', 'down', 'off',
+      'only', 'even', 'much', 'such', 'every', 'some', 'each', 'other', 'another', 'any',
+      'many', 'all', 'few', 'most', 'both', 'how', 'what', 'when', 'where', 'why', 'which',
+      'who', 'whom', 'via', 'new', 'now', 'today', 'soon', 'next', 'month', 'week', 'day', 'year','while','have'
     ]);
-
+  
     const words = allText.match(/\b[a-z]{4,}\b/g) || [];
+  
     const freqMap = new Map<string, number>();
     words.forEach(word => {
       if (!stopWords.has(word)) {
         freqMap.set(word, (freqMap.get(word) || 0) + 1);
       }
     });
-
+  
     return Array.from(freqMap.entries())
       .map(([text, value]) => ({ text, value }))
       .sort((a, b) => b.value - a.value)
-      .slice(0, 50);
+      .slice(0, 50); // Top 50 most used words
   };
+  
+  
 
   const sentimentByDate = filtered.reduce((acc, item) => {
     const date = item.date.split('T')[0];
@@ -176,61 +185,61 @@ export default function NewsDashboard() {
     labels: ['Positive', 'Neutral', 'Negative'],
     datasets: [{
       data: [sentimentCounts.positive, sentimentCounts.neutral, sentimentCounts.negative],
-      backgroundColor: ['#34D399', '#FBBF24', '#EF4444'],
+      backgroundColor: ['#238823', '#FFBF00', '#D2222D'],  // Green, Yellow, Red
     }],
   };
-
+  
   const trendChartData = {
     labels: sortedDates,
     datasets: [
       {
         label: 'Positive',
         data: sortedDates.map(date => sentimentByDate[date].positive),
-        borderColor: '#10B981',
-        backgroundColor: 'rgba(16, 185, 129, 0.5)',
+        borderColor: '#238823', // Green
+        backgroundColor: 'rgba(35, 136, 35, 0.5)',
         tension: 0.2,
       },
       {
         label: 'Neutral',
         data: sortedDates.map(date => sentimentByDate[date].neutral),
-        borderColor: '#F59E0B',
-        backgroundColor: 'rgba(245, 158, 11, 0.5)',
+        borderColor: '#FFBF00', // Yellow
+        backgroundColor: 'rgba(255, 191, 0, 0.5)',
         tension: 0.2,
       },
       {
         label: 'Negative',
         data: sortedDates.map(date => sentimentByDate[date].negative),
-        borderColor: '#DC2626',
-        backgroundColor: 'rgba(239, 68, 68, 0.5)',
+        borderColor: '#D2222D', // Red
+        backgroundColor: 'rgba(210, 34, 45, 0.5)',
         tension: 0.2,
       },
     ],
   };
-
+  
   const barChartData = {
     labels: sortedDates,
     datasets: [
       {
         label: 'Positive',
         data: sortedDates.map((d) => sentimentByDate[d]?.positive || 0),
-        backgroundColor: '#34D399',
+        backgroundColor: '#238823', // Green
         stack: 'sentiment',
       },
       {
         label: 'Neutral',
         data: sortedDates.map((d) => sentimentByDate[d]?.neutral || 0),
-        backgroundColor: '#FBBF24',
+        backgroundColor: '#FFBF00', // Yellow
         stack: 'sentiment',
       },
       {
         label: 'Negative',
         data: sortedDates.map((d) => sentimentByDate[d]?.negative || 0),
-        backgroundColor: '#EF4444',
+        backgroundColor: '#D2222D', // Red
         stack: 'sentiment',
       },
     ],
   };
-
+  
   const barChartOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -397,7 +406,7 @@ export default function NewsDashboard() {
 
         {/* Tabs */}
         <div className="flex gap-4 mb-6">
-          <button
+        <button
             onClick={() => setActiveTab('news')}
             className={`text-sm font-medium rounded-full px-4 py-1.5 shadow transition-all
               ${activeTab === 'news' ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white hover:shadow-lg' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}
@@ -409,7 +418,7 @@ export default function NewsDashboard() {
           <button
             onClick={() => setActiveTab('analytics')}
             className={`text-sm font-medium rounded-full px-4 py-1.5 shadow transition-all
-              ${activeTab === 'news' ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white hover:shadow-lg' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}
+              ${activeTab === 'analytics' ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white hover:shadow-lg' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}
             `}
           >
             Sentiment Analytics
@@ -505,13 +514,13 @@ export default function NewsDashboard() {
               </div>
             )}
           </div>
-        ) : (
+        ) : activeTab === 'analytics' ? (
           <div className="bg-white/50 backdrop-blur-xl border border-gray-200 rounded-2xl shadow-xl p-6 space-y-10">
-            <motion.h2
+                       <motion.h2
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
-              className="text-3xl font-bold text-center text-gray-800"
+              className="text-4xl font-bold tracking-tight bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
             >
               Sentiment Analysis Overview
             </motion.h2>
@@ -558,17 +567,16 @@ export default function NewsDashboard() {
             </div>
 
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.4 }}
-              className="bg-gradient-to-r from-slate-50 to-white border border-gray-200 rounded-2xl shadow-md p-6"
-            >
-              <h3 className="text-2xl font-bold text-gray-800 text-center">
-                Trending Keywords
-              </h3>
-              <p className="text-sm text-gray-500 text-center mb-6">Based on top 15 extracted keywords from filtered news content</p>
-              <EnhancedKeywords keywords={keywordFreqs.slice(0, 30)} />
-            </motion.div>
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.4, delay: 0.4 }}
+  className="bg-gradient-to-r from-slate-50 to-white border border-gray-200 rounded-2xl shadow-md p-6"
+>
+
+
+  <EnhancedKeywords keywords={keywordFreqs.slice(0, 30)} />
+</motion.div>
+
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
               <motion.div
@@ -609,7 +617,7 @@ export default function NewsDashboard() {
               </motion.div>
             </div>
           </div>
-        )}
+        ): null}
       </div>
       {/* Toast notification */}
       <div

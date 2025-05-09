@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { Line, Bar, Pie } from 'react-chartjs-2';
 import EnhancedKeywords from '@/components/EnhancedKeywords';
-import { Loader2, Flame, BarChart4, PieChart, LineChart } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import {
   Chart as ChartJS,
@@ -34,9 +34,9 @@ type NewsItem = {
   id?: string;
   title: string;
   source: string;
-  date: string;
+  date: string;               // e.g. "2025-05-09T14:32:10Z" or "2025-04-21 22:06:46.383532"
   content: string;
-  sentiment_label: string;
+  sentiment_label: string;    // "Positive" | "Neutral" | "Negative"
   sentiment_score: number;
   aspect?: string;
   url?: string;
@@ -59,33 +59,43 @@ export default function NewsDashboard() {
   const [sourceFilter, setSourceFilter] = useState('all');
 
   const observer = useRef<IntersectionObserver | null>(null);
-  const lastNewsElementRef = useCallback((node: HTMLDivElement | null) => {
-    if (loading) return;
-    if (observer.current) observer.current.disconnect();
-    observer.current = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && filtered.length > displayCount) {
-        setDisplayCount((prev) => prev + LOAD_INCREMENT);
-      }
-    });
-    if (node) observer.current.observe(node);
-  }, [loading, displayCount]);
+  const lastNewsElementRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (loading) return;
+      if (observer.current) observer.current.disconnect();
+      observer.current = new IntersectionObserver(entries => {
+        if (entries[0].isIntersecting && filtered.length > displayCount) {
+          setDisplayCount(prev => prev + LOAD_INCREMENT);
+        }
+      });
+      if (node) observer.current.observe(node);
+    },
+    [loading, displayCount]
+  );
 
   const toggleExpanded = (id: string) => {
-    setExpanded((prev) => {
-      const set = new Set(prev);
-      set.has(id) ? set.delete(id) : set.add(id);
-      return set;
+    setExpanded(prev => {
+      const s = new Set(prev);
+      s.has(id) ? s.delete(id) : s.add(id);
+      return s;
     });
   };
 
-  useEffect(() => {
-    fetchNews();
-  }, []);
+  // Parses a variety of timestamp formats into a valid Date
+  function parseToDate(dateString: string): Date | null {
+    // try native parse
+    const d = new Date(dateString.replace(' ', 'T'));
+    return isNaN(d.getTime()) ? null : d;
+  }
 
   const fetchNews = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/news_sentiment');
+      const until = new Date().toISOString();
+      const sinceD = new Date();
+      sinceD.setDate(sinceD.getDate() - 6);
+      const since = sinceD.toISOString();
+      const res = await fetch(`/api/news_sentiment?since=${since}&until=${until}`);
       const data = await res.json();
       if (Array.isArray(data.articles)) setNews(data.articles);
     } catch (err) {
@@ -94,6 +104,10 @@ export default function NewsDashboard() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchNews();
+  }, []);
 
   const getSentimentColor = (label?: string) => {
     const l = label?.toLowerCase();
@@ -104,157 +118,87 @@ export default function NewsDashboard() {
 
   const formatDate = (d: string) =>
     new Date(d).toLocaleDateString('en-GB', {
-      weekday: 'short',
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
+      weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'
     });
 
-  const cryptocurrencies = ['Bitcoin', 'Ethereum', 'XRP', 'BNB', 'SOL', 'DOGE', 'ADA', 'LINK', 'AVAX'];
-  const newsSources = Array.from(new Set(news.map((n) => n.source))).sort();
+  const cryptocurrencies = ['Bitcoin','Ethereum','XRP','BNB','SOL','DOGE','ADA','LINK','AVAX'];
+  const newsSources = Array.from(new Set(news.map(n => n.source))).sort();
 
-  const filtered = news.filter((item) => {
-    const text =
-      item.title?.toLowerCase().includes(search.toLowerCase()) ||
-      item.content?.toLowerCase().includes(search.toLowerCase());
-    const sentiment = filter === 'all' || item.sentiment_label?.toLowerCase() === filter;
-    const crypto =
-      cryptoFilter === 'all' ||
+  const filtered = news.filter(item => {
+    const textMatch =
+      item.title.toLowerCase().includes(search.toLowerCase()) ||
+      item.content.toLowerCase().includes(search.toLowerCase());
+    const sentimentMatch = filter === 'all' || item.sentiment_label.toLowerCase() === filter;
+    const cryptoMatch = cryptoFilter === 'all' ||
       item.cryptocurrency?.toLowerCase() === cryptoFilter.toLowerCase() ||
-      item.title?.toLowerCase().includes(cryptoFilter.toLowerCase()) ||
-      item.content?.toLowerCase().includes(cryptoFilter.toLowerCase());
-    const source = sourceFilter === 'all' || item.source === sourceFilter;
-    return text && sentiment && crypto && source;
+      item.title.toLowerCase().includes(cryptoFilter.toLowerCase()) ||
+      item.content.toLowerCase().includes(cryptoFilter.toLowerCase());
+    const sourceMatch = sourceFilter === 'all' || item.source === sourceFilter;
+    return textMatch && sentimentMatch && cryptoMatch && sourceMatch;
   });
 
   const totalFilteredCount = filtered.length || 1;
-
   const sentimentCounts = {
-    positive: filtered.filter(i => i.sentiment_label?.toLowerCase() === 'positive').length,
-    neutral: filtered.filter(i => i.sentiment_label?.toLowerCase() === 'neutral').length,
-    negative: filtered.filter(i => i.sentiment_label?.toLowerCase() === 'negative').length,
+    positive: filtered.filter(i => i.sentiment_label.toLowerCase() === 'positive').length,
+    neutral:  filtered.filter(i => i.sentiment_label.toLowerCase() === 'neutral').length,
+    negative: filtered.filter(i => i.sentiment_label.toLowerCase() === 'negative').length,
   };
 
   const generateWordFrequencies = () => {
-    const allText = filtered.map(item => `${item.title} ${item.content}`).join(' ').toLowerCase();
-  
-    const stopWords = new Set([
-      'the', 'and', 'is', 'in', 'to', 'of', 'for', 'on', 'by', 'with', 'a', 'an', 'as', 'at',
-      'this', 'that', 'these', 'those', 'are', 'was', 'were', 'be', 'been', 'being', 'it',
-      'its', 'you', 'your', 'we', 'us', 'our', 'they', 'them', 'their', 'i', 'me', 'my',
-      'he', 'him', 'his', 'she', 'her', 'hers', 'or', 'but', 'if', 'then', 'so', 'do', 'does',
-      'did', 'doing', 'can', 'could', 'should', 'would', 'will', 'shall', 'may', 'might',
-      'must', 'not', 'no', 'yes', 'too', 'very', 'just', 'also', 'because', 'about', 'from',
-      'than', 'into', 'out', 'over', 'under', 'again', 'more', 'less', 'up', 'down', 'off',
-      'only', 'even', 'much', 'such', 'every', 'some', 'each', 'other', 'another', 'any',
-      'many', 'all', 'few', 'most', 'both', 'how', 'what', 'when', 'where', 'why', 'which',
-      'who', 'whom', 'via', 'new', 'now', 'today', 'soon', 'next', 'month', 'week', 'day', 'year','while','have'
-    ]);
-  
+    const allText = filtered.map(i => `${i.title} ${i.content}`).join(' ').toLowerCase();
+    const stopWords: Set<string> = new Set([/*...*/]);
     const words = allText.match(/\b[a-z]{4,}\b/g) || [];
-  
-    const freqMap = new Map<string, number>();
-    words.forEach(word => {
-      if (!stopWords.has(word)) {
-        freqMap.set(word, (freqMap.get(word) || 0) + 1);
-      }
-    });
-  
-    return Array.from(freqMap.entries())
+    const freq = new Map<string, number>();
+    words.forEach(w => { if (!stopWords.has(w)) freq.set(w, (freq.get(w)||0)+1); });
+    return Array.from(freq.entries())
       .map(([text, value]) => ({ text, value }))
-      .sort((a, b) => b.value - a.value)
-      .slice(0, 50); // Top 50 most used words
+      .sort((a,b) => b.value - a.value).slice(0,50);
   };
-  
-  
 
+  // 1) bucket counts by ISO date
   const sentimentByDate = filtered.reduce((acc, item) => {
-    const date = item.date.split('T')[0];
-    if (!acc[date]) acc[date] = { positive: 0, neutral: 0, negative: 0, total: 0 };
-    const label = item.sentiment_label?.toLowerCase();
-    if (label === 'positive') acc[date].positive++;
-    else if (label === 'negative') acc[date].negative++;
-    else acc[date].neutral++;
-    acc[date].total++;
+    const d = parseToDate(item.date);
+    if (!d) return acc;
+    const day = d.toISOString().slice(0,10);
+    if (!acc[day]) acc[day] = { positive:0, neutral:0, negative:0, total:0 };
+    const lbl = item.sentiment_label.toLowerCase();
+    if (lbl==='positive') acc[day].positive++;
+    else if (lbl==='negative') acc[day].negative++;
+    else acc[day].neutral++;
+    acc[day].total++;
     return acc;
-  }, {} as Record<string, { positive: number, neutral: number, negative: number, total: number }>);
+  }, {} as Record<string,{positive:number,neutral:number,negative:number,total:number}>);
 
-  const sortedDates = Object.keys(sentimentByDate).sort();
+  // 2) get the actual sorted dates and last 7
+  const dateKeys = Object.keys(sentimentByDate).sort();
+  const last7Dates = dateKeys.length>7 ? dateKeys.slice(-7) : dateKeys;
 
+  // 3) chart data
   const pieChartData = {
-    labels: ['Positive', 'Neutral', 'Negative'],
-    datasets: [{
-      data: [sentimentCounts.positive, sentimentCounts.neutral, sentimentCounts.negative],
-      backgroundColor: ['#238823', '#FFBF00', '#D2222D'],  // Green, Yellow, Red
-    }],
+    labels:['Positive','Neutral','Negative'],
+    datasets:[{ data:[sentimentCounts.positive,sentimentCounts.neutral,sentimentCounts.negative], backgroundColor:['#238823','#FFBF00','#D2222D'] }]
   };
-  
+
   const trendChartData = {
-    labels: sortedDates,
-    datasets: [
-      {
-        label: 'Positive',
-        data: sortedDates.map(date => sentimentByDate[date].positive),
-        borderColor: '#238823', // Green
-        backgroundColor: 'rgba(35, 136, 35, 0.5)',
-        tension: 0.2,
-      },
-      {
-        label: 'Neutral',
-        data: sortedDates.map(date => sentimentByDate[date].neutral),
-        borderColor: '#FFBF00', // Yellow
-        backgroundColor: 'rgba(255, 191, 0, 0.5)',
-        tension: 0.2,
-      },
-      {
-        label: 'Negative',
-        data: sortedDates.map(date => sentimentByDate[date].negative),
-        borderColor: '#D2222D', // Red
-        backgroundColor: 'rgba(210, 34, 45, 0.5)',
-        tension: 0.2,
-      },
-    ],
+    labels:last7Dates,
+    datasets:[
+      { label:'Positive', data:last7Dates.map(d=>sentimentByDate[d]?.positive||0), borderColor:'#238823', backgroundColor:'rgba(35,136,35,0.3)', tension:0.2 },
+      { label:'Neutral',  data:last7Dates.map(d=>sentimentByDate[d]?.neutral ||0), borderColor:'#FFBF00', backgroundColor:'rgba(255,191,0,0.3)', tension:0.2 },
+      { label:'Negative', data:last7Dates.map(d=>sentimentByDate[d]?.negative||0), borderColor:'#D2222D', backgroundColor:'rgba(210,34,45,0.3)', tension:0.2 }
+    ]
   };
-  
+
   const barChartData = {
-    labels: sortedDates,
-    datasets: [
-      {
-        label: 'Positive',
-        data: sortedDates.map((d) => sentimentByDate[d]?.positive || 0),
-        backgroundColor: '#238823', // Green
-        stack: 'sentiment',
-      },
-      {
-        label: 'Neutral',
-        data: sortedDates.map((d) => sentimentByDate[d]?.neutral || 0),
-        backgroundColor: '#FFBF00', // Yellow
-        stack: 'sentiment',
-      },
-      {
-        label: 'Negative',
-        data: sortedDates.map((d) => sentimentByDate[d]?.negative || 0),
-        backgroundColor: '#D2222D', // Red
-        stack: 'sentiment',
-      },
-    ],
+    labels:last7Dates,
+    datasets:[
+      { label:'Positive', data:last7Dates.map(d=>sentimentByDate[d]?.positive||0), backgroundColor:'#238823', stack:'sentiment' },
+      { label:'Neutral',  data:last7Dates.map(d=>sentimentByDate[d]?.neutral||0), backgroundColor:'#FFBF00', stack:'sentiment' },
+      { label:'Negative', data:last7Dates.map(d=>sentimentByDate[d]?.negative||0), backgroundColor:'#D2222D', stack:'sentiment' }
+    ]
   };
-  
-  const barChartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { position: 'top' as const },
-      tooltip: {
-        callbacks: {
-          label: (ctx: any) => `${ctx.dataset.label}: ${ctx.raw}`,
-        },
-      },
-    },
-    scales: {
-      x: { stacked: true },
-      y: { stacked: true, beginAtZero: true },
-    },
+  const barChartOptions = { responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{position:'top' as const}, tooltip:{callbacks:{label:(ctx:any)=>`${ctx.dataset.label}: ${ctx.raw}`}} },
+    scales:{ x:{stacked:true}, y:{stacked:true, beginAtZero:true} }
   };
 
   const keywordFreqs = generateWordFrequencies();

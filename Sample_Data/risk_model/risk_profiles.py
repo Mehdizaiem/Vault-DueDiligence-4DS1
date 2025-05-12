@@ -88,7 +88,7 @@ class CryptoRiskScoreGenerator:
         return start_date.isoformat().replace("+00:00", "Z"), end_date.isoformat().replace("+00:00", "Z")
 
 
-    def _get_date_range_objects(self, days: int = 3) -> Tuple[datetime, datetime]:
+    def _get_date_range_objects(self, days: int = 20) -> Tuple[datetime, datetime]:
        # ... (keep this method as is) ...
         end_date_dt = datetime.now(timezone.utc)
         start_date_dt = end_date_dt - timedelta(days=days)
@@ -480,8 +480,22 @@ class CryptoRiskScoreGenerator:
 
             start_date_dt, end_date_dt = self._get_date_range_objects(days)
 
-            market_df = self._get_market_metrics(symbol, start_date_dt, end_date_dt)
-            sentiment_df = self._get_sentiment_data(symbol, start_date_dt, end_date_dt)
+            # Try multiple fallback windows if no data in recent days
+            day_windows = [days, 7, 14, 30, 45, 60, 90]
+            for window in day_windows:
+                start_date_dt, end_date_dt = self._get_date_range_objects(window)
+                market_df = self._get_market_metrics(symbol, start_date_dt, end_date_dt)
+                sentiment_df = self._get_sentiment_data(symbol, start_date_dt, end_date_dt)
+
+                if not market_df.empty or not sentiment_df.empty:
+                    result_dict["analysis_period"] = f"{window} days"
+                    break  # Accept this window
+            else:
+                logger.warning(f"No market or sentiment data found in fallback windows for {symbol}")
+                result_dict["error"] = "Insufficient data for risk assessment (even in fallback)"
+                self._store_risk_profile(result_dict)
+                return result_dict
+
 
             result_dict["data_points"]["market_metrics"] = len(market_df)
             result_dict["data_points"]["sentiment_articles"] = len(sentiment_df)

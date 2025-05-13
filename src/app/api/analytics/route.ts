@@ -1,10 +1,10 @@
-// File: app/api/analytics/route.ts
+// app/api/analytics/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { spawn, ChildProcess } from 'child_process';
 import path from 'path';
 
 // Maximum time to wait for a response (in milliseconds)
-const TIMEOUT = 60000; // 1 minute
+const TIMEOUT = 90000; // 1.5 minutes - increase timeout for large data
 const PYTHON_SCRIPT_PATH = path.join(process.cwd(), 'analytics', 'analytics_data.py');
 
 // Interface for the expected JSON structure
@@ -38,21 +38,37 @@ interface AnalyticsData {
 export async function GET(request: NextRequest) {
   try {
     console.log('Fetching analytics data');
+    
+    // Extract filters from query parameters
+    const searchParams = request.nextUrl.searchParams;
+    const dateRange = searchParams.get('dateRange') || '30d';
+    const symbols = searchParams.getAll('symbols');
+    
+    const filters = {
+      dateRange,
+      symbols,
+    };
+
+    console.log('Filters:', filters);
 
     // Run the Python script to fetch analytics data
-    const rawOutput = await runPythonScript();
+    const rawOutput = await runPythonScript(filters);
     
     // Try to parse the output
     try {
       const data: AnalyticsData = parseOutputSafely(rawOutput);
+      
+      // Validate data structure
+      validateDataStructure(data);
+      
       return NextResponse.json(data);
     } catch (error) {
       console.error('Error parsing analytics data:', error);
-      console.error('Raw output was:', rawOutput);
+      console.error('Raw output snippet:', rawOutput.substring(0, 500) + '...');
       
       return NextResponse.json(
         { 
-          error: 'Failed to parse analytics data',
+          error: 'Failed to parse analytics data: ' + (error instanceof Error ? error.message : String(error)),
           kpis: createFallbackKpis(),
           asset_distribution: createFallbackAssetDistribution(),
           portfolio_performance: [],
@@ -66,8 +82,7 @@ export async function GET(request: NextRequest) {
     console.error('Error fetching analytics data:', error);
     return NextResponse.json(
       { 
-        error: 'Failed to fetch analytics data', 
-        details: String(error),
+        error: 'Failed to fetch analytics data: ' + String(error),
         kpis: createFallbackKpis(),
         asset_distribution: createFallbackAssetDistribution(),
         portfolio_performance: [],
@@ -79,12 +94,39 @@ export async function GET(request: NextRequest) {
   }
 }
 
-function runPythonScript(): Promise<string> {
+function validateDataStructure(data: AnalyticsData): void {
+  // Ensure all required properties exist
+  if (!data.kpis) data.kpis = {};
+  if (!data.asset_distribution) data.asset_distribution = [];
+  if (!data.portfolio_performance) data.portfolio_performance = [];
+  if (!data.recent_news) data.recent_news = [];
+  if (!data.due_diligence) data.due_diligence = [];
+  
+  // Validate portfolio_performance data
+  data.portfolio_performance = data.portfolio_performance.filter(item => {
+    // Ensure valid symbol (not empty)
+    if (!item.symbol) return false;
+    
+    // Ensure valid timestamp
+    try {
+      new Date(item.timestamp);
+    } catch {
+      return false;
+    }
+    
+    // Ensure change_pct is a number
+    if (typeof item.change_pct !== 'number') return false;
+    
+    return true;
+  });
+}
+
+function runPythonScript(filters: any): Promise<string> {
   return new Promise((resolve, reject) => {
     let pythonProcess: ChildProcess | null = null;
     let timeoutId: NodeJS.Timeout | null = null;
 
-    // Define cleanup function at the top of the function scope
+    // Define cleanup function
     const cleanup = () => {
       if (timeoutId) {
         clearTimeout(timeoutId);
@@ -98,8 +140,13 @@ function runPythonScript(): Promise<string> {
 
     try {
       console.log(`Running Python script: ${PYTHON_SCRIPT_PATH}`);
+      console.log(`With filters: ${JSON.stringify(filters)}`);
 
-      pythonProcess = spawn('python', [PYTHON_SCRIPT_PATH], {
+      pythonProcess = spawn('python', [
+        PYTHON_SCRIPT_PATH,
+        '--filters',
+        JSON.stringify(filters)
+      ], {
         stdio: ['ignore', 'pipe', 'pipe'],
         cwd: process.cwd(),
         env: { ...process.env, PYTHONUNBUFFERED: '1' }
@@ -155,13 +202,11 @@ function runPythonScript(): Promise<string> {
   });
 }
 
-/**
- * Parse the output from the Python script more robustly
- */
 function parseOutputSafely(output: string): AnalyticsData {
   // Try direct JSON parse first
   try {
-    return JSON.parse(output);
+    const data = JSON.parse(output);
+    return normalizeKpiTrends(data);
   } catch (e) {
     console.log('Direct JSON parse failed, attempting to extract JSON');
   }
@@ -177,26 +222,71 @@ function parseOutputSafely(output: string): AnalyticsData {
   const jsonString = output.slice(jsonStart, jsonEnd + 1);
 
   try {
-    return JSON.parse(jsonString);
+    const data = JSON.parse(jsonString);
+    return normalizeKpiTrends(data);
   } catch (error) {
     // Try to clean up common JSON issues
     try {
-      const cleanedJson = jsonString
+      // Replace single quotes with double quotes
+      let cleanedJson = jsonString
         .replace(/'/g, '"')
+        // Add quotes around property names
         .replace(/([{,]\s*)(\w+)(?=\s*:)/g, '$1"$2"')
-        .replace(/,\s*}/g, '}');
+        // Remove trailing commas in objects and arrays
+        .replace(/,\s*}/g, '}')
+        .replace(/,\s*\]/g, ']');
       
-      return JSON.parse(cleanedJson);
+      // Handle special cases
+      cleanedJson = cleanedJson
+        // Fix invalid boolean values
+        .replace(/":\s*True/g, '": true')
+        .replace(/":\s*False/g, '": false')
+        // Fix invalid None value
+        .replace(/":\s*None/g, '": null');
+      
+      const data = JSON.parse(cleanedJson);
+      return normalizeKpiTrends(data);
     } catch (innerError) {
       console.error('JSON parsing failed:', innerError);
+      console.error('Cleaned JSON snippet:', jsonString.substring(0, 500) + '...');
       throw new Error('Failed to parse JSON output');
     }
   }
 }
 
-/**
- * Creates fallback KPI data when real data can't be loaded
- */
+// Helper function to normalize KPI trend values
+function normalizeKpiTrends(data: AnalyticsData): AnalyticsData {
+  if (data.kpis) {
+    // Normalize trend values for all KPIs
+    if (data.kpis.market_cap) {
+      data.kpis.market_cap.trend = normalizeTrend(data.kpis.market_cap.trend);
+    }
+    
+    if (data.kpis.asset_count) {
+      data.kpis.asset_count.trend = normalizeTrend(data.kpis.asset_count.trend);
+    }
+    
+    if (data.kpis.price_change) {
+      data.kpis.price_change.trend = normalizeTrend(data.kpis.price_change.trend);
+    }
+    
+    if (data.kpis.market_sentiment) {
+      data.kpis.market_sentiment.trend = normalizeTrend(data.kpis.market_sentiment.trend);
+    }
+  }
+  
+  return data;
+}
+
+// Helper to normalize a single trend value
+function normalizeTrend(trend: any): 'up' | 'down' | 'neutral' {
+  if (trend === 'up' || trend === 'down' || trend === 'neutral') {
+    return trend;
+  }
+  // Default to neutral for invalid values
+  return 'neutral';
+}
+
 function createFallbackKpis() {
   return {
     market_cap: {
@@ -222,9 +312,6 @@ function createFallbackKpis() {
   };
 }
 
-/**
- * Creates fallback asset distribution data when real data can't be loaded
- */
 function createFallbackAssetDistribution() {
   return [
     { name: "BTC", value: 60.5, color: "bg-orange-500" },

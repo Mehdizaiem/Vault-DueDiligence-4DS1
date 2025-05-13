@@ -1,4 +1,5 @@
 id,source,title,url,content,date,authors,image_url,scraped_at
+<<<<<<< HEAD
 9ca0004aa7b4b8c7bff355754e7d393c,Cointelegraph,Bitcoin Core to unilaterally remove controversial OP-Return limit,https://cointelegraph.com/news/bitcoin-core-unilaterally-remove-controversial-op-return-limit," The change will remove a limit on the amount of arbitrary data that can be added to Bitcoin transactions. 
 Bitcoin Core developers have decided to remove a limit on transaction data in the next network upgrade, enabling more data to be included in a more efficient way. 
 “Bitcoin Core’s next release will, by default, relay and mine transactions whose OP_RETURN outputs exceed 80 bytes and allow any number of these outputs,” read the announcement on GitHub by Bitcoin developer Greg Sanders on May 5. 
@@ -33,6 +34,165 @@ He added that the most likely to pass is HB 2749, which offers a budget-neutral 
 There is also a related bill, SB 1373, which would authorize the state treasurer to allocate up to 10% of Arizona state funds into digital assets. It has yet to reach a final vote.
 Magazine: Bitcoin to $1M ‘by 2029,’ CIA tips its hat to Bitcoin: Hodler’s Digest
 ",2025-05-06 09:34:44.264193,[],,2025-05-06T09:34:44.264193
+=======
+3ee92e6f630a0bffafb6bcbde01e48c8,Cointelegraph,"Price predictions 5/12: SPX, DXY, BTC, ETH, XRP, BNB, SOL, DOGE, ADA, SUI",https://cointelegraph.com/news/price-predictions-5-12-spx-dxy-btc-eth-xrp-bnb-sol-doge-ada-sui," Bitcoin is witnessing profit booking near its all-time high, but it is likely to find solid support at $100,000. Will altcoins follow? 
+Key points:
+Bitcoin price saw profit booking near $105,819, signaling that bears remain active at higher levels.
+Select altcoins have continued to move higher, indicating increased investor interest.  
+The SPX and the DXY are playing catch-up to Bitcoin following the US-China trade deal.
+Bitcoin (BTC) has started the new week on a cautious note, falling below $103,000, but the S&P 500 Index (SPX) and the US Dollar Index (DXY) have risen sharply following the announcement of the US-China trade agreement. One of the reasons could be that other assets are trying to play catch up with Bitcoin, and the sharp rally in the US dollar may be acting as headwinds for Bitcoin in the near term.
+Bitwise European Head of Research André Dragosch said in a post on X that the firm’s proprietary indicator has reached its highest level since 2024. Historically, high levels of the indicator have resulted in a short-term correction or sideways price action.
+The short-term uncertainty has not stopped the long-term bulls from adding more Bitcoin to their portfolio. Michael Saylor’s Strategy acquired 13,390 Bitcoin at an average price of $99,856 between May 5 and May 11. The latest purchase has boosted the firm's haul to 568,840 Bitcoin.
+What are the crucial support levels to watch out for in Bitcoin and altcoins? Let’s analyze the charts of the top 10 cryptocurrencies to find out.
+The S&P 500 Index gapped up sharply on May 12 and rose above the stiff overhead resistance at 5,800.
+Time is running out for the bears. If they want to prevent the upside, they will have to fiercely defend the 5,800 level and quickly drag the price below the 20-day exponential moving average (5,570). If they manage to do that, the index could start a deeper correction toward 5,400.
+Instead, if the price closes above 5,800, the up move may continue toward the 6,000 level. There could be a minor halt at 6,000, but if the bulls prevail, the index could retest the all-time high at 6,147.
+The US Dollar Index pierced the 20-day EMA (100.42) on May 8, indicating that the bears are losing their grip.
+Sellers tried to pull the price back below the 20-day EMA on May 9, but the bulls held their ground. The index has reached the 50-day simple moving average (102.08), which is expected to behave as a resistance. 
+If the price turns down from the 50-day SMA but finds support at the 20-day EMA, it suggests a positive sentiment. That increases the likelihood of a rally to 103.54 and thereafter to 104.68.
+Bitcoin has turned down from $105,819, indicating that the bears are defending the $107,000 to $109,588 zone.
+The first support on the downside is the $100,000 level, and below that, the 20-day EMA ($97,238). If the price rebounds off the support zone, the bulls will again try to kick the BTC/USDT pair above $109,588. If they can pull it off, the pair could ascend to $130,000.
+Conversely, if the price turns down and breaks below the 20-day EMA, it signals that buyers are booking profits at higher levels. That opens the doors for a fall to $93,000 and then to the 50-day SMA ($89,302).
+Ether (ETH) bulls are trying to sustain the price above $2,550, but the bears have kept up the selling pressure.
+If the price skids below $2,435, the ETH/USDT pair may fall to $2,320. If the price rebounds off $2,320, the bulls will try to resume the up move. There is resistance at $2,850, but if it is crossed, the pair could reach $3,000.
+Contrary to this assumption, if the price turns down and breaks below $2,320, it suggests that the bulls are booking profits. The pair may drop to the breakout level of $2,111, which is likely to act as support.
+XRP (XRP) broke above the resistance line on May 10, and the bulls successfully held the retest of the breakout level on May 11.
+The bulls have strengthened their position by pushing the price above the $2.50 resistance. There is minor resistance at $2.65, but if the level is scaled, the rally could reach $3. Such a move signals a potential trend change.
+Alternatively, if the price turns down sharply from $2.65 and breaks below the 20-day EMA ($2.27), it signals a possible range formation in the near term. The XRP/USDT pair could swing between $2 and $2.65 for some time.
+BNB (BNB) turned down from $679 on May 10 but rebounded off the breakout level of $644 on May 12.
+Buyers tried to resume the up move, but the long wick on the candlestick shows selling near the $700 level. If the price stays above $644, the bulls will make another attempt to propel the BNB/USDT pair to $745.
+Sellers will have to pull the price below $644 to weaken the bulls. The pair could then fall to the 20-day EMA ($621). Buyers are expected to defend the 20-day EMA because a break below it could tilt the advantage in favor of the bears.
+Solana’s (SOL) up move has stalled near the $180 resistance, but a positive sign is that the bulls have not given up much ground to the bears. 
+A shallow pullback increases the possibility of the continuation of the rally. If buyers drive the price above $180, the SOL/USDT pair could rally to $210.
+The immediate support on the downside is at $168. If the price slides below $168, the pair could descend to the 20-day EMA ($155). A solid rebound off the 20-day EMA suggests the bulls remain in control. That increases the likelihood of a break above $180. Sellers will gain the upper hand on a break below $153.
+Related: Bitcoin set for $150K BTC price rally as US, China agree to slash tariffs
+Dogecoin (DOGE) turned down from $0.26 on May 11, indicating profit booking by short-term buyers.
+The bulls are expected to aggressively defend the breakout level of $0.21. If the price rebounds off $0.21 with strength, it signals that the bulls have flipped the level into support. The DOGE/USDT pair could then climb to $0.31.
+On the contrary, a break and close below the $0.21 level suggests that bears remain active at higher levels. The pair could then drop to the moving averages, pointing to a possible range formation between $0.14 and $0.26 in the near term.
+Cardano (ADA) is facing resistance near $0.86, but a positive sign is that the bulls have not ceded much ground to the bears.
+The 20-day EMA ($0.72) has started to turn up, and the RSI is near the overbought area, indicating an advantage to buyers. If the price rebounds off the neckline, the bulls will try to propel the ADA/USDT pair above $0.856. If they can pull it off, the pair could travel to the target objective of $1.01.
+If sellers want to prevent the upside, they will have to swiftly yank the price below the moving averages. If they do that, the pair could descend to the solid support at $0.58.
+Sui (SUI) is facing selling at $4.25, but a positive sign is that the bulls have maintained the price above the breakout level of $3.90.
+Both moving averages are sloping up, and the RSI is near the overbought zone, indicating that the path of least resistance is to the upside. If buyers clear the $4.25 level, the SUI/USDT pair could soar to $5.
+The first sign of weakness will be a break and close below the $3.90 level. That opens the doors for a fall to the 20-day EMA ($3.48). A bounce off the 20-day EMA signals that the positive momentum remains intact. The bulls will then again try to clear the overhead hurdle at $4.25. 
+This article does not contain investment advice or recommendations. Every investment and trading move involves risk, and readers should conduct their own research when making a decision.
+",2025-05-12 22:12:11.637590,[],,2025-05-12T22:12:11.637590
+1bdff37865bdc5ee7c2f40da128d4b50,Cointelegraph,Bitcoin price sells off after Trump’s US-China tariff deal — Here is why,https://cointelegraph.com/news/bitcoin-price-sells-off-after-trump-s-us-china-tariff-deal-here-is-why," Bitcoin price takes an unexpected turn to the downside even as stocks soar following the US-China trade deal announcement. 
+Key takeaways:
+Bitcoin lags as investors shift toward stocks after the US and China strike a deal that could end the current trade war.
+Macroeconomic conditions are swinging away from gold investing and back to stocks. 
+Bitcoin (BTC) reached its highest price in over three months at $105,720 on May 12, but was unable to maintain its bullish momentum. Interestingly, the drop to $102,000 came after a temporary easing in the US-China tariff conflict. This has left traders puzzled as to why Bitcoin reacted negatively to what seemed like positive developments.
+The 90-day truce reduced import tariffs, and US Treasury Secretary Scott Bessent noted that the agreement could be extended, provided there is a genuine effort and constructive dialogue. According to Yahoo Finance, the topics under discussion include “currency manipulation,” “steel price dumping,” and restrictions on semiconductor exports.
+Part of Bitcoin’s recent lack of momentum can be attributed to its 24% gains over the previous 30 days, during which S&P 500 futures rose 7% and gold remained flat. Investors see little reason for further divergence between Bitcoin and traditional markets, especially since the 30-day correlation with the stock market remains high at 83%. 
+Additionally, Bitcoin has now surpassed the market capitalization of both silver and Google, making it the world’s sixth-largest tradable asset.
+News that Strategy acquired another 13,390 BTC between May 5 and May 11 has also raised concerns among investors. With BlackRock and Strategy together holding 1.19 million BTC, about 6% of the circulating supply, some traders worry that Michael Saylor’s company is largely responsible for supporting the price.
+Critics, such as Peter Schiff, predict that Strategy’s ever-increasing average purchase price could eventually lead to losses and force the company to sell some of its holdings to cover borrowing costs. However, this scenario seems unlikely, as the company has doubled its capital increase limit by $21 billion in stocks and another $21 billion in debt.
+While traders often focus on Bitcoin-specific events, the most likely reason for the weakness near $105,000 is broader macroeconomic conditions. Although the pause in tariffs directly benefits the stock market, the effect on scarce assets like Bitcoin is somewhat negative. For example, gold fell 3.4% on May 12 as the demand for safe-haven assets declined.
+Gold has typically shown an inverse correlation with the US Dollar Index (DXY), which climbed to its highest level in 30 days on May 12. The strengthening US dollar signals investor confidence, despite a 0.3% decline in US first-quarter Gross Domestic Product (GDP) and a 6.1% jump in pending home sales in March compared to the previous month.
+Related: Bitcoin short-term ‘technical sell-off’ under $100K possible ahead of May 13 CPI print
+The lack of conviction among Bitcoin investors when prices traded near $105,000 is at least partly due to reduced demand for scarce assets, as investors view the stock market as a more immediate and direct beneficiary of the US-China trade deal. Lower import duties suggest higher revenues and potentially improved profit margins for companies.
+Given the impressive $2 billion in inflows into US spot Bitcoin exchange-traded funds (ETFs) between May 1 and May 9, the likelihood of a price drop below $100,000 remains low. The steady demand for Bitcoin following a 24% monthly gain points to institutional adoption rather than retail-driven FOMO, which is a very positive sign for the price.
+This article is for general information purposes and is not intended to be and should not be taken as legal or investment advice. The views, thoughts, and opinions expressed here are the author’s alone and do not necessarily reflect or represent the views and opinions of Cointelegraph.
+",2025-05-12 22:12:15.478966,[],,2025-05-12T22:12:15.478966
+9a579272a97cb851590955eb3d9087ab,Cointelegraph,BlackRock flags quantum computing as risk for Bitcoin ETFs,https://cointelegraph.com/news/blackrock-flags-quantum-computing-as-risk-for-bitcoin-etfs," The asset manager added a detailed overview of quantum computing threats to the risk disclosure in its Bitcoin ETF's regulatory filing. 
+Emerging technologies, including quantum computing, could potentially render the cryptography securing Bitcoin and other blockchain networks ineffective, asset manager BlackRock said in a regulatory filing. 
+On May 9, BlackRock updated the registration statement for its iShares Bitcoin ETF (IBIT). The revised version addressed potential risks to the integrity of the Bitcoin network posed by quantum computing, the filing shows.
+“[I]f quantum computing technology is able to advance […] it could potentially undermine the viability of many of the cryptographic algorithms used across the world’s information technology infrastructure, including the cryptographic algorithms used for digital assets like bitcoin,” BlackRock said. 
+It is the first time the asset manager has explicitly flagged this risk in its IBIT disclosures. The IBIT ETF is the largest spot Bitcoin (BTC) ETF, with approximately $64 billion in net assets, according to its website. 
+Quantum computing is an emergent field that seeks to use the principles of quantum mechanics to greatly enhance computers’ processing capabilities. 
+Related: Quantum computing will bring lost Bitcoin 'back in circulation’ — Tether CEO
+James Seyffart, an analyst for Bloomberg Intelligence, cautioned that risk disclosures such as IBIT’s are required to highlight every possible risk to an asset, even those that are extremely unlikely. 
+“They are going to highlight any potential thing that can go wrong with any product they list or underlying asset that’s being invested in,” Seyffart said in a May 9 X post. “It's completely standard. And honestly [it] makes complete sense.”
+Since launching in January, Bitcoin ETFs have collectively attracted more than $41 billion in net inflows, according to data from Farside Investors. 
+On May 8, Bitcoin ETF net inflows surpassed all-time highs of around $40 billion, according to Bloomberg Intelligence. 
+“Lifetime net flows is #1 most imp metric to watch IMO, very hard to grow, pure truth, no bs,” Bloomberg Intelligence analyst Eric Balchunas said in a May 9 X post. “Impressive, they were able to make it to a new high water mark so soon after the world was supposed to end.”
+In February, Tether CEO Paolo Ardoino predicted that quantum computing would eventually enable hackers to break into inactive Bitcoin wallets and recover the dormant coins. 
+“Any Bitcoin in lost wallets, including Satoshi (if not alive), will be hacked and put back in circulation,” Ardoino said in a Feb. 8 X post.
+Magazine: Adam Back says Bitcoin price cycle ’10x bigger’ but will still decisively break above $100K
+
+",2025-05-12 22:12:18.995849,[],,2025-05-12T22:12:18.995849
+9d4313c8d35a6a57077906dff1da0988,Cointelegraph,Bitcoin short-term ‘technical sell-off’ under $100K possible ahead of May 13 CPI print,https://cointelegraph.com/news/bitcoin-short-term-technical-sell-off-under-100-k-possible-ahead-of-may-13-cpi-print," Bitcoin sells off after nearly rallying to $106,000, but data suggests the correction will be short-lived. 
+Key takeaways: 
+Possible de-risking ahead of the May 13 CPI print could be playing a role in today’s BTC price correction. 
+Bitcoin market structure and qualitative fundamentals remain bullish, suggesting today’s correction could be short-lived.
+Bitcoin (BTC) price briefly stumbled on May 12, falling to $102,388 after hitting an intraday high at $105,819 during the US trading session. At first glance, the abrupt correction seemed unexpected given the positive news of the day. Since Sunday evening (May 11), mainstream media headlines have reported on the positive headway made in the US-China trade talks occurring in Switzerland, and throughout the evening, US President Donald Trump ran his victory lab via Truth Social posts heralding the positives of the deal. 
+BREAKING: U.S. Announces China Trade Deal in Geneva pic.twitter.com/JjgvYAvAGe
+As news of the tentative deal broke, US equity futures markets soared, and these gains materialized into a 1,000-point rally in the Dow at the opening bell. Looking beyond the temporary resolution of the US-China trade war, Bitcoin has racked up back-to-back wins over the past two weeks. On May 12, Strategy CEO Michael Saylor announced that the company had acquired 13,390 Bitcoin, bringing its total balance to 568,840 BTC. 
+On the same day, shares of healthcare company KindlyMD surged up to 600% after announcing the merger with Nakamoto Holdings, a Bitcoin investment company founded by David Bailey, who is Trump’s current crypto adviser. The month of April followed a similar trajectory to today, where frequent Bitcoin treasury creation announcements were made by an assortment of US-based and international companies. 
+Related: US real estate asset manager launches $100M tokenized fund with institutional backing
+While Bitcoin's mass adoption appears to be accelerating, data from Glassnode suggests that BTC price could be in for a brief period of consolidation after gaining 9% in the last week. 
+The onchain analytics firm posted the above chart and warned that: 
+At major crypto exchanges, there was an uptick in selling in perpetual futures markets, and selling was also seen in spot markets as BTC price rallied into a sell wall near $106,000. 
+From a trader's point of view, a portion of the selling could be possible derisking ahead of the May 13 Consumer Price Index (CPI) inflation report, along with the view that the Trump trade deal with China is now priced in after BTC failed to rally and hold above $104,000 on such momentous news. 
+Leading into the trade war news, the US Dollar Index (DXY) rallied and stock indexes soared. Seeing Bitcoin failing to break and hold $104,000 to $105,000 prior to stock futures opening and then BTC being unable to follow equities opening bell gains in the NY session suggests some traders elected to close profitable longs ahead of tomorrow’s CPI or before the current bid appetite shifts to lower price levels. 
+This view can be interpreted by the chart above, showing open interest rising hour-over-hour, along with an abrupt spike in the funding rate as short positions opened and longs were liquidated. 
+Spot purchasing played a significant role in last week’s Bitcoin price rally, and the May 12 announcement from Strategy and spot BTC ETF inflows of the past 7 days raises more immediate concerns of whether the type of buying appetite seen since late April will spill over into another week. 
+Considering the accelerating pace of Bitcoin adoption within traditional finance and the rapidly improving crypto regulatory environment, the current price action appears to be a short-term technical correction. Perhaps, dependent upon tomorrow’s CPI print, spot and margin longs will return in force once the market digests the details of the report.
+This article does not contain investment advice or recommendations. Every investment and trading move involves risk, and readers should conduct their own research when making a decision.
+",2025-05-12 22:12:22.588890,[],,2025-05-12T22:12:22.588890
+6b1317538c02f23303dda567676c0a42,Cointelegraph,Will Bitcoin hodlers be the reason more countries adopt wealth taxes?,https://cointelegraph.com/news/bitcoin-hodlers-wealth-taxes," As Bitcoin’s value skyrockets, governments may turn to wealth taxes to tap into unrealized gains, raising questions about the future of crypto taxation. 
+Opinion by: Robin Singh, CEO of Koinly
+Is there a catch for Bitcoin hodlers, with the asset’s price up over 600,000% since the beginning of 2013? 
+Perhaps — if governments keep waking up to Bitcoin’s value, the whole “you only pay tax when you sell” mantra could soon be a thing of the past.
+What if a wealth tax is the answer for revenue-hungry tax agencies with no time to lose? It’s a yearly tax on a person’s total net worth — cash, investments, property and other assets — minus any debts, applied whether or not those assets are sold or generating income. The idea is to boost public revenue and curb inequality, mainly by taxing the ultra-rich. A wealth tax takes a clip off what you own, not what you earn.
+Countries such as Belgium, Norway and Switzerland have had wealth taxes baked into their tax systems for ages, yet some of the world’s biggest economies — like the US, Australia and France — have largely steered clear. 
+That might be changing. More governments are eyeing wealth taxes for crypto. In December 2024, French Senator Sylvie Vermeillet took it a step further, suggesting Bitcoin (BTC) be labeled “unproductive,” which would mean taxing its gains every year — whether or not it’s ever sold. 
+Yep, every asset holder’s favorite word is unrealized capital gains tax. It would be naive to assume other countries are not thinking about the same idea. 
+With Bitcoin’s significant gains and industry executives such as ARK Invest’s Cathie Wood eyeing a $1.5-million price tag by 2030, I’d bet a magic 8-ball would say, “Signs point to yes.”
+It might seem far-fetched, but it is hard to ignore the gains. The average long-term Bitcoin holder is already sitting on significant profits.
+The incentive is obvious. Switzerland’s wealth tax goes up to 1% of a portfolio’s value, and governments know there is plenty to collect.
+Countries catch on — sooner or later. Consider how capital gains tax became the norm.
+The US introduced capital gains tax in 1913, the UK jumped on board 52 years later in 1965, and Australia followed in 1985. 
+Governments are likely entertaining the idea — whether they admit it or not. If any country seriously considers it, Germany could be a prime candidate, even though it scrapped its wealth tax back in 1997.
+Recent: Ukraine floats 23% tax on some crypto income, exemptions for stablecoins
+In July 2024, offloading 50,000 seized BTC at $58,000 might have seemed like a smart move for the German government, but when Bitcoin hit $100,000 just months later in December, it became clear they left a fortune on the table. 
+In retrospect, a costly mistake…
+Will this be remembered as a blunder on par with Gordon Brown selling half of the UK’s gold reserves at $275 an ounce? 
+Imposing such a rule on the wealthy comes with obvious risks.
+To understand the real effect of taxation on a country, just follow the money — specifically, where millionaires are moving. Recent data shows that high-net-worth individuals are leaving countries like the United Kingdom in droves, heading for tax-friendly havens like Dubai.
+Will nations risk losing these individuals to tap into unrealized gains on Bitcoin and other assets?
+Bitcoin is volatile and full of unknowns. While some events could lead to massive losses, governments may still push forward with policies that ultimately drive away millionaires, only to realize the trade-off wasn’t worth it. 
+Conversely, US President Donald Trump recently signed an executive order establishing a Bitcoin Strategic Reserve — a clear nod to the hodl mentality. No doubt, this has other nations considering a similar move.
+If nations are embracing the hodl mindset, could that mean wealth taxes are off the table in those countries? Only time will tell.
+One thing is sure: Bitcoin hodlers have amassed enough wealth to put themselves on the radar of tax authorities. Whether this sparks fundamental policy changes or just political grandstanding, the crypto community won’t sit back quietly.
+Opinion by: Robin Singh, CEO of Koinly.
+This article is for general information purposes and is not intended to be and should not be taken as legal or investment advice. The views, thoughts, and opinions expressed here are the author’s alone and do not necessarily reflect or represent the views and opinions of Cointelegraph.
+",1747073466873,[],,2025-05-12T18:11:06.873145
+8b19984d9914688d9b7c332af32d7709,Cointelegraph,Bitcoin all-time high cues come as US-China deal sends DXY to 1-month high,https://cointelegraph.com/news/bitcoin-all-time-high-cues-come-us-china-deal-dxy-1-month-high," Bitcoin pauses as major assets catch up to the US-China trade deal announcement, with $102,000 on the cards as a BTC price support retest target. 
+Key points:
+Bitcoin seeks consolidation after rapid gains as stocks and the US dollar surge on US-China trade deal news.
+Nearby order book liquidity forms potential targets for traders, which now include $102,000.
+A classic moving average retest suggests that a new all-time high should result.
+Bitcoin (BTC) stuck to $104,000 at the May 12 Wall Street open as markets shifted on US-China trade deal news.
+Data from Cointelegraph Markets Pro and TradingView showed BTC/USD consolidating after hitting its highest levels since late January.
+The US and China agreed to slash reciprocal trade tariffs on the day, causing the S&P 500 and Nasdaq Composite Index to gain around 3%.
+US dollar strength also benefited as a result, with the US dollar index (DXY) hitting one-month highs.
+“The last time US tariffs on China were this high, the S&P 500 was ~200 points lower, 4 Fed rate cuts were expected in 2025, and Wall Street was calling for a recession,” trading resource The Kobeissi Letter wrote in part of ongoing analysis on X. 
+Bitcoin thus adopted the middle ground between major assets on the day as gold dropped precipitously to $3,208 per ounce, nearing month-to-date lows.
+“BTC Swept most nearby liquidity above after chopping around the $103K-$105K area for a few days,” popular trader Daan Crypto Trades told X followers alongside a chart of exchange order book liquidity from monitoring resource CoinGlass. 
+CoinGlass data showed increasing bids around the $103,000 mark after the Wall Street open.
+Continuing, fellow trader CrypNuevo was among those doubling down on a longer-term bull thesis for BTC price action.
+Related: Is Bitcoin about to go parabolic? BTC price targets include $160K next
+BTC/USD, he noted, had conducted a successful retest of the 50-week exponential moving average (EMA).
+Currently at $80,300, the 50-week EMA has functioned as a springboard for new all-time highs in recent years.
+“We got the 1W50EMA retest and, consequently, the next leg up,” CrypNuevo explained in an X thread on May 11. 
+Earlier, Cointelegraph reported on a classic bull market breakout signal on weekly timeframes in the form of a cross on the moving average convergence/divergence (MACD) indicator.
+This article does not contain investment advice or recommendations. Every investment and trading move involves risk, and readers should conduct their own research when making a decision.
+",2025-05-12 22:12:26.345365,[],,2025-05-12T22:12:26.345365
+a775906bf7b719f9dafd1cf8ca38c11a,Cointelegraph,Trump-linked miner American Bitcoin going public via Gryphon merger,https://cointelegraph.com/news/american-bitcoin-gryphon-merger-public-listing-hut8-trump," Gryphon Digital Mining will acquire American Bitcoin in a stock-for-stock transaction, with the combined entity operating under the American Bitcoin brand. 
+Bitcoin mining firm American Bitcoin is going public through a merger with crypto mining company Gryphon Digital Mining, the companies announced on May 12.
+Under the terms of the deal, Gryphon Digital Mining will acquire American Bitcoin in a stock-for-stock transaction. After the merger, the new company will operate under the American Bitcoin brand and be led by its board of directors, which includes Eric Trump, the second-eldest of US President Donald Trump’s three sons. News of the merger coincided with a sharp rise in Gryphon Digital Mining’s stock price, which climbed from $0.52 on May 9 to $2.15 at the time of writing, a gain of more than 313%, according to Google Finance.
+The announcement follows early April reports that American Bitcoin was considering an initial public offering (IPO).
+American Bitcoin is a majority-owned subsidiary of energy infrastructure, crypto mining, and data center firm Hut 8. Hut 8 CEO Asher Genoot said the company aims to make American Bitcoin “a purpose-built vehicle for low-cost Bitcoin accumulation at scale.” He added:
+Related: Top Bitcoin miners produced nearly $800M of BTC in Q1 2025
+According to the announcement, existing American Bitcoin shareholders will own roughly 98% of the newly formed company. Following the transaction, the new company will control most of the outstanding stock.
+Hut 8 will continue to manage American Bitcoin’s infrastructure and operations through long-term commercial agreements. Those deals are expected, according to the announcement, to generate stable, contracted revenue streams for Hut 8’s power and digital infrastructure segments.
+Related: Bitcoin miner Hut 8 grows hashrate 79% despite $134M quarterly loss
+Hut 8 acquired a majority stake in American Bitcoin when it was unveiled at the end of March, with backing from several members of Trump's family. The company, formerly known as American Data Center, was founded by a group of investors, including Trump sons Donald Trump Jr. and Eric Trump.
+Following the deal, American Bitcoin took ownership of Hut 8’s Bitcoin mining hardware. The announcement at the time explained that the new firm “aims to become the world’s largest, most efficient pure-play Bitcoin miner while building a robust strategic Bitcoin reserve.”
+Magazine: Bitcoiners are ‘all in’ on Trump since Bitcoin ’24, but it’s getting risky
+",1747073472469,[],,2025-05-12T18:11:12.469466
+>>>>>>> 04b7f027736bf3d4ed2c5ae7b11f526b304c469f
 c43f72eb84509cddc953e82486627eca,Cointelegraph,Here’s what happened in crypto today,https://cointelegraph.com/news/what-happened-in-crypto-today," Need to know what happened in crypto today? Here is the latest news on daily trends and events impacting Bitcoin price, blockchain, DeFi, NFTs, Web3 and crypto regulation. 
 Today in crypto, the Chicago Mercantile Exchange (CME) Group announced the launch of Solana futures contracts in March. Meanwhile, global trade concerns continue pressuring investor sentiment, risking a potential Bitcoin correction below the key $75,000 support level. In addition, the US Securities and Exchange Commission has released a statement saying it does not view memecoins as securities.
 The Chicago Mercantile Exchange (CME) Group, a globally recognized derivatives exchange, announced it will launch Solana (SOL) futures contracts on March 17, pending a review by United States financial regulators.
@@ -53,6 +213,7 @@ Source: David Sacks
 “As such, persons who participate in the offer and sale of meme coins do not need to register their transactions with the Commission,” the SEC said.
 It added that memecoin buyers and holders wouldn’t be protected by US securities laws but said the fraudulent offer and sale of memecoins “may be subject to enforcement action or prosecution by other federal or state agencies.”
 ",1740780816989,[],,2025-02-28T22:13:36.989672
+<<<<<<< HEAD
 <<<<<<< HEAD
 5e8aefe8e27e49a1d5ccd11c8cd4cd5b,Cointelegraph,Binance founder CZ says Bitcoin could hit $500K–$1M this cycle,https://cointelegraph.com/news/cz-says-bitcoin-could-hit-500-k-1-m-this-cycle," Changpeng Zhao expects Bitcoin to reach between $500,000 and $1 million this market cycle, driven by institutional adoption, growing government accumulation and a pro-crypto US policy. 
 Binance co-founder Changpeng “CZ” Zhao expects Bitcoin’s price to top at $500,000 to $1 million during this market cycle.
@@ -170,3 +331,83 @@ Instead, if the price turns down from the current level or the overhead resistan
 This article does not contain investment advice or recommendations. Every investment and trading move involves risk, and readers should conduct their own research when making a decision.
 ",2025-05-06 09:34:56.818440,[],,2025-05-06T09:34:56.818440
 >>>>>>> ee346e95add6e5e9490b6129a41232b7eaa5a6f5
+=======
+a692bb73f625f20896b0ecc2a045c1aa,Cointelegraph,Can you stake Bitcoin (BTC)? Here’s what you need to know,https://cointelegraph.com/news/can-you-stake-bitcoin-btc," Earn yield on Bitcoin using centralized lending platforms, through Wrapped Bitcoin (WBTC) on Ethereum, or Bitcoin layer-2 platforms. 
+Though Bitcoin doesn’t support native staking, holders can earn yield through centralized lending platforms, Wrapped Bitcoin (WBTC) on Ethereum, and Bitcoin-related networks like Babylon and Stacks.
+WBTC allows BTC holders to participate in lending, liquidity pools and yield farming on Ethereum-based DeFi platforms like Aave and Curve but introduces bridge and smart contract risks.
+Protocols like Babylon and Stacks use mechanisms like native time-locked scripts or stacking to offer rewards without removing BTC from the Bitcoin blockchain.
+Custodial, smart contract and regulatory risks persist. Bitcoin’s community also remains divided on whether Bitcoin yield generation features align with its decentralized and trust-minimized ethos.
+Unlike proof-of-stake (PoS) blockchains like Ethereum or Cardano, Bitcoin relies on proof-of-work (PoW) mining for network security. However, with the rise of decentralized finance (DeFi) and layer-2 innovations, Bitcoin (BTC) holders can now generate passive income through various yield-generating methods. These include centralized lending, Wrapped Bitcoin (WBTC) on Ethereum, and layer-2 solutions like Babylon and Stacks.
+This article explores how to earn yield on BTC, the risks involved and the technological advancements enabling these opportunities, all without altering Bitcoin’s core protocol.
+Staking and mining are two distinct consensus mechanisms used to secure blockchain networks and validate transactions. 
+Staking is central to PoS blockchains like Ethereum and Solana. Participants lock up cryptocurrency to become validators, who are randomly selected to create new blocks and confirm transactions, earning rewards. The more coins staked, the higher the chance of selection.
+Mining, used by PoW blockchains like Bitcoin and Litecoin, involves miners solving complex mathematical puzzles with powerful computers. The first to solve the puzzle adds a new block and receives a reward. Mining demands significant energy and hardware.
+Bitcoin’s PoW design means it does not support staking. The network relies entirely on miners to ensure decentralization and security. There are no validators or staking rewards in the traditional sense. Yield-generating methods for BTC, such as lending or layer-2 solutions, are not equivalent to PoS staking.
+Did you know? Some staking platforms offer liquid staking, where you get a token representing your staked asset (like stETH for Ether). This lets you earn staking rewards and still use your capital in DeFi protocols.
+While you cannot natively stake BTC due to its PoW mechanism, there are alternative methods to help you earn yield on your BTC holdings and make passive income. These methods often involve using third-party platforms or bridging BTC to other blockchains.
+Centralized lending platforms like Binance Earn, Nexo and Ledn enable you to earn with BTC deposited, which the platform lends to institutional borrowers. In return, you receive interest, which might be paid daily or monthly. But this method involves custodial risk, as users must trust the platform to remain solvent and secure. The collapse of firms like Celsius and BlockFi has highlighted this vulnerability. 
+WBTC is an ERC-20 token backed 1:1 by BTC, held by a centralized custodian (BitGo). It enables BTC holders to engage in Ethereum-based DeFi protocols, such as lending on Aave, providing liquidity on Curve or yield farming. This unlocks DeFi’s potential but introduces risks from BitGo’s custody, bridge vulnerabilities and smart contract bugs.
+Emerging layer-2 platforms such as Babylon and Stacks also enable you to explore Bitcoin-native yield opportunities. Babylon locks BTC in time-locked scripts to secure its PoS network, while Stacks uses a proof-of-transfer (PoX) model where STX tokenholders lock tokens to earn BTC rewards. These platforms expand Bitcoin’s utility without leaving its ecosystem entirely.
+Did you know? Ethereum became the largest PoS network in 2022 after “the Merge,” replacing miners with validators. This move reportedly reduced the blockchain’s energy consumption by over 99.95%, making it one of the greenest major crypto networks.
+Earning yield on BTC via centralized platforms is straightforward. Choose a reputable platform, create a verified account, deposit BTC, select a flexible or fixed-term lending option, confirm terms, and monitor earnings. Funds can typically be withdrawn after the term.
+Using Binance Earn as an example, the platform offers multiple yield options:
+Simple Earn: Beginner-friendly, offering stable yields through flexible or locked savings products.
+Dual Investment: Higher-risk, with returns based on the settlement price of two assets, exposing users to market volatility.
+On-chain Yield: Bridges funds to DeFi protocols like Aave, with variable yields managed by Binance.
+Yields and terms vary by option and market conditions. Simple Earn offers lower, predictable returns with flexible withdrawals, while Dual Investment and On-chain Yield may yield higher but riskier returns with locked terms. Check Binance Earn for current rates.
+After subscribing:
+Simple Earn: BTC is locked (fixed term) or withdrawable (flexible term), with interest paid daily or at term’s end.
+Dual Investment: Funds are committed to a target price and settlement date, with yields paid in the deposited or alternative asset.
+On-chain Yield: Funds are deployed to DeFi protocols, with Binance handling gas fees and smart contracts. Withdrawals may face delays due to liquidity or network issues.
+Rewards depend on the platform, BTC amount and program terms.
+WBTC allows BTC holders to earn yield on Ethereum’s DeFi platforms, such as Aave or Curve, by depositing WBTC into liquidity pools and earning interest or fees.
+Steps to earn yield with WBTC, using Curve as an example:
+Convert BTC to WBTC: Use a centralized exchange (CEX) (e.g., Binance) or decentralized bridge (e.g., RenBridge) to convert BTC to WBTC, custodied by BitGo.
+Transfer WBTC to a wallet: Move WBTC to a Web3 wallet like MetaMask and make sure you have enough Ether (ETH) for gas fees.
+Connect to a DeFi protocol: Visit Curve.fi and deposit WBTC into a liquidity pool via the platform’s interface.
+Earn yield: By providing liquidity, you earn interest or fees based on pool performance.
+Layer-2 solutions like Babylon and Stacks enable yield generation by leveraging Bitcoin’s security. Babylon, for example, locks BTC as collateral to secure its PoS network, connecting to Cosmos zones (interconnected blockchains). Babylon’s Genesis mainnet launched on April 10, 2025, with over 57,000 BTC staked, valued at approximately $4.6 billion.
+Steps to earn yield with Babylon:
+Set up a compatible wallet: Use a wallet like OKX or Phantom, supporting Native SegWit (bc1q) or Taproot (bc1p) addresses. Avoid wallets with Bitcoin Inscriptions (Ordinals).
+Access the Babylon stake app: Visit the Babylon Stake app, which is active post-Genesis launch.
+Connect your wallet: Link your BTC wallet and approve digital signature requests for platform interaction.
+Choose a finality provider: Select from over 250 finality providers (e.g., Galaxy, Figment) that secure Babylon’s network.
+Set transaction fees: Choose default or custom fees (higher fees ensure faster confirmation) and enter the BTC amount to lock.
+Confirm and monitor: Lock BTC via the app and track status in the Babylon Staking Terminal. Rewards include BABY tokens, split 50-50 between BTC and BABY stakers.
+Did you know? In some countries, crypto yield rewards are taxed as income upon receipt and as capital gains when sold. Tax treatment varies, so consult a professional.
+Layer-2 protocols enhance Bitcoin’s scalability and functionality. Babylon and Stacks introduce unique mechanisms to generate yield while leveraging Bitcoin’s security.
+Babylon locks BTC in self-custodial, time-locked scripts on the Bitcoin blockchain, using it as collateral to secure its PoS network, launched on April 10, 2025. This non-custodial model supports Cosmos zones without requiring bridges or wrapping. BTC stakers delegate to Finality Providers, earning BABY tokens, while BABY stakers support block production. This trustless system enables delegated voting and restaking across PoS chains.
+Stacking is Stacks’ yield mechanism, using proof-of-transfer (PoX). STX tokenholders lock Stacks (STX) for ~2 weeks to support network consensus, earning BTC rewards paid by Stacks miners. This non-custodial process, available via platforms like Okcoin or Xverse, creates an economic link to Bitcoin without locking BTC itself.
+Coinbase Asset Management has launched the Coinbase Bitcoin Yield Fund (CBYF) on May 1, aiming to deliver sustainable Bitcoin-denominated returns for institutional investors outside the US. 
+The fund uses a conservative cash-and-carry arbitrage strategy, capitalizing on price gaps between spot and futures markets, while steering clear of high-risk tactics like leveraged loans or call selling. 
+Targeting annual net returns of 4–8% in BTC, CBYF offers a safer alternative for earning yield on Bitcoin — an asset that lacks native staking options unlike other cryptocurrencies.
+Generating yield on BTC involves risks distinct from PoS staking due to reliance on third-party services or layer 2s:
+Custodial risk: Centralized platforms (e.g., Binance, Nexo) and WBTC’s custodian (BitGo) hold BTC, risking losses if they face insolvency, hacks or regulatory shutdowns.
+Smart contract risk: WBTC bridges and DeFi platforms like Aave are vulnerable to bugs or exploits.
+Liquidity risk: Locked BTC in fixed-term programs or low-liquidity pools may be inaccessible during market shifts.
+Network maturity: Newer protocols like Babylon may face technical or adoption challenges.
+Market risk: Price volatility can offset yield during bear markets.
+Regulatory risk: Centralized platforms and custodians face Know Your Customer (KYC) and Anti-Money Laundering (AML) scrutiny, and yield may be taxed as income or capital gains, depending on jurisdiction. 
+Bitcoin’s yield landscape is evolving through layer-2 and DeFi innovations. Babylon and Stacks pioneer trustless solutions, locking BTC or STX without centralized custodians. Future advancements may include more non-custodial, Bitcoin-native systems using cryptographic tools to unlock value while preserving Bitcoin’s censorship resistance. 
+However, purists argue that yield generation risks diluting Bitcoin’s role as hard money, sparking debates over balancing utility and security.
+This article does not contain investment advice or recommendations. Every investment and trading move involves risk, and readers should conduct their own research when making a decision.
+",1747044543220,[],,2025-05-12T10:09:03.220939
+b9fb755866f13d83cf97b3ce436ff332,Cointelegraph,"Bitcoin, altcoins poised to rally on US-China tariff agreement",https://cointelegraph.com/news/us-china-tariff-truce-crypto-market-rally," The constructive tone of tariff negotiations removes the risks of “sudden re-escalation,” potentially paving the way for risk assets to surpass their January peaks, analysts said. 
+A 90-day tariff agreement between the US and China may set the stage for a broader recovery of stock and cryptocurrency markets, as investors look ahead to a potential tax relief package.
+The White House announced on May 12 that the two countries will reduce their respective tariffs to 10% for an initial 90-day period beginning May 14 — a 24% cut from current levels.  
+Speaking at a news conference in Geneva, US Treasury Secretary Scott Bessent said both governments are aligned on avoiding further economic decoupling.  
+“The consensus from both delegations is neither side wants to be decoupled,” Bessent said. “What has occurred with these very high tariffs was an equivalent of an embargo, and neither side wants that. We do want trade. We want more balance in trade.”
+Related: Bitcoin treasury firms driving $200T hyperbitcoinization — Adam Back
+The constructive tone of the negotiations, along with the 90-day suspension of additional tariffs, removes the risk of “sudden re-escalation,” which may help altcoins and traditional stock markets follow Bitcoin’s (BTC) price recovery, according to Aurelie Barthere, principal research analyst at crypto intelligence platform Nansen.
+“Bitcoin is already trading close to its all-time highs,” Barthere told Cointelegraph. “However, with the latest easing in trade tensions, it now appears that altcoins, US equities, and the US Dollar Index (DXY) are well-positioned for a catch-up rally.”
+She noted that Bitcoin has outperformed risk assets in recent months due to its insulation from tariff-related risks.
+“I also expect the US dollar to perform strongly against prior safe-haven currencies such as the euro, Swiss franc and Japanese yen, reflecting improved global risk sentiment,” Barthere added.
+Nansen previously predicted a 70% chance for crypto and stocks to find their bottom by June, with their price recovery depending on the outcome of trade negotiations.
+Related: Bitcoin ETFs, gov’t adoption to drive BTC to $1M by 2029: Finance Redefined
+Bitcoin is currently 4.8% away from recapturing its all-time high of over $109,800 recorded in January 2025, Cointelegraph Markets Pro data shows.
+“There is potential for risk assets to move beyond the January peak levels if we see a generous tax cut package materialize,” Barthere told Cointelegraph, adding:
+She noted that Bessent hinted such a package could be unveiled by mid-July, which would act as a “significant additional catalyst” for the markets.  
+The constructive trade negotiations, paired with emerging technical chart patterns, have spurred analyst calls for a Bitcoin rally to $150,000, depending on the outcome of an emerging bull flag pattern on the weekly chart.
+Magazine: Altcoin season to hit in Q2? Mantra’s plan to win trust: Hodler’s Digest, April 13 – 19
+",1747073475388,[],,2025-05-12T18:11:15.388803
+>>>>>>> 04b7f027736bf3d4ed2c5ae7b11f526b304c469f

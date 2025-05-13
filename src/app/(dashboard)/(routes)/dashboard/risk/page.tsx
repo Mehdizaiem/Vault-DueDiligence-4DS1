@@ -4,6 +4,7 @@
 import { useEffect, useState } from "react";
 import { RiskProfile } from "@/types/risk";
 import { Bar, Pie, Line } from "react-chartjs-2";
+
 import {
   Chart as ChartJS,
   BarElement,
@@ -47,10 +48,14 @@ const riskColors: Record<
 
 export default function RiskDashboardPage() {
   const [allProfiles, setAllProfiles] = useState<RiskProfile[]>([]);
+  const [selectedRange, setSelectedRange] = useState("30d"); // default selected
   const [error, setError] = useState("");
   const [filterText, setFilterText] = useState("");
   const [selectedSymbol, setSelectedSymbol] = useState<string | null>(null);
   const [dateRange, setDateRange] = useState<{ start: string; end: string }>({ start: "", end: "" });
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
 
   useEffect(() => {
     fetch("/api/risk-profiles")
@@ -179,70 +184,129 @@ export default function RiskDashboardPage() {
 
       {error && <p className="text-red-600">{error}</p>}
 
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+      <div className="flex items-center border rounded overflow-hidden text-sm">
+      
+      {/* Custom Date Range */}
+      <div className="flex items-center gap-2">
         <input
-          type="text"
-          value={filterText}
-          onChange={(e) => setFilterText(e.target.value)}
-          placeholder="🔍 Filter by symbol or category..."
-          className="border p-2 rounded w-full max-w-xs text-sm"
+          type="date"
+          value={dateRange.start}
+          onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
+          className="border p-2 rounded text-sm"
         />
-        <div className="flex gap-2">
-          <input
-            type="date"
-            value={dateRange.start}
-            onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
-            className="border p-2 rounded text-sm"
-          />
-          <input
-            type="date"
-            value={dateRange.end}
-            onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
-            className="border p-2 rounded text-sm"
-          />
-        </div>
+        <input
+          type="date"
+          value={dateRange.end}
+          onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
+          className="border p-2 rounded text-sm"
+        />
+      </div>
+      </div>
+
+
+    {/* Filter & Export */}
+    <div className="flex gap-2">
+      <div className="relative">
         <button
-          onClick={exportCSV}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm rounded"
+          onClick={() => setFilterOpen(!filterOpen)}
+          className="border px-4 py-2 rounded text-sm flex items-center gap-2 hover:bg-gray-50"
         >
-          📁 Export CSV
+          <span> Filter</span>
+          <span className="ml-1">▾</span>
         </button>
+        {filterOpen && (
+          <div className="absolute z-10 mt-2 bg-white border rounded shadow p-3 w-64">
+            <input
+              type="text"
+              value={filterText}
+              onChange={(e) => setFilterText(e.target.value)}
+              placeholder="Filter by symbol or category"
+              className="w-full border p-2 rounded text-sm"
+            />
+          </div>
+        )}
       </div>
 
+    <button
+      onClick={exportCSV}
+      className="border px-4 py-2 rounded text-sm hover:bg-gray-50 flex items-center gap-2"
+    >
+      ⬇ Export
+    </button>
+  </div>
+</div>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white shadow rounded p-4">
-          <h2 className="text-sm font-semibold text-gray-600">Highest Risk</h2>
-          <p className="text-xl font-bold text-red-600">{highest?.symbol} ({highest?.risk_score?.toFixed(2)})</p>
-          <span className={`text-xs font-medium px-2 py-1 rounded ${riskColors[highest?.risk_category as keyof typeof riskColors]}`}>{highest?.risk_category}</span>
-        </div>
-        <div className="bg-white shadow rounded p-4">
-          <h2 className="text-sm font-semibold text-gray-600">Lowest Risk</h2>
-          <p className="text-xl font-bold text-green-600">{lowest?.symbol} ({lowest?.risk_score?.toFixed(2)})</p>
-          <span className={`text-xs font-medium px-2 py-1 rounded ${riskColors[lowest?.risk_category as keyof typeof riskColors]}`}>{lowest?.risk_category}</span>
-        </div>
-        <div className="bg-white shadow rounded p-4">
-          <h2 className="text-sm font-semibold text-gray-600">Average Risk</h2>
-          <p className="text-2xl font-bold text-blue-600">{average.toFixed(2)}</p>
-        </div>
+
+<div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+  {/* Highest Risk Card */}
+  <div className="relative overflow-hidden rounded-xl border bg-white/50 backdrop-blur-lg p-6 transition-all duration-300 hover:shadow-xl hover:scale-[1.02] shadow-lg group-hover:shadow-blue-500/25">
+    <div className="absolute -left-12 -bottom-12 h-32 w-32 rounded-full bg-gradient-to-br opacity-0 from-red-500 to-yellow-600" />
+    <div>
+      <div className="text-sm font-medium text-gray-500 mb-1">Highest Risk</div>
+      <div className="text-2xl font-bold text-red-600">
+        {highest?.symbol} ({highest?.risk_score?.toFixed(2)})
       </div>
+      <span
+        className={`text-xs font-medium mt-1 inline-block px-2 py-1 rounded ${riskColors[highest?.risk_category as keyof typeof riskColors]}`}
+      >
+        {highest?.risk_category}
+      </span>
+    </div>
+    <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-gradient-to-br opacity-20 from-blue-500 to-indigo-600" />
+  </div>
+
+  {/* Lowest Risk Card */}
+ <div className="relative overflow-hidden rounded-xl border bg-white/50 backdrop-blur-lg p-6 transition-all duration-300 hover:shadow-xl hover:scale-[1.02] shadow-lg group-hover:shadow-blue-500/25">
+    <div className="absolute -left-12 -bottom-12 h-32 w-32 rounded-full bg-gradient-to-br opacity-0 from-red-500 to-yellow-600" />
+    <div>
+      <div className="text-sm font-medium text-gray-500 mb-1">Lowest Risk</div>
+      <div className="text-2xl font-bold text-green-600">
+        {lowest?.symbol} ({lowest?.risk_score?.toFixed(2)})
+      </div>
+      <span
+        className={`text-xs font-medium mt-1 inline-block px-2 py-1 rounded ${riskColors[lowest?.risk_category as keyof typeof riskColors]}`}
+      >
+        {lowest?.risk_category}
+      </span>
+    </div>
+        <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-gradient-to-br opacity-20 from-blue-500 to-indigo-600" />
+
+  </div>
+
+  {/* Average Risk Card */}
+<div className="relative overflow-hidden rounded-xl border bg-white/50 backdrop-blur-lg p-6 transition-all duration-300 hover:shadow-xl hover:scale-[1.02] shadow-lg group-hover:shadow-blue-500/25">
+    <div className="absolute -left-12 -bottom-12 h-32 w-32 rounded-full bg-gradient-to-br opacity-0 from-red-500 to-yellow-600" />
+        <div>
+      <div className="text-sm font-medium text-gray-500 mb-1">Average Risk</div>
+      <div className="text-3xl font-bold text-blue-600">{average.toFixed(2)}</div>
+    </div>
+            <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-gradient-to-br opacity-20 from-blue-500 to-indigo-600" />
+
+  </div>
+</div>
+
 
       {/* Charts */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white shadow rounded p-4 max-h-[300px]">
-          <h3 className="text-md font-semibold mb-2">Risk Scores by Asset</h3>
-          <div className="relative h-[250px]">
-            <Bar data={barData} options={{ maintainAspectRatio: false }} />
-          </div>
-        </div>
-        <div className="bg-white shadow rounded p-4 max-h-[300px]">
-          <h3 className="text-md font-semibold mb-2">Category Distribution</h3>
-          <div className="relative h-[250px]">
-            <Pie data={pieData} options={{ maintainAspectRatio: false }} />
-          </div>
+      {/*<div className="rounded-lg border text-card-foreground overflow-hidden bg-white/50 backdrop-blur-lg shadow-xl border-none hover:shadow-2xl transition-all duration-300"></div>*/}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 rounded-lg text-card-foreground bg-white/50 backdrop-blur-lg shadow-xl p-4 transition-all duration-300">
+      {/* Risk Scores Bar Chart */}
+      <div className="bg-white shadow rounded p-4 h-[300px]">
+        <h3 className="text-md font-semibold mb-2">Risk Scores by Asset</h3>
+        <div className="relative h-[250px]">
+          <Bar data={barData} options={{ maintainAspectRatio: false }} />
         </div>
       </div>
+
+      {/* Category Distribution Pie Chart */}
+      <div className="bg-white shadow rounded p-4 h-[300px]">
+        <h3 className="text-md font-semibold mb-2">Category Distribution</h3>
+        <div className="relative h-[250px]">
+          <Pie data={pieData} options={{ maintainAspectRatio: false }} />
+        </div>
+      </div>
+    </div>
+
 
       {/* Risk Time Series Chart */}
       {selectedSymbol && riskTimeSeries.length > 0 && (
@@ -255,46 +319,45 @@ export default function RiskDashboardPage() {
       )}
 
       {/* Table */}
-      <div className="overflow-auto rounded border shadow max-h-[400px]">
-        <table className="min-w-full bg-white text-sm">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-4 py-3 text-left">Symbol</th>
-              <th className="px-4 py-3 text-left">Score</th>
-              <th className="px-4 py-3 text-left">Category</th>
-              <th className="px-4 py-3 text-left">Timestamp</th>
+      <div className="rounded-2xl border border-gray-200 shadow-md overflow-hidden">
+      <table className="min-w-full divide-y divide-gray-200 text-sm text-gray-700 bg-white">
+        <thead className="bg-gray-50 text-xs uppercase tracking-wider text-gray-500">
+          <tr>
+            <th className="px-6 py-3 text-left">Symbol</th>
+            <th className="px-6 py-3 text-left">Score</th>
+            <th className="px-6 py-3 text-left">Category</th>
+            <th className="px-6 py-3 text-left">Timestamp</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-gray-100">
+          {filtered.map((p, idx) => (
+            <tr
+              key={idx}
+              onClick={() => setSelectedSymbol(p.symbol)}
+              className="hover:bg-gray-50 transition-colors duration-150 cursor-pointer"
+            >
+              <td className="px-6 py-3 font-medium text-gray-800">{p.symbol}</td>
+              <td className="px-6 py-3">{p.risk_score.toFixed(2)}</td>
+              <td className="px-6 py-3">
+                <span className={`px-2 py-1 rounded-full text-xs font-semibold ${riskColors[p.risk_category as keyof typeof riskColors]}`}>
+                  {p.risk_category}
+                </span>
+              </td>
+              <td className="px-6 py-3 text-gray-500">
+                {new Date(p.analysis_timestamp).toLocaleString("en-US", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                  hour: "numeric",
+                  minute: "2-digit"
+                })}
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {filtered.map((p, idx) => (
-              <tr
-                key={idx}
-                onClick={() => setSelectedSymbol(p.symbol)}
-                className="border-t hover:bg-gray-100 cursor-pointer"
-              >
-                <td className="px-4 py-2 font-semibold">{p.symbol}</td>
-                <td className="px-4 py-2">{p.risk_score.toFixed(2)}</td>
-                <td className="px-4 py-2">
-                  <span
-                    className={`px-2 py-1 text-xs font-medium rounded-full ${riskColors[p.risk_category as keyof typeof riskColors]}`}
-                  >
-                    {p.risk_category}
-                  </span>
-                </td>
-                <td className="px-4 py-2 text-gray-500">
-                  {new Date(p.analysis_timestamp).toLocaleString("en-US", {
-                    year: "numeric",
-                    month: "short",
-                    day: "numeric",
-                    hour: "numeric",
-                    minute: "2-digit"
-                  })}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
     </div>
   );
 }

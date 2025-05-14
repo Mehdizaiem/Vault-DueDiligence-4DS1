@@ -180,7 +180,7 @@ export default function ReportsPage() {
     {
       id: '4',
       title: 'DeFi Exposure Analysis - Institutional Portfolio',
-      status: 'failed',
+      status: 'pending',
       type: 'risk',
       created_at: '2025-05-08T16:10:00Z',
       updated_at: '2025-05-08T16:25:00Z',

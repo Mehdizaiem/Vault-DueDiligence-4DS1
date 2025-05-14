@@ -94,7 +94,6 @@ const marketPulse = [
   {
     label: 'Market Sentiment',
     value: 'Moderate',
-    change: '+0.5%',
     icon: Zap
   },
   {

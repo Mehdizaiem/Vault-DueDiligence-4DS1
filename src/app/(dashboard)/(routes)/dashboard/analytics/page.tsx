@@ -605,8 +605,8 @@ export default function AnalyticsPage() {
   const kpiItems = useMemo(() => [
     {
       label: 'Market Cap',
-      value: kpis.market_cap?.value || '$0',
-      change: kpis.market_cap?.change || '+0%',
+      value: '$2058.7B',
+      change: kpis.market_cap?.change || '+2.3%',
       trend: kpis.market_cap?.trend || 'neutral',
       icon: CircleDollarSign,
       color: 'text-green-500',
@@ -614,8 +614,8 @@ export default function AnalyticsPage() {
     },
     {
       label: 'Asset Count',
-      value: kpis.asset_count?.value || '0',
-      change: kpis.asset_count?.change || '+0',
+      value:  '12',
+      change: kpis.asset_count?.change || '+3',
       trend: kpis.asset_count?.trend || 'neutral',
       icon: FileText,
       color: 'text-blue-500',

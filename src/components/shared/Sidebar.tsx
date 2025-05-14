@@ -22,6 +22,13 @@ const routes = [
     color: "text-blue-400",
     lightColor: '#4c6bff',
   },
+   {
+    label: 'Analytics',
+    icon: BarChart4,
+    color: "text-indigo-400",
+    href: '/dashboard/analytics',
+    lightColor: '#6366f1',
+  },
   {
     label: 'Documents',
     icon: FileText,
@@ -52,13 +59,6 @@ const routes = [
     lightColor: '#10b981',
   },
   {
-    label: 'Analytics',
-    icon: BarChart4,
-    color: "text-indigo-400",
-    href: '/dashboard/analytics',
-    lightColor: '#6366f1',
-  },
-  {
     label: 'News',
     icon: Newspaper,
     color: "text-yellow-400",
@@ -70,7 +70,7 @@ const routes = [
     icon: FileText,
     color: "text-green-400",
     href: '/dashboard/reports',
-    lightColor: '#BBBE33FF',
+    lightColor: '#DD8A1EFF',
   }
 ];
 

@@ -39,52 +39,63 @@ class StorageManager:
     Handles storage strategies for different data types including embedding generation.
     """
     
+    # Class-level variable to store the shared client
+    _shared_client = None
+    
     def __init__(self):
         """Initialize the storage manager"""
+        # Don't initialize client here - we'll get it in connect()
         self.client = None
     
     def connect(self):
         """Connect to Weaviate with improved error handling and reconnection logic"""
         try:
-            # If client exists but is not connected, try to reconnect
-            if self.client:
+            # First, check if we already have a shared client that's alive
+            if StorageManager._shared_client is not None:
                 try:
-                    self.client.connect()
-                    if self.client.is_live():
-                        logger.info("Reconnected to existing Weaviate client")
+                    if StorageManager._shared_client.is_live():
+                        logger.info("Using existing shared Weaviate client")
+                        self.client = StorageManager._shared_client
                         return True
                     else:
-                        # If reconnection fails, create a new client
-                        logger.warning("Failed to reconnect to existing client, creating new client")
-                        self.client.close()
-                        self.client = None
+                        # If shared client exists but isn't live, reconnect it
+                        logger.info("Reconnecting existing shared client")
+                        StorageManager._shared_client.connect()
+                        if StorageManager._shared_client.is_live():
+                            logger.info("Successfully reconnected shared client")
+                            self.client = StorageManager._shared_client
+                            return True
+                        else:
+                            # If reconnection fails, we'll create a new one below
+                            logger.warning("Failed to reconnect existing client")
                 except Exception as e:
-                    logger.warning(f"Error reconnecting to Weaviate: {e}")
-                    # Reset client to create a new one
-                    self.client = None
+                    logger.warning(f"Error with existing client: {e}")
             
-            # Create a new client if needed
-            if self.client is None:
-                self.client = get_weaviate_client()
+            # We need a new client - create it
+            from Sample_Data.vector_store.weaviate_client import get_weaviate_client
+            new_client = get_weaviate_client()
+            
+            if new_client and new_client.is_live():
+                logger.info("Created new Weaviate client successfully")
+                # Store at both instance and class level
+                self.client = new_client
+                StorageManager._shared_client = new_client
+                return True
+            else:
+                logger.error("Failed to create live Weaviate client")
+                return False
                 
-                # Verify the connection is live
-                if self.client.is_live():
-                    logger.info("Successfully connected to Weaviate")
-                    return True
-                else:
-                    logger.error("Weaviate client created but connection is not live")
-                    return False
-                
-            return self.client.is_live()
         except Exception as e:
             logger.error(f"Failed to connect to Weaviate: {e}")
             return False
     
     def close(self):
-        """Close the Weaviate connection"""
-        if self.client:
-            self.client.close()
-            self.client = None
+        """
+        'Close' the connection - but don't actually close the shared client,
+        just clear the instance reference
+        """
+        self.client = None
+        # We intentionally don't close the shared client
     def ensure_connection(self):
         """Ensure a live connection to Weaviate before operations"""
         max_retries = 3

@@ -23,6 +23,14 @@ import {
 
 const features = [
   {
+    label: 'Analytics',
+    icon: BarChart4,
+    color: "text-indigo-500",
+    bgColor: "bg-indigo-50",
+    description: "Crypto portfolio insights",
+    href: "/dashboard/analytics"
+  },
+  {
     label: 'Document Analysis',
     icon: FileText,
     color: "text-violet-500",
@@ -53,14 +61,6 @@ const features = [
     bgColor: "bg-green-50",
     description: "Price predictions and market analysis",
     href: "/dashboard/forecast"
-  },
-  {
-    label: 'Analytics',
-    icon: BarChart4,
-    color: "text-indigo-500",
-    bgColor: "bg-indigo-50",
-    description: "Crypto portfolio insights",
-    href: "/dashboard/analytics"
   },
   {
     label: 'News',

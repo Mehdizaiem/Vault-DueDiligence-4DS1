@@ -72,9 +72,11 @@ def get_document_type_from_extension(file_path):
     else:
         return 'unknown'
 
+# Modifications for process_user_document.py
+
 def read_document_content(file_path):
     """
-    Read document content based on file type
+    Read document content based on file type with improved error handling
     
     Args:
         file_path: Path to the document file
@@ -86,16 +88,45 @@ def read_document_content(file_path):
         # Determine document type
         doc_type = get_document_type_from_extension(file_path)
         
+        # Convert to Path object for compatibility
+        from pathlib import Path
+        file_path_obj = Path(file_path)
+        
+        # Import the read functions from process_documents
+        from Code.document_processing.process_documents import read_pdf, read_docx, read_text_file
+        
         # Use the appropriate reader function
         if doc_type == 'pdf':
-            from Code.document_processing.process_documents import read_pdf
-            return read_pdf(file_path)
+            logger.info(f"Reading PDF file: {file_path}")
+            # Modified PDF reading approach to avoid the 'str' object has no attribute 'name' error
+            try:
+                # First try with PyMuPDF for better results if available
+                import fitz  # PyMuPDF
+                
+                logger.info("Using PyMuPDF for PDF extraction")
+                with fitz.open(file_path) as pdf:
+                    content = ""
+                    for page in pdf:
+                        content += page.get_text()
+                
+                logger.info(f"Successfully extracted {len(content)} characters from PDF using PyMuPDF")
+                return content
+            except ImportError:
+                logger.info("PyMuPDF not available, falling back to PyPDF2")
+                content = read_pdf(file_path_obj)
+                logger.info(f"Extracted {len(content)} characters from PDF using PyPDF2")
+                return content
+            except Exception as pdf_err:
+                logger.error(f"Error with PyMuPDF: {pdf_err}, falling back to PyPDF2")
+                # Try the original PDF reader as fallback
+                content = read_pdf(file_path_obj)
+                logger.info(f"Extracted {len(content)} characters from PDF using PyPDF2")
+                return content
+                
         elif doc_type == 'docx':
-            from Code.document_processing.process_documents import read_docx
-            return read_docx(file_path)
+            return read_docx(file_path_obj)
         elif doc_type == 'text':
-            from Code.document_processing.process_documents import read_text_file
-            return read_text_file(file_path)
+            return read_text_file(file_path_obj)
         else:
             logger.error(f"Unsupported document type: {doc_type}")
             return None
@@ -104,9 +135,11 @@ def read_document_content(file_path):
         logger.error(traceback.format_exc())
         return None
 
+# In process_user_document.py, modify the process_document function:
+
 def process_document(file_path, processor):
     """
-    Process document using the CryptoDocumentProcessor
+    Process document using the CryptoDocumentProcessor with improved content handling
     
     Args:
         file_path: Path to the document file
@@ -119,15 +152,33 @@ def process_document(file_path, processor):
         # Read document content
         content = read_document_content(file_path)
         
-        if content is None:
-            logger.error(f"Failed to read content from {file_path}")
+        # Log content extraction results
+        if content:
+            logger.info(f"Successfully extracted {len(content)} characters from {os.path.basename(file_path)}")
+        else:
+            logger.error(f"Failed to extract content from {file_path}")
             return None
         
         # Process the document
         file_name = os.path.basename(file_path)
         result = processor.process_document(content, file_name)
         
-        return result
+        if result:
+            # Ensure content is stored in the result
+            if "metadata" not in result:
+                result["metadata"] = {}
+            
+            # Store the content in multiple locations to ensure it's available
+            result["metadata"]["text"] = content
+            result["metadata"]["content"] = content
+            result["content"] = content
+            
+            logger.info(f"Document processed successfully with {len(result.keys())} keys in result")
+            return result
+        else:
+            logger.error("Document processing returned None or empty result")
+            return None
+            
     except Exception as e:
         logger.error(f"Error processing document: {e}")
         logger.error(traceback.format_exc())
@@ -135,7 +186,7 @@ def process_document(file_path, processor):
 
 def store_user_document(storage_manager, processed_data, user_id, document_id, file_path, is_public, notes):
     """
-    Store processed document in UserDocuments collection
+    Store processed document in UserDocuments collection with improved content handling
     
     Args:
         storage_manager: StorageManager instance
@@ -164,72 +215,86 @@ def store_user_document(storage_manager, processed_data, user_id, document_id, f
         file_size = file_stats.st_size
         file_type = get_document_type_from_extension(file_path)
         
-        # Extract document content
-        content = processed_data.get("metadata", {}).get("text", "")
-        if not content:
+        # Extract document content - first check if it's in processed_data
+        content = ""
+        if processed_data:
             # Check multiple possible locations for content
-            content = processed_data.get("content", "")
-            if not content and "metadata" in processed_data:
-                content = processed_data["metadata"].get("content", "")
-            # Also check if raw content might be directly in processed_data
+            if "content" in processed_data:
+                content = processed_data["content"]
+                logger.info(f"Found content in processed_data.content: {len(content)} characters")
+            elif "metadata" in processed_data and "text" in processed_data["metadata"]:
+                content = processed_data["metadata"]["text"]
+                logger.info(f"Found content in processed_data.metadata.text: {len(content)} characters")
+            elif "metadata" in processed_data and "content" in processed_data["metadata"]:
+                content = processed_data["metadata"]["content"]
+                logger.info(f"Found content in processed_data.metadata.content: {len(content)} characters")
+        
+        # If we still don't have content, try to read it directly
         if not content:
-            content = read_document_content(file_path)  # Fallback to re-reading the file
+            logger.warning("No content found in processed data, reading file directly")
+            content = read_document_content(file_path)
+            if content:
+                logger.info(f"Read {len(content)} characters directly from file")
+            else:
+                logger.error("Failed to read content directly from file")
+                content = "Error: Failed to extract content from this document."
+        
         logger.info(f"Content length before storing: {len(content)} characters")
-        logger.info(f"Content structure in processed_data: {json.dumps(list(processed_data.keys()))}")
-        if "metadata" in processed_data:
-            logger.info(f"Metadata keys: {json.dumps(list(processed_data['metadata'].keys()))}")
+        
         # Generate embedding with MPNet
         vector = generate_mpnet_embedding(content)
         
         # Prepare properties
         properties = {
-            "content": content,
+            "content": content,  # Store the content here
             "title": os.path.basename(file_path),
-            "document_type": processed_data.get("document_type", file_type),
+            "document_type": processed_data.get("document_type", file_type) if processed_data else file_type,
             "source": os.path.basename(file_path),
             "user_id": user_id,
             "upload_date": datetime.now().isoformat(),
             "is_public": is_public,
             "file_size": file_size,
             "file_type": file_type,
-            "processing_status": "completed",
+            "processing_status": "completed" if content else "failed",
             "notes": notes
         }
         
-        # Add additional properties from processed data
-        metadata = processed_data.get("metadata", {})
-        entities = processed_data.get("entities", {})
-        
-        if metadata:
-            properties["word_count"] = metadata.get("word_count", 0)
-            properties["sentence_count"] = metadata.get("sentence_count", 0)
+        # Add additional properties from processed data if available
+        if processed_data:
+            metadata = processed_data.get("metadata", {})
+            entities = processed_data.get("entities", {})
             
-            # Handle dates properly
-            if "document_date" in metadata:
-                properties["date"] = metadata["document_date"]
-        
-        if entities:
-            if "cryptocurrencies" in entities:
-                properties["crypto_entities"] = entities["cryptocurrencies"]
+            if metadata:
+                properties["word_count"] = metadata.get("word_count", 0)
+                properties["sentence_count"] = metadata.get("sentence_count", 0)
+                
+                # Handle dates properly
+                if "document_date" in metadata:
+                    properties["date"] = metadata["document_date"]
             
-            if "persons" in entities:
-                properties["person_entities"] = entities["persons"]
+            if entities:
+                if "cryptocurrencies" in entities:
+                    properties["crypto_entities"] = entities["cryptocurrencies"]
                 
-            if "organizations" in entities:
-                properties["org_entities"] = entities["organizations"]
-                
-            if "locations" in entities:
-                properties["location_entities"] = entities["locations"]
-                
-            if "keywords" in entities:
-                properties["keywords"] = entities["keywords"]
-        
-        # Add risk information
-        risk_info = processed_data.get("risk_indicators", {})
-        if risk_info and "risk_indicators" in risk_info:
-            properties["risk_factors"] = risk_info["risk_indicators"]
+                if "persons" in entities:
+                    properties["person_entities"] = entities["persons"]
+                    
+                if "organizations" in entities:
+                    properties["org_entities"] = entities["organizations"]
+                    
+                if "locations" in entities:
+                    properties["location_entities"] = entities["locations"]
+                    
+                if "keywords" in entities:
+                    properties["keywords"] = entities["keywords"]
+            
+            # Add risk information
+            risk_info = processed_data.get("risk_indicators", {})
+            if risk_info and "risk_indicators" in risk_info:
+                properties["risk_factors"] = risk_info["risk_indicators"]
         
         # Store the document
+        logger.info("Inserting document into Weaviate collection")
         collection.data.insert(properties=properties, vector=vector)
         
         logger.info(f"Successfully stored user document: {properties['title']}")

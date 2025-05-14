@@ -24,7 +24,8 @@ import {
   Shield,
   Gift,
   BookOpen,
-  FileOutput
+  FileOutput,
+  Lock
 } from 'lucide-react';
 
 // Import UI components

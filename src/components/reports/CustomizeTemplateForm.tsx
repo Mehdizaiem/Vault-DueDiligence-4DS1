@@ -24,23 +24,24 @@ import {
 interface CustomizeTemplateFormProps {
   onClose: () => void;
   onSave: (template: any) => void;
+  initialTemplate?: any;
 }
 
-const CustomizeTemplateForm = ({ onClose, onSave }: CustomizeTemplateFormProps) => {
-  const [templateName, setTemplateName] = useState('');
-  const [templateType, setTemplateType] = useState('comprehensive');
+const CustomizeTemplateForm = ({ onClose, onSave, initialTemplate }: CustomizeTemplateFormProps) => {
+  const [templateName, setTemplateName] = useState(initialTemplate?.name || '');
+  const [templateType, setTemplateType] = useState(initialTemplate?.type || 'comprehensive');
   const [brandingOptions, setBrandingOptions] = useState({
-    useCompanyLogo: true,
-    customColors: false,
-    useFooter: true,
-    applyWatermark: false
+    useCompanyLogo: initialTemplate?.branding?.useCompanyLogo ?? true,
+    customColors: initialTemplate?.branding?.customColors ?? false,
+    useFooter: initialTemplate?.branding?.useFooter ?? true,
+    applyWatermark: initialTemplate?.branding?.applyWatermark ?? false
   });
   
-  const [primaryColor, setPrimaryColor] = useState('#4c6bff');
-  const [secondaryColor, setSecondaryColor] = useState('#10b981');
-  const [accentColor, setAccentColor] = useState('#f97316');
+  const [primaryColor, setPrimaryColor] = useState(initialTemplate?.colors?.primary || '#4c6bff');
+  const [secondaryColor, setSecondaryColor] = useState(initialTemplate?.colors?.secondary || '#10b981');
+  const [accentColor, setAccentColor] = useState(initialTemplate?.colors?.accent || '#f97316');
   
-  const [selectedSections, setSelectedSections] = useState([
+  const [selectedSections, setSelectedSections] = useState(initialTemplate?.sections || [
     'executive_summary',
     'risk_assessment',
     'compliance_status',
@@ -63,10 +64,10 @@ const CustomizeTemplateForm = ({ onClose, onSave }: CustomizeTemplateFormProps) 
   
   // Layout options
   const [layoutOptions, setLayoutOptions] = useState({
-    slidesPerSection: 2,
-    includeTableOfContents: true,
-    includePageNumbers: true,
-    chartStyle: 'modern'
+    slidesPerSection: initialTemplate?.layout?.slidesPerSection || 2,
+    includeTableOfContents: initialTemplate?.layout?.includeTableOfContents ?? true,
+    includePageNumbers: initialTemplate?.layout?.includePageNumbers ?? true,
+    chartStyle: initialTemplate?.layout?.chartStyle || 'modern'
   });
   
   // Custom Logo upload
@@ -87,7 +88,7 @@ const CustomizeTemplateForm = ({ onClose, onSave }: CustomizeTemplateFormProps) 
       return;
     }
     
-    setSelectedSections(prev => 
+    setSelectedSections((prev: string[]) => 
       prev.includes(sectionId)
         ? prev.filter(id => id !== sectionId)
         : [...prev, sectionId]
@@ -122,6 +123,7 @@ const CustomizeTemplateForm = ({ onClose, onSave }: CustomizeTemplateFormProps) 
     
     // Create template object
     const template = {
+      ...(initialTemplate?.id ? { id: initialTemplate.id } : {}), // Preserve ID if editing
       name: templateName,
       type: templateType,
       branding: brandingOptions,
@@ -132,7 +134,7 @@ const CustomizeTemplateForm = ({ onClose, onSave }: CustomizeTemplateFormProps) 
       },
       sections: selectedSections,
       layout: layoutOptions,
-      logo: logoFile ? logoFile.name : null
+      logo: logoFile ? logoFile.name : (initialTemplate?.logo || null)
     };
     
     // Pass to parent component
@@ -146,7 +148,7 @@ const CustomizeTemplateForm = ({ onClose, onSave }: CustomizeTemplateFormProps) 
           <div className="p-2 rounded-lg bg-purple-100">
             <Settings className="h-6 w-6 text-purple-600" />
           </div>
-          <h2 className="text-2xl font-bold">Customize Report Template</h2>
+          <h2 className="text-2xl font-bold">{initialTemplate ? 'Edit Template' : 'Create New Template'}</h2>
         </div>
         <button 
           onClick={onClose}
@@ -234,11 +236,13 @@ const CustomizeTemplateForm = ({ onClose, onSave }: CustomizeTemplateFormProps) 
                       className="flex items-center gap-2 text-sm px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg cursor-pointer"
                     >
                       <Upload size={16} />
-                      {logoFile ? 'Change Logo' : 'Upload Logo'}
+                      {logoFile ? 'Change Logo' : initialTemplate?.logo ? 'Replace Logo' : 'Upload Logo'}
                     </label>
-                    {logoFile && (
+                    {(logoFile && (
                       <span className="text-xs text-gray-500">{logoFile.name}</span>
-                    )}
+                    )) || (initialTemplate?.logo && !logoFile && (
+                      <span className="text-xs text-gray-500">{initialTemplate.logo}</span>
+                    ))}
                   </div>
                 </div>
               )}
@@ -507,7 +511,7 @@ const CustomizeTemplateForm = ({ onClose, onSave }: CustomizeTemplateFormProps) 
               </div>
               {brandingOptions.useCompanyLogo && (
                 <div className="absolute right-2 top-1 bg-white rounded w-6 h-6 flex items-center justify-center">
-                  {logoFile ? (
+                  {logoFile || initialTemplate?.logo ? (
                     <span className="text-xs">LOGO</span>
                   ) : (
                     <Package className="h-3 w-3 text-gray-400" />

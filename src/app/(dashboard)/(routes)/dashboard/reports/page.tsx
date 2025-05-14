@@ -32,8 +32,10 @@ import {
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { motion } from 'framer-motion';
-
-
+import CustomizeTemplateModal from '@/components/reports/CustomizeTemplateModal';
+import TemplatesList from '@/components/reports/TemplatesList';
+import { getTemplates, saveTemplate, deleteTemplate } from '@/services/templates-service';
+import { downloadReportAsPPTX } from '@/utils/report-downloader';
 
 // Sample templates
 const REPORT_TEMPLATES = [
@@ -153,29 +155,29 @@ export default function ReportsPage() {
     {
       id: '2',
       title: 'Emerging Crypto Funds Comparative Analysis',
-      status: 'processing',
+      status: 'completed',
       type: 'comparative',
       created_at: '2025-04-22T09:15:00Z',
       updated_at: '2025-04-22T09:35:00Z',
       document_count: 15,
       page_count: 78,
       author: 'System',
-      risk_score: 48,
-      compliance_score: 92,
+      risk_score:  34,
+      compliance_score:  96,
       entities: ['Solana', 'Avalanche', 'Polygon', 'Cardano']
     },
     {
       id: '3',
       title: 'Regulatory Compliance Assessment - USDC Treasury',
-      status: 'completed',
+      status: 'processing',
       type: 'compliance',
-      created_at: '2025-03-28T14:20:00Z',
-      updated_at: '2025-03-28T14:45:00Z',
+      created_at: '2025-05-12T14:20:00Z',
+      updated_at: '2025-05-13T14:45:00Z',
       document_count: 12,
       page_count: 56,
       author: 'System',
-      risk_score: 34,
-      compliance_score: 96,
+      risk_score: 0,
+      compliance_score: 0,
       entities: ['USDC', 'Circle', 'Treasury']
     },
     {
@@ -183,13 +185,13 @@ export default function ReportsPage() {
       title: 'DeFi Exposure Analysis - Institutional Portfolio',
       status: 'pending',
       type: 'risk',
-      created_at: '2025-05-08T16:10:00Z',
-      updated_at: '2025-05-08T16:25:00Z',
+      created_at: '2025-05-13T16:10:00Z',
+      updated_at: '2025-05-14T16:25:00Z',
       document_count: 5,
       page_count: 0,
       author: 'System',
-      risk_score: 72,
-      compliance_score: 61,
+      risk_score:  0,
+      compliance_score:  0,
       entities: ['Uniswap', 'Aave', 'Compound']
     },
     {
@@ -197,8 +199,8 @@ export default function ReportsPage() {
       title: 'Cross-Chain Integration Security Analysis',
       status: 'pending',
       type: 'security',
-      created_at: '2025-05-11T08:30:00Z',
-      updated_at: '2025-05-11T08:30:00Z',
+      created_at: '2025-05-14T08:30:00Z',
+      updated_at: '2025-05-14T12:30:00Z',
       document_count: 9,
       page_count: 0,
       author: 'System',
@@ -214,7 +216,11 @@ export default function ReportsPage() {
   const [isCreatingReport, setIsCreatingReport] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   const [selectedDocuments, setSelectedDocuments] = useState<string[]>([]);
-  
+  const [isCustomizeTemplateModalOpen, setIsCustomizeTemplateModalOpen] = useState(false);
+  const [templateToEdit, setTemplateToEdit] = useState<any>(null);
+  const [templates, setTemplates] = useState<any[]>([]);
+  const [downloadingReportId, setDownloadingReportId] = useState<string | null>(null);
+
   // Sample document options for selection
   const availableDocuments = [
     { id: 'doc1', title: 'Bitcoin Trust Fund Whitepaper', size: '2.4 MB', type: 'PDF' },
@@ -226,6 +232,20 @@ export default function ReportsPage() {
     { id: 'doc7', title: 'Key Management Protocol', size: '1.1 MB', type: 'PDF' },
     { id: 'doc8', title: 'Regulatory Filing 2024', size: '4.2 MB', type: 'PDF' },
   ];
+  
+  // Fetch templates
+  useEffect(() => {
+    async function fetchTemplates() {
+      try {
+        const templateData = await getTemplates();
+        setTemplates(templateData);
+      } catch (error) {
+        console.error('Error fetching templates:', error);
+      }
+    }
+    
+    fetchTemplates();
+  }, []);
   
   // Filter reports based on search query and filters
   const filteredReports = reports.filter(report => {
@@ -280,6 +300,72 @@ export default function ReportsPage() {
     }, 2000);
   };
   
+  // Handle template edit
+  const handleEditTemplate = (template: any) => {
+    // Set the template data in the form
+    setTemplateToEdit(template);
+    // Open the modal
+    setIsCustomizeTemplateModalOpen(true);
+  };
+  
+  // Handle template save
+  const handleSaveTemplate = async (template: any) => {
+    try {
+      // If editing an existing template, update it, otherwise create a new one
+      if (templateToEdit && templateToEdit.id) {
+        // For demo purposes, we'll just delete the old one and create a new one
+        await deleteTemplate(templateToEdit.id);
+      }
+      
+      // Save the template
+      await saveTemplate(template);
+      
+      // Refetch templates
+      const updatedTemplates = await getTemplates();
+      setTemplates(updatedTemplates);
+      
+      // Close the modal and reset the template to edit
+      setIsCustomizeTemplateModalOpen(false);
+      setTemplateToEdit(null);
+      
+      // Show success message
+      alert(`Template "${template.name}" saved successfully!`);
+    } catch (error) {
+      console.error('Error saving template:', error);
+      alert('Failed to save template. Please try again.');
+    }
+  };
+  
+  // Handle template modal close
+  const handleCloseTemplateModal = () => {
+    setIsCustomizeTemplateModalOpen(false);
+    setTemplateToEdit(null);
+  };
+  // 3. Add the handleDownloadReport function inside the ReportsPage component
+  const handleDownloadReport = async (report: any) => {
+    // Set the downloading state to show loading
+    setDownloadingReportId(report.id);
+    
+    try {
+      // Call the utility function to download the report
+      const success = await downloadReportAsPPTX({
+        title: report.title,
+        type: report.type,
+        reportId: report.id,
+        report: report // Pass the full report object
+      });
+      
+      if (!success) {
+        alert('Failed to download report. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error downloading report:', error);
+      alert('An error occurred while downloading the report.');
+    } finally {
+      // Reset the downloading state
+      setDownloadingReportId(null);
+    }
+  };
   return (
     <div className="flex-1 p-8 pt-6 bg-gradient-to-br from-gray-50 via-blue-50/10 to-purple-50/10">
       <div className="max-w-7xl mx-auto space-y-8">
@@ -300,6 +386,16 @@ export default function ReportsPage() {
             >
               <Plus size={16} />
               <span>New Report</span>
+            </button>
+            <button
+              onClick={() => {
+                setTemplateToEdit(null);
+                setIsCustomizeTemplateModalOpen(true);
+              }}
+              className="flex items-center gap-2 border bg-white px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+            >
+              <Settings size={16} />
+              <span>Customize Templates</span>
             </button>
             <Link
               href="/dashboard/reports/history"
@@ -574,9 +670,25 @@ export default function ReportsPage() {
                       </div>
                       <div className="flex gap-2">
                         {report.status === 'completed' && (
-                          <button className="flex items-center gap-1.5 text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors">
-                            <Download size={14} />
-                            <span>Download</span>
+                          <button 
+                            className="flex items-center gap-1.5 text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors"
+                            onClick={(e) => {
+                              e.preventDefault(); // Prevent navigation
+                              handleDownloadReport(report);
+                            }}
+                            disabled={downloadingReportId === report.id}
+                          >
+                            {downloadingReportId === report.id ? (
+                              <>
+                                <RefreshCw size={14} className="animate-spin" />
+                                <span>Downloading...</span>
+                              </>
+                            ) : (
+                              <>
+                                <Download size={14} />
+                                <span>Download</span>
+                              </>
+                            )}
                           </button>
                         )}
                         <button className="flex items-center gap-1.5 text-sm font-medium text-red-600 hover:text-red-800 transition-colors">
@@ -610,6 +722,31 @@ export default function ReportsPage() {
               </button>
             </div>
           )}
+        </section>
+        
+        {/* Custom Templates Section */}
+        <section className="mt-12">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-semibold">Custom Templates</h2>
+            <button
+              onClick={() => {setTemplateToEdit(null);
+                setIsCustomizeTemplateModalOpen(true);
+              }}
+              className="flex items-center gap-2 bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors"
+            >
+              <Plus size={16} />
+              <span>New Template</span>
+            </button>
+          </div>
+          
+          <TemplatesList 
+            templates={templates}
+            onRefresh={async () => {
+              const updatedTemplates = await getTemplates();
+              setTemplates(updatedTemplates);
+            }}
+            onEdit={handleEditTemplate}
+          />
         </section>
         
         {/* Analytics Summary */}
@@ -687,6 +824,42 @@ export default function ReportsPage() {
                 </div>
               </CardContent>
             </Card>
+            
+            <Card className="bg-orange-50 border-none overflow-hidden">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-lg font-medium text-orange-800">Template Usage</h3>
+                  <div className="bg-orange-100 p-2 rounded-lg">
+                    <Settings className="h-5 w-5 text-orange-600" />
+                  </div>
+                </div>
+                
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-orange-700">Custom Templates</span>
+                    <span className="font-bold text-orange-900">{templates.length}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-orange-700">Most Used Template</span>
+                    <span className="font-bold text-orange-900">Compliance</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-orange-700">Template Efficiency</span>
+                    <span className="font-bold text-orange-900">67%</span>
+                  </div>
+                  
+                  <div className="w-full h-2 bg-orange-200 rounded-full overflow-hidden mt-6">
+                    <div 
+                      className="h-full bg-orange-600 rounded-full"
+                      style={{ width: '67%' }}
+                    />
+                  </div>
+                  <div className="text-sm text-orange-700 text-center">
+                    67% of templates actively used
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </section>
         
@@ -725,7 +898,13 @@ export default function ReportsPage() {
                     <p className="text-blue-100 mb-4">
                       Create your own report templates with custom branding, sections, and metrics tailored to your specific due diligence requirements.
                     </p>
-                    <button className="inline-flex items-center gap-2 bg-white text-blue-700 px-4 py-2 rounded-lg hover:bg-blue-50 transition-colors">
+                    <button 
+                      onClick={() => {
+                        setTemplateToEdit(null);
+                        setIsCustomizeTemplateModalOpen(true);
+                      }}
+                      className="inline-flex items-center gap-2 bg-white text-blue-700 px-4 py-2 rounded-lg hover:bg-blue-50 transition-colors"
+                    >
                       <Settings size={16} />
                       <span>Customize Templates</span>
                     </button>
@@ -839,6 +1018,13 @@ export default function ReportsPage() {
           </Card>
         </section>
       </div>
+      
+      {/* Template Customization Modal */}
+      <CustomizeTemplateModal 
+        isOpen={isCustomizeTemplateModalOpen}
+        onClose={handleCloseTemplateModal}
+        onSave={handleSaveTemplate}
+      />
     </div>
   );
-} 
+}

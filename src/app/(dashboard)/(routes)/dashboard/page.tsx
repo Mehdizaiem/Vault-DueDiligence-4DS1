@@ -494,7 +494,7 @@ export default function DashboardPage() {
                     Upgrade Now 
                     <ChevronRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                   </button>
-                  <span className="text-white/80 text-xs mt-2">Try free for 14 days</span>
+                  <span className="text-white/80 text-xs mt-2">Try free for 30 days</span>
                 </div>
               </div>
             </div>

@@ -881,20 +881,67 @@ def create_risk_profiles_schema(client):
             raise
 
 def create_user_doc_risk_schema(client):
-    client.collections.create(
-        name="user_doc_risk",
-        description="Stores risk scores generated from UserDocuments",
-        vectorizer_config=Configure.Vectorizer.none(),
-        properties=[
-            {"name": "document_id", "dataType": [DataType.TEXT]},
-            {"name": "user_id", "dataType": [DataType.TEXT]},
-            {"name": "title", "dataType": [DataType.TEXT]},
-            {"name": "upload_date", "dataType": [DataType.TEXT]},
-            {"name": "risk_score", "dataType": [DataType.NUMBER]},
-            {"name": "risk_category", "dataType": [DataType.TEXT]},
-            {"name": "risk_factors", "dataType": [DataType.TEXT_ARRAY]}
-        ]
-    )
+    """
+    Create the user_doc_risk collection to store risk scores from user documents.
+    """
+    try:
+        # Check if collection already exists
+        collection = client.collections.get("user_doc_risk")
+        logger.info("user_doc_risk collection already exists")
+        return collection
+    except Exception:
+        logger.info("Creating user_doc_risk collection")
+        
+        try:
+            # Create the collection with correct property format
+            collection = client.collections.create(
+                name="user_doc_risk",
+                description="Stores risk scores generated from UserDocuments",
+                vectorizer_config=Configure.Vectorizer.none(),
+                properties=[
+                    {
+                        "name": "document_id",
+                        "data_type": DataType.TEXT,
+                        "description": "ID of the referenced document"
+                    },
+                    {
+                        "name": "user_id",
+                        "data_type": DataType.TEXT,
+                        "description": "ID of the user who owns the document"
+                    },
+                    {
+                        "name": "title",
+                        "data_type": DataType.TEXT,
+                        "description": "Title of the document"
+                    },
+                    {
+                        "name": "upload_date",
+                        "data_type": DataType.TEXT,
+                        "description": "Date when document was uploaded"
+                    },
+                    {
+                        "name": "risk_score",
+                        "data_type": DataType.NUMBER,
+                        "description": "Calculated risk score"
+                    },
+                    {
+                        "name": "risk_category",
+                        "data_type": DataType.TEXT,
+                        "description": "Risk category (e.g., Low, Medium, High)"
+                    },
+                    {
+                        "name": "risk_factors",
+                        "data_type": DataType.TEXT_ARRAY,
+                        "description": "Identified risk factors"
+                    }
+                ]
+            )
+            
+            logger.info("Successfully created user_doc_risk collection")
+            return collection
+        except Exception as e:
+            logger.error(f"Failed to create user_doc_risk collection: {e}")
+            raise
 
 
 def setup_all_schemas(client):

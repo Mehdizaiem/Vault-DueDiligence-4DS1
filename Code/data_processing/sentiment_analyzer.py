@@ -33,14 +33,14 @@ def preprocess_text(text: str) -> str:
 def extract_aspect(text: str) -> str:
     text = text.lower()
     if any(w in text for w in ["sec", "regulation", "lawsuit", "ban", "legal"]):
-        return "regulation"
+        return "REGULATION"
     if any(w in text for w in ["bitcoin", "ethereum", "solana", "crypto"]):
-        return "cryptocurrency"
+        return "CRYPTOCURRENCY"
     if any(w in text for w in ["bullish", "bearish", "price", "market"]):
-        return "market"
+        return "MARKET"
     if any(w in text for w in ["blockchain", "nft", "smart contract", "web3"]):
-        return "technology"
-    return "general"
+        return "TECHNOLOGY"
+    return "GENERAL"
 
 
 def format_date_rfc3339(date_value):

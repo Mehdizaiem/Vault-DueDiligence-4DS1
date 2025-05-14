@@ -1,3 +1,4 @@
+//src\types\risk.ts
 export type RiskProfile = {
     symbol: string;
     risk_score: number;

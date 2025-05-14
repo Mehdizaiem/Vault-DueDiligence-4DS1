@@ -1,3 +1,4 @@
+//src\services\risk-service.ts
 import { RiskProfile } from "@/types/risk";
 
 export async function fetchRiskProfiles(): Promise<RiskProfile[]> {
@@ -19,6 +20,12 @@ export async function fetchRiskProfiles(): Promise<RiskProfile[]> {
           risk_score
           risk_category
           analysis_timestamp
+          analysis_period_days
+          market_data_points
+          sentiment_data_points
+          risk_factors
+          calculation_error
+          
         }
       }
     }`;

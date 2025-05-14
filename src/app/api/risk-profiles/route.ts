@@ -1,3 +1,4 @@
+//src\app\api\risk-profiles\route.ts
 import { fetchRiskProfiles } from "@/services/risk-service";
 
 export async function GET() {

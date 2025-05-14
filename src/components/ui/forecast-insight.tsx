@@ -85,7 +85,6 @@ export default function ForecastInsight({ currentPrice, forecastData }: Forecast
             )}
           </div>
         </div>
-        
         <div className="flex items-start space-x-2">
           <ExternalLink className="h-4 w-4 text-gray-400 mt-0.5" />
           <div>
@@ -97,12 +96,8 @@ export default function ForecastInsight({ currentPrice, forecastData }: Forecast
                 Type: {forecastData.model_type}
               </span>
             </p>
-            <p className="text-xs text-gray-500 mt-1">
-              Probability of Increase: {forecastData.probability_increase.toFixed(1)}%
-            </p>
           </div>
         </div>
-        
         <div className="flex items-start space-x-2">
           <ShieldAlert className="h-4 w-4 text-gray-400 mt-0.5" />
           <div>

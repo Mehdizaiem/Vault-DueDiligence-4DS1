@@ -23,7 +23,11 @@ import {
   Zap,
   Activity,
   BarChart4,
-  Waves
+  Waves,
+  Download,
+  CheckCircle,
+  AlertTriangle,
+  MinusCircle
 } from 'lucide-react';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import TimeFrameSelector from '@/components/ui/time-frame-selector';
@@ -296,6 +300,14 @@ export default function ForecastPage() {
   const [error, setError] = useState<string | null>(null);
   const [selectedTimePeriod, setSelectedTimePeriod] = useState<'90d' | '180d' | '365d'>('365d');
 
+  // Helper to calculate 24h/7d change
+  function getChangePct(daysAgo: number): number | null {
+    if (historicalData.length < daysAgo + 1) return null;
+    const latest = historicalData[historicalData.length - 1].price;
+    const past = historicalData[historicalData.length - 1 - daysAgo].price;
+    return ((latest - past) / past) * 100;
+  }
+
   // Helper function to combine historical and forecast data for the chart
   function combineDataForChart(historical: HistoricalData[], forecast: ForecastData | null): ChartData[] {
     if (!historical || historical.length === 0) return [];
@@ -390,6 +402,115 @@ export default function ForecastPage() {
     fetchData();
   }, [selectedTimePeriod]);
 
+  // Helper for key takeaways
+  function getKeyTakeaways() {
+    if (!forecastData) return [];
+    const takeaways = [];
+    if (forecastData.trend) takeaways.push(`Trend: ${forecastData.trend.charAt(0).toUpperCase() + forecastData.trend.slice(1)}`);
+    if (forecastData.average_uncertainty !== undefined) takeaways.push(`Volatility: ±${forecastData.average_uncertainty.toFixed(1)}%`);
+    if (forecastData.change_pct !== undefined) takeaways.push(`Expected Change: ${forecastData.change_pct > 0 ? '+' : ''}${forecastData.change_pct.toFixed(2)}%`);
+    // Add more as needed
+    return takeaways;
+  }
+  function getConfidenceBadge() {
+    if (!forecastData) return null;
+    const unc = forecastData.average_uncertainty;
+    if (unc <= 5) return <span className="inline-block px-2 py-0.5 rounded bg-green-100 text-green-700 text-xs font-semibold ml-2">High Confidence</span>;
+    if (unc <= 10) return <span className="inline-block px-2 py-0.5 rounded bg-yellow-100 text-yellow-700 text-xs font-semibold ml-2">Medium Confidence</span>;
+    return <span className="inline-block px-2 py-0.5 rounded bg-red-100 text-red-700 text-xs font-semibold ml-2">Low Confidence</span>;
+  }
+  function getAnalystNote() {
+    if (!forecastData) return null;
+    if (forecastData.average_uncertainty > 10) return 'Volatility is elevated. Consider risk management.';
+    if (forecastData.trend?.includes('bullish')) return 'Mild bullish signal, but not strong enough for aggressive action.';
+    if (forecastData.trend?.includes('bearish')) return 'Mild bearish signal, but not strong enough for aggressive action.';
+    return 'No strong buy/sell signal. Consider holding or waiting for more volatility.';
+  }
+  function downloadForecastCSV() {
+    if (!forecastData) return;
+    const rows = [
+      ['Day', 'Forecast', 'Best Case', 'Worst Case', 'Change %'],
+      ...forecastData.forecast_values.map((value, i) => [
+        `Day ${i + 1}`,
+        value,
+        forecastData.upper_bounds?.[i] ?? '',
+        forecastData.lower_bounds?.[i] ?? '',
+        latestHistoricalPrice ? (((value - latestHistoricalPrice) / latestHistoricalPrice) * 100).toFixed(2) + '%' : ''
+      ])
+    ];
+    const csv = rows.map(r => r.join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'forecast.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function getKeyTakeawaysVisual() {
+    if (!forecastData) return [];
+    const takeaways = [];
+    // Trend
+    if (forecastData.trend) {
+      let icon = <MinusCircle className="inline w-4 h-4 text-gray-400 mr-1" />;
+      let color = 'bg-gray-100 text-gray-700';
+      if (forecastData.trend.includes('bullish')) {
+        icon = <TrendingUp className="inline w-4 h-4 text-green-500 mr-1" />;
+        color = 'bg-green-50 text-green-700';
+      } else if (forecastData.trend.includes('bearish')) {
+        icon = <TrendingDown className="inline w-4 h-4 text-red-500 mr-1" />;
+        color = 'bg-red-50 text-red-700';
+      }
+      takeaways.push(<span key="trend" className={`inline-flex items-center px-2 py-1 rounded ${color} font-medium text-sm`}>{icon}Trend: {forecastData.trend.charAt(0).toUpperCase() + forecastData.trend.slice(1)}</span>);
+    }
+    // Volatility
+    if (forecastData.average_uncertainty !== undefined) {
+      let color = 'bg-yellow-50 text-yellow-700';
+      let icon = <AlertTriangle className="inline w-4 h-4 text-yellow-500 mr-1" />;
+      if (forecastData.average_uncertainty <= 5) {
+        color = 'bg-green-50 text-green-700';
+        icon = <CheckCircle className="inline w-4 h-4 text-green-500 mr-1" />;
+      } else if (forecastData.average_uncertainty > 10) {
+        color = 'bg-red-50 text-red-700';
+        icon = <AlertTriangle className="inline w-4 h-4 text-red-500 mr-1" />;
+      }
+      takeaways.push(<span key="volatility" className={`inline-flex items-center px-2 py-1 rounded ${color} font-medium text-sm`}>{icon}Volatility: ±{forecastData.average_uncertainty.toFixed(1)}%</span>);
+    }
+    // Expected Change
+    if (forecastData.change_pct !== undefined) {
+      let color = forecastData.change_pct > 0 ? 'bg-green-50 text-green-700' : forecastData.change_pct < 0 ? 'bg-red-50 text-red-700' : 'bg-gray-100 text-gray-700';
+      let icon = forecastData.change_pct > 0 ? <TrendingUp className="inline w-4 h-4 text-green-500 mr-1" /> : forecastData.change_pct < 0 ? <TrendingDown className="inline w-4 h-4 text-red-500 mr-1" /> : <MinusCircle className="inline w-4 h-4 text-gray-400 mr-1" />;
+      takeaways.push(<span key="change" className={`inline-flex items-center px-2 py-1 rounded ${color} font-medium text-sm`}>{icon}Expected Change: {forecastData.change_pct > 0 ? '+' : ''}{forecastData.change_pct.toFixed(2)}%</span>);
+    }
+    // Confidence
+    if (forecastData.average_uncertainty !== undefined) {
+      let badge = null;
+      if (forecastData.average_uncertainty <= 5) badge = <span className="inline-block px-2 py-0.5 rounded bg-green-100 text-green-700 text-xs font-semibold ml-2">High Confidence</span>;
+      else if (forecastData.average_uncertainty <= 10) badge = <span className="inline-block px-2 py-0.5 rounded bg-yellow-100 text-yellow-700 text-xs font-semibold ml-2">Medium Confidence</span>;
+      else badge = <span className="inline-block px-2 py-0.5 rounded bg-red-100 text-red-700 text-xs font-semibold ml-2">Low Confidence</span>;
+      takeaways.push(
+        <span key="confidence" className="inline-flex items-center px-2 py-1 rounded bg-blue-50 text-blue-700 font-medium text-sm">🛡️ Confidence: {badge} <span aria-label="Confidence Info" title="Based on forecast uncertainty. Lower uncertainty = higher confidence."><Info className="inline w-3 h-3 text-gray-400 ml-1" /></span></span>
+      );
+    }
+    return takeaways;
+  }
+  function getAnalystNoteDynamic() {
+    if (!forecastData) return null;
+    if (forecastData.average_uncertainty > 10) return '⚠️ Volatility is elevated. Consider risk management.';
+    if (forecastData.trend?.includes('bullish') && forecastData.average_uncertainty <= 5) return '💡 Mild bullish signal with high confidence. Consider gradual accumulation.';
+    if (forecastData.trend?.includes('bearish') && forecastData.average_uncertainty <= 5) return '⚠️ Mild bearish signal with high confidence. Consider reducing exposure.';
+    if (forecastData.trend?.includes('bullish')) return 'Mild bullish signal, but not strong enough for aggressive action.';
+    if (forecastData.trend?.includes('bearish')) return 'Mild bearish signal, but not strong enough for aggressive action.';
+    return 'Market is calm. No strong buy/sell signal. Consider holding or waiting for a catalyst.';
+  }
+  function getRiskOpportunityCallout() {
+    if (!forecastData) return null;
+    if (forecastData.average_uncertainty > 10) return <div className="mt-2 p-2 rounded bg-red-50 text-red-700 text-xs font-semibold flex items-center"><AlertTriangle className="w-4 h-4 mr-2" />Elevated risk: Large price swings possible.</div>;
+    if (forecastData.trend?.includes('bullish') && forecastData.average_uncertainty <= 5) return <div className="mt-2 p-2 rounded bg-green-50 text-green-700 text-xs font-semibold flex items-center"><TrendingUp className="w-4 h-4 mr-2" />Opportunity: Strong trend detected, but manage risk.</div>;
+    return null;
+  }
+
   if (loading) {
     return (
       <div className="flex-1 p-8 pt-6 flex items-center justify-center min-h-[600px] bg-gradient-to-br from-blue-50 to-purple-50">
@@ -465,6 +586,69 @@ export default function ForecastPage() {
             />
           </motion.div>
 
+          {/* Market Overview Panel */}
+          <div className="grid gap-6 md:grid-cols-5">
+            <MetricTile
+              label="24h Change"
+              value={(() => {
+                const pct = getChangePct(1);
+                return pct !== null ? `${pct > 0 ? '+' : ''}${pct.toFixed(2)}%` : 'N/A';
+              })()}
+              icon={TrendingUp}
+              color={(() => {
+                const pct = getChangePct(1);
+                return pct === null ? 'blue' : pct > 0 ? 'green' : pct < 0 ? 'red' : 'yellow';
+              })()}
+              delay={0.1}
+            />
+            <MetricTile
+              label="7d Change"
+              value={(() => {
+                const pct = getChangePct(7);
+                return pct !== null ? `${pct > 0 ? '+' : ''}${pct.toFixed(2)}%` : 'N/A';
+              })()}
+              icon={TrendingUp}
+              color={(() => {
+                const pct = getChangePct(7);
+                return pct === null ? 'blue' : pct > 0 ? 'green' : pct < 0 ? 'red' : 'yellow';
+              })()}
+              delay={0.2}
+            />
+            <MetricTile
+              label="Trend"
+              value={forecastData?.trend ? forecastData.trend.charAt(0).toUpperCase() + forecastData.trend.slice(1) : 'N/A'}
+              icon={forecastData?.trend?.includes('bullish') ? TrendingUp : forecastData?.trend?.includes('bearish') ? TrendingDown : Gauge}
+              color={forecastData?.trend?.includes('bullish') ? 'green' : forecastData?.trend?.includes('bearish') ? 'red' : 'yellow'}
+              delay={0.3}
+            />
+            <MetricTile
+              label="Confidence"
+              value={(() => {
+                if (!forecastData) return 'N/A';
+                const unc = forecastData.average_uncertainty;
+                if (unc <= 5) return 'High';
+                if (unc <= 10) return 'Medium';
+                return 'Low';
+              })()}
+              icon={ShieldAlert}
+              color={(() => {
+                if (!forecastData) return 'blue';
+                const unc = forecastData.average_uncertainty;
+                if (unc <= 5) return 'green';
+                if (unc <= 10) return 'yellow';
+                return 'red';
+              })()}
+              delay={0.4}
+            />
+            <MetricTile
+              label="Sentiment"
+              value="Neutral" // Placeholder, wire up real data if available
+              icon={Waves}
+              color="blue"
+              delay={0.5}
+            />
+          </div>
+
           <div className="grid gap-6 md:grid-cols-2">
             <PriceCard
               title="Current Price"
@@ -486,7 +670,7 @@ export default function ForecastPage() {
           </div>
 
           {forecastData && (
-            <div className="grid gap-6 md:grid-cols-4">
+            <div className="grid gap-6 md:grid-cols-3">
               <MetricTile
                 label="Model"
                 value={forecastData.model_name}
@@ -502,18 +686,17 @@ export default function ForecastPage() {
                 delay={0.2}
               />
               <MetricTile
-                label="Probability of Increase"
-                value={`${forecastData.probability_increase.toFixed(1)}%`}
-                icon={Gauge}
-                color={forecastData.probability_increase > 50 ? "green" : "red"}
-                delay={0.3}
-              />
-              <MetricTile
                 label="Volatility"
                 value={`±${forecastData.average_uncertainty.toFixed(1)}%`}
                 icon={Activity}
-                color={forecastData.average_uncertainty <= 5 ? "green" : forecastData.average_uncertainty <= 10 ? "yellow" : "red"}
-                delay={0.4}
+                color={
+                  forecastData.average_uncertainty <= 5
+                    ? "green"
+                    : forecastData.average_uncertainty <= 10
+                    ? "yellow"
+                    : "red"
+                }
+                delay={0.3}
               />
             </div>
           )}
@@ -544,10 +727,6 @@ export default function ForecastPage() {
                       <div className="w-3 h-3 bg-green-500 rounded-full" />
                       <span className="text-sm text-muted-foreground">Forecast</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-green-500/20 rounded-full" />
-                      <span className="text-sm text-muted-foreground">Confidence</span>
-                    </div>
                   </div>
                 </div>
               </CardHeader>
@@ -566,14 +745,50 @@ export default function ForecastPage() {
                 icon={Sparkles}
                 iconColor="purple"
               >
-                <div className="prose prose-sm">
-                  <p className="text-gray-600 leading-relaxed">
+                <div className="prose prose-sm bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 shadow-lg">
+                  <p className="text-gray-700 leading-relaxed mb-2">
                     {forecastData.insight}
                   </p>
-                </div>
-                <div className="mt-6 space-y-6">
+                  <div className="mb-2 font-semibold text-sm text-gray-600">Key Points:</div>
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {/* Trend badge with icon */}
+                    {forecastData.trend && (
+                      <span className={`inline-flex items-center px-2 py-1 rounded font-medium text-sm ${forecastData.trend.includes('bullish') ? 'bg-green-100 text-green-700' : forecastData.trend.includes('bearish') ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-700'}`}>
+                        {forecastData.trend.includes('bullish') ? <TrendingUp className="w-4 h-4 mr-1" /> : forecastData.trend.includes('bearish') ? <TrendingDown className="w-4 h-4 mr-1" /> : <MinusCircle className="w-4 h-4 mr-1" />}Trend: {forecastData.trend.charAt(0).toUpperCase() + forecastData.trend.slice(1)}
+                      </span>
+                    )}
+                    {/* Volatility badge with icon */}
+                    {forecastData.average_uncertainty !== undefined && (
+                      <span className={`inline-flex items-center px-2 py-1 rounded font-medium text-sm ${forecastData.average_uncertainty <= 5 ? 'bg-green-100 text-green-700' : forecastData.average_uncertainty > 10 ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                        {forecastData.average_uncertainty <= 5 ? <CheckCircle className="w-4 h-4 mr-1" /> : <AlertTriangle className="w-4 h-4 mr-1" />}Volatility: ±{forecastData.average_uncertainty.toFixed(1)}%
+                      </span>
+                    )}
+                    {/* Expected Change badge with icon */}
+                    {forecastData.change_pct !== undefined && (
+                      <span className={`inline-flex items-center px-2 py-1 rounded font-medium text-sm ${forecastData.change_pct > 0 ? 'bg-green-100 text-green-700' : forecastData.change_pct < 0 ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-700'}`}>
+                        {forecastData.change_pct > 0 ? <TrendingUp className="w-4 h-4 mr-1" /> : forecastData.change_pct < 0 ? <TrendingDown className="w-4 h-4 mr-1" /> : <MinusCircle className="w-4 h-4 mr-1" />}Expected Change: {forecastData.change_pct > 0 ? '+' : ''}{forecastData.change_pct.toFixed(2)}%
+                      </span>
+                    )}
+                    {/* Confidence badge with icon */}
+                    {forecastData.average_uncertainty !== undefined && (
+                      <span className="inline-flex items-center px-2 py-1 rounded bg-blue-100 text-blue-700 font-medium text-sm">
+                        <ShieldAlert className="w-4 h-4 mr-1" />Confidence: {forecastData.average_uncertainty <= 5 ? 'High' : forecastData.average_uncertainty <= 10 ? 'Medium' : 'Low'}
+                      </span>
+                    )}
+                  </div>
+                  {/* Analyst Note as callout */}
+                  <div className="border-l-4 border-blue-400 bg-blue-50 p-2 rounded mb-2 text-blue-800">
+                    <Info className="inline w-4 h-4 mr-1" /> Analyst Note: {getAnalystNoteDynamic()}
+                  </div>
+                  {/* Confidence progress bar (if not already present) */}
                   <ConfidenceIndicator value={forecastData.average_uncertainty} />
-                  <div className="space-y-2">
+                  {/* Risk/Opportunity callout (if present) */}
+                  {getRiskOpportunityCallout() && (
+                    <div className="mt-3 p-2 rounded border-l-4 bg-yellow-50 border-yellow-400 text-yellow-800 font-medium">
+                      {getRiskOpportunityCallout()}
+                    </div>
+                  )}
+                  <div className="space-y-2 mt-4">
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-muted-foreground">Price Range</span>
                       <span className="font-medium">
@@ -589,39 +804,72 @@ export default function ForecastPage() {
                 icon={Target}
                 iconColor="blue"
               >
-                <div className="space-y-6">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <p className="text-sm text-muted-foreground">Model Type</p>
-                      <p className="font-medium">{forecastData.model_type}</p>
+                <div className="bg-gradient-to-br from-white to-blue-50 rounded-xl p-6 shadow-lg">
+                  <div className="flex gap-4 mb-4">
+                    <span className="inline-flex items-center bg-blue-100 text-blue-700 px-2 py-1 rounded font-semibold">
+                      <Brain className="w-4 h-4 mr-1" /> {forecastData.model_type}
+                    </span>
+                    <span className="inline-flex items-center bg-green-100 text-green-700 px-2 py-1 rounded font-semibold">
+                      <Calendar className="w-4 h-4 mr-1" /> {forecastData.days_ahead} days ahead
+                    </span>
+                  </div>
+                  {/* Forecast at a Glance summary row */}
+                  <div className="mb-4 flex flex-wrap gap-4">
+                    <div className="flex flex-col items-center bg-blue-100 text-blue-700 rounded px-3 py-2 font-semibold">
+                      <span>Average</span>
+                      <span>{formatPrice(forecastData.forecast_values.reduce((a, b) => a + b, 0) / forecastData.forecast_values.length)}</span>
                     </div>
-                    <div className="space-y-2">
-                      <p className="text-sm text-muted-foreground">Timeframe</p>
-                      <p className="font-medium">{forecastData.days_ahead} days ahead</p>
+                    <div className="flex flex-col items-center bg-green-100 text-green-700 rounded px-3 py-2 font-semibold">
+                      <span>Best</span>
+                      <span>{formatPrice(Math.max(...forecastData.upper_bounds))}</span>
+                    </div>
+                    <div className="flex flex-col items-center bg-red-100 text-red-700 rounded px-3 py-2 font-semibold">
+                      <span>Worst</span>
+                      <span>{formatPrice(Math.min(...forecastData.lower_bounds))}</span>
                     </div>
                   </div>
-                  
-                  <div className="space-y-4">
-                    {forecastData.forecast_values.map((value, index) => (
-                      <motion.div 
-                        key={index}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.5, delay: index * 0.1 }}
-                        className="flex items-center justify-between bg-gray-50/50 rounded-lg p-3"
-                      >
-                        <span className="text-sm text-muted-foreground">Day {index + 1} Forecast</span>
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium">{formatPrice(value)}</span>
-                          <div className={cn(
-                            "text-xs font-medium px-1.5 py-0.5 rounded-full",
-                            value > latestHistoricalPrice ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
-                          )}>
-                            {((value - latestHistoricalPrice) / latestHistoricalPrice * 100).toFixed(2)}%
-                          </div>
-                        </div>
-                      </motion.div>
-                    ))}
+                  <div className="flex justify-end mb-2">
+                    <button
+                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded bg-gradient-to-r from-blue-400 to-blue-600 text-xs font-medium text-white shadow hover:from-blue-500 hover:to-blue-700 transition"
+                      onClick={downloadForecastCSV}
+                    >
+                      <Download className="h-4 w-4" /> Download CSV
+                    </button>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full text-xs border rounded-xl">
+                      <thead>
+                        <tr className="bg-blue-600">
+                          <th className="px-3 py-2 text-left font-semibold text-white">Day</th>
+                          <th className="px-3 py-2 text-left font-semibold text-white">Forecast</th>
+                          <th className="px-3 py-2 text-left font-semibold text-white">
+                            Best Case
+                            <span className="ml-1" title="Best possible outcome based on model confidence."><Info className="inline w-3 h-3 text-white" /></span>
+                          </th>
+                          <th className="px-3 py-2 text-left font-semibold text-white">
+                            Worst Case
+                            <span className="ml-1" title="Worst possible outcome based on model confidence."><Info className="inline w-3 h-3 text-white" /></span>
+                          </th>
+                          <th className="px-3 py-2 text-left font-semibold text-white">Change %</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {forecastData && forecastData.forecast_values.map((value, index) => {
+                          const upper = forecastData.upper_bounds?.[index];
+                          const lower = forecastData.lower_bounds?.[index];
+                          const pct = latestHistoricalPrice ? ((value - latestHistoricalPrice) / latestHistoricalPrice) * 100 : 0;
+                          return (
+                            <tr key={index} className={index % 2 === 0 ? 'bg-blue-50' : ''}>
+                              <td className="px-3 py-2">Day {index + 1}</td>
+                              <td className="px-3 py-2 font-bold">{formatPrice(value)}</td>
+                              <td className="px-3 py-2 bg-green-100 text-green-700 font-medium">{upper !== undefined ? formatPrice(upper) : '-'}</td>
+                              <td className="px-3 py-2 bg-red-100 text-red-700 font-medium">{lower !== undefined ? formatPrice(lower) : '-'}</td>
+                              <td className={`px-3 py-2 font-semibold rounded ${pct > 0 ? 'bg-green-100 text-green-700' : pct < 0 ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-700'}`}>{pct > 0 ? '+' : ''}{pct.toFixed(2)}%</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               </InsightCard>

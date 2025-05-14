@@ -55,17 +55,24 @@ export default function RiskDashboardPage() {
   const [dateRange, setDateRange] = useState<{ start: string; end: string }>({ start: "", end: "" });
   const [filterOpen, setFilterOpen] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
+  type RiskProfileWithAlerts = RiskProfile & { alerts?: string[] };
+  const [alertsOpen, setAlertsOpen] = useState(false);
 
 
-  useEffect(() => {
-    fetch("/api/risk-profiles")
-      .then((res) => res.json())
-      .then((data) => {
+
+useEffect(() => {
+  fetch("/api/risk-profiles")
+    .then((res) => res.json())
+    .then((data) => {
         if (data.success) setAllProfiles(data.data);
         else setError("Failed to load risk data.");
-      })
-      .catch(() => setError("Error connecting to API."));
-  }, []);
+    })
+    .catch((err) => {
+      console.error("Fetch error:", err);
+      setError("Error connecting to API.");
+    });
+}, []);
+
 
   const isWithinRange = (date: string) => {
     if (!dateRange.start && !dateRange.end) return true;
@@ -136,6 +143,37 @@ export default function RiskDashboardPage() {
         .sort((a, b) => new Date(a.analysis_timestamp).getTime() - new Date(b.analysis_timestamp).getTime())
     : [];
 
+    const alertMap: { [key: string]: boolean } = {};
+    const uniqueAlerts: string[] = [];
+
+    filtered.forEach((p) => {
+      const alerts: string[] = [];
+
+      alerts.push(`ℹ️ ${p.symbol} score: ${p.risk_score.toFixed(2)} (${p.risk_category})`);
+
+      if (p.risk_score >= 80) {
+        alerts.push(`🚨 High Risk Detected for ${p.symbol} — Score: ${p.risk_score.toFixed(1)} (${p.risk_category})`);
+      }
+
+      if (p.risk_factors?.some((f) => f.toLowerCase().includes("sentiment"))) {
+        alerts.push(`⚠️ Sentiment-related risk for ${p.symbol}`);
+      }
+
+      alerts.forEach((alert) => {
+        if (!alertMap[alert]) {
+          alertMap[alert] = true;
+          uniqueAlerts.push(alert);
+        }
+      });
+    });
+
+    // Deduplicate alerts
+    //const uniqueAlerts = [...new Set(filteredWithAlerts.flatMap((p) => p.alerts ?? []))];
+
+
+
+
+
   const lineData = {
     labels: riskTimeSeries.map((p) => new Date(p.analysis_timestamp)),
     datasets: [
@@ -181,7 +219,7 @@ export default function RiskDashboardPage() {
   return (
     <div className="p-8 space-y-6">
       <h1 className="text-3xl font-bold text-gray-800 mb-6">Risk Analysis Dashboard</h1>
-
+      
       {error && <p className="text-red-600">{error}</p>}
 
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
@@ -203,16 +241,48 @@ export default function RiskDashboardPage() {
         />
       </div>
       </div>
+      
+      {/* Filter & Export */}
+      <div className="flex items-center justify-end gap-4">
+      {/* Alert Button */}
+      <div className="relative">
+        <button
+          onClick={() => setAlertsOpen(!alertsOpen)}
+          className="relative text-gray-700 hover:text-yellow-600 focus:outline-none"
+        >
+          🔔
+          {uniqueAlerts.length > 0 && (
+            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+              {uniqueAlerts.length}
+            </span>
+          )}
+        </button>
 
+        {alertsOpen && (
+          <div className="absolute right-0 mt-2 w-80 bg-white border rounded shadow-lg z-50 max-h-96 overflow-auto">
+            <div className="p-3 border-b font-semibold text-gray-800">Alerts</div>
+            <ul className="divide-y divide-gray-100">
+              {uniqueAlerts.length > 0 ? (
+                uniqueAlerts.map((alert, i) => (
+                  <li key={i} className="p-3 text-sm text-gray-700 hover:bg-gray-50">
+                    {alert}
+                  </li>
+                ))
+              ) : (
+                <li className="p-3 text-sm text-gray-500 italic">No alerts</li>
+              )}
+            </ul>
+          </div>
+        )}
+      </div>
 
-    {/* Filter & Export */}
-    <div className="flex gap-2">
+      {/* Filter */}
       <div className="relative">
         <button
           onClick={() => setFilterOpen(!filterOpen)}
           className="border px-4 py-2 rounded text-sm flex items-center gap-2 hover:bg-gray-50"
         >
-          <span> Filter</span>
+          <span>Filter</span>
           <span className="ml-1">▾</span>
         </button>
         {filterOpen && (
@@ -228,13 +298,14 @@ export default function RiskDashboardPage() {
         )}
       </div>
 
-    <button
-      onClick={exportCSV}
-      className="border px-4 py-2 rounded text-sm hover:bg-gray-50 flex items-center gap-2"
-    >
-      ⬇ Export
-    </button>
-  </div>
+      {/* Export */}
+      <button
+        onClick={exportCSV}
+        className="border px-4 py-2 rounded text-sm hover:bg-gray-50 flex items-center gap-2"
+      >
+        ⬇ Export
+      </button>
+    </div>
 </div>
 
 

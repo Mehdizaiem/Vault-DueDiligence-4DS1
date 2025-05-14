@@ -65,6 +65,13 @@ const routes = [
     href: '/dashboard/news',
     lightColor: '#eab308',
   },
+   {
+    label: 'Report Generation',
+    icon: FileText,
+    color: "text-green-400",
+    href: '/dashboard/reports',
+    lightColor: '#BBBE33FF',
+  }
 ];
 
 const Sidebar = () => {

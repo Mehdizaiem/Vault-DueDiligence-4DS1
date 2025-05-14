@@ -495,19 +495,7 @@ export default function NewsDashboard() {
                   <Pie data={pieChartData} options={{ maintainAspectRatio: false }} />
                 </div>
               </motion.div>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.3 }}
-                className="lg:col-span-2 bg-white border rounded-xl shadow-md p-6 hover:shadow-lg transition"
-              >
-                <h3 className="text-lg font-semibold text-center text-gray-700">
-                  Sentiment Trends Over Time
-                </h3>
-                <div className="h-80 mt-4">
-                  <Line data={trendChartData} options={{ maintainAspectRatio: false }} />
-                </div>
-              </motion.div>
+
             </div>
 
             <motion.div

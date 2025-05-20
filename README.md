@@ -13,46 +13,14 @@ VAULT is an advanced cryptocurrency due diligence platform that leverages AI and
 ## 🛠️ Tech Stack
 
 ### Frontend
-- Next.js 13 with App Router
+- Next.js 16 with App Router
 - TypeScript
 - Tailwind CSS
 - Clerk Authentication
 - Shadcn UI Components
 - Lucide React Icons
 
-### Backend (Coming Soon)
-- Node.js
-- Express.js
-- MongoDB
-- Redis for caching
 
-### AI/ML Components (Coming Soon)
-- LangChain
-- OpenAI GPT-4
-- BERT for relevance scoring
-- RAGAs for document retrieval
-
-### Data Processing (Coming Soon)
-- Python
-- Pandas
-- NumPy
-- Apache Tika
-- Tesseract OCR
-
-## 📊 Project Structure
-Following Team Data Science Process (TDSP) methodology:
-/
-├── Docs/
-│   ├── Business_Understanding/
-│   ├── Data_Understanding/
-│   ├── Modeling/
-│   └── Deployment/
-├── Code/
-├── Sample_Data/
-└── src/
-└── app/
-├── (auth)/
-└── (dashboard)/
 
 ## 🎯 Project Goals
 1. Reduce manual due diligence time by 70%
